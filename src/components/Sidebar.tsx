@@ -53,7 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       <div className="organizer-flex organizer-items-center  ">
         <button
           onClick={onClose}
-          className="organizer-rounded-lg organizer-text-white hover:organizer-bg-[#2a2a2a] organizer-transition-all organizer-p-2"
+          className="organizer-rounded-lg organizer-text-white hover:organizer-text-white/70 organizer-transition-all organizer-p-2"
           title="Close sidebar"
         >
           <ArrowRightFromLineIcon size={18} />
