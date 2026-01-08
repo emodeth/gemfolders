@@ -1,8 +1,9 @@
 import cssText from "data-text:~style.css"
 import type { PlasmoCSConfig } from "plasmo"
+import { useState } from "react"
 
 import SidebarButton from "./components/SidebarButton"
-
+import Sidebar from "./components/Sidebar"
 
 export const config: PlasmoCSConfig = {
   matches: ["https://gemini.google.com/*"]
@@ -27,10 +28,23 @@ export const getStyle = (): HTMLStyleElement => {
 }
 
 const PlasmoOverlay = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen)
+  }
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false)
+  }
+
   return (
-    <div className="organizer-z-50 organizer-flex organizer-fixed organizer-top-[72px] organizer-right-4">
-      <SidebarButton />
-    </div>
+    <>
+      <div className="organizer-z-50 organizer-flex organizer-fixed organizer-top-[72px] organizer-right-4">
+        <SidebarButton onClick={toggleSidebar} />
+      </div>
+      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+    </>
   )
 }
 
