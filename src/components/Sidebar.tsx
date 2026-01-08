@@ -11,6 +11,7 @@ import FoldersTab from "./FoldersTab";
 import BookmarksTab from "./BookmarksTab";
 import ProfileTab from "./ProfileTab";
 import SettingsTab from "./SettingsTab";
+import TabButton from "./TabButton";
 
 type TabType = "folders" | "bookmarks" | "profile" | "settings";
 
@@ -28,8 +29,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { id: "profile", icon: <User size={18} />, label: "Profile" },
     { id: "settings", icon: <Settings size={18} />, label: "Settings" },
   ];
-
-
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -54,8 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       <div className="organizer-flex organizer-items-center  ">
         <button
           onClick={onClose}
-          className="organizer-rounded-lg organizer-text-white hover:organizer-bg-[#2a2a2a] organizer-transition-all organizer-p-2
-          "
+          className="organizer-rounded-lg organizer-text-white hover:organizer-bg-[#2a2a2a] organizer-transition-all organizer-p-2"
           title="Close sidebar"
         >
           <ArrowRightFromLineIcon size={18} />
@@ -63,34 +61,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
         <div className="organizer-flex organizer-items-center organizer-gap-2 organizer-mx-auto">
           {tabs.map((tab) => (
-            <button
+            <TabButton
               key={tab.id}
+              active={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`organizer-relative organizer-px-2 organizer-py-3 organizer-rounded-lg organizer-transition-all organizer-text-white hover:organizer-text-white/70`}
-              title={tab.label}
-            >
-              {tab.icon}
-              {activeTab === tab.id && (
-                <div
-                  className="organizer-absolute organizer-bottom-0 organizer-left-1/2 organizer--translate-x-1/2 organizer-h-[2px] organizer-rounded-full"
-                  style={{
-                    background: "linear-gradient(90deg, #60a5fa, #a78bfa)",
-                    width: "20px",
-                  }}
-                />
-              )}
-            </button>
+              tab={tab}
+            />
           ))}
         </div>
       </div>
-
 
       <div className="organizer-mt-4">
         <h2 className="organizer-text-white organizer-font-semibold organizer-text-lg organizer-mb-2">
           {tabs.find((t) => t.id === activeTab)?.label}
         </h2>
       </div>
-
 
       <div className="organizer-flex-1 organizer-overflow-y-auto">
         {renderTabContent()}

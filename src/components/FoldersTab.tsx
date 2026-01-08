@@ -20,7 +20,6 @@ const FoldersTab: React.FC = () => {
         />
       </div>
 
-      {/* Add Folder Button */}
       <div className="organizer-flex organizer-justify-end organizer-mb-4">
         <button
           className="organizer-p-2 organizer-rounded-lg organizer-bg-[#2a2a2a] organizer-border organizer-border-[#3a3a3a] organizer-text-gray-400 hover:organizer-text-white hover:organizer-bg-[#3a3a3a] organizer-transition-all"
@@ -30,7 +29,6 @@ const FoldersTab: React.FC = () => {
         </button>
       </div>
 
-      {/* Empty State */}
       <div className="organizer-flex organizer-flex-col organizer-items-center organizer-justify-center organizer-flex-1 organizer-text-center">
         <p className="organizer-text-gray-300 organizer-font-medium organizer-mb-1">
           No folders yet
