@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Tooltip from "./Tooltip";
 import {
   ArrowRightFromLineIcon,
   Bookmark,
@@ -51,13 +52,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         }`}
     >
       <div className="organizer-flex organizer-items-center  ">
-        <button
-          onClick={onClose}
-          className="organizer-rounded-lg organizer-text-white hover:organizer-text-white/70 organizer-transition-all organizer-p-2"
-          title="Close sidebar"
-        >
-          <ArrowRightFromLineIcon size={18} />
-        </button>
+        <Tooltip text="Hide">
+          <button
+            onClick={onClose}
+            className="organizer-rounded-lg organizer-text-white hover:organizer-text-white/70 organizer-transition-all organizer-p-2"
+          >
+            <ArrowRightFromLineIcon size={18} />
+          </button>
+        </Tooltip>
 
         <div className="organizer-flex organizer-items-center organizer-gap-2 organizer-mx-auto">
           {tabs.map((tab) => (
