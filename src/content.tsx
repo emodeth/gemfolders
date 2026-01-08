@@ -1,10 +1,11 @@
 import cssText from "data-text:~style.css"
 import type { PlasmoCSConfig } from "plasmo"
 import { useState } from "react"
-import { ModalProvider } from "./context/ModalContext"
+import { ModalProvider } from "~context/ModalContext"
 
 import SidebarButton from "./components/SidebarButton"
 import Sidebar from "./components/Sidebar"
+import ModalManager from "./components/ModalManager"
 
 export const config: PlasmoCSConfig = {
   matches: ["https://gemini.google.com/*"]
@@ -45,6 +46,7 @@ const PlasmoOverlay = () => {
         <SidebarButton onClick={toggleSidebar} />
       </div>
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+      <ModalManager />
     </ModalProvider>
   )
 }

@@ -1,8 +1,24 @@
 import React, { useState } from "react";
+import { useModal } from "../context/ModalContext";
 import { Search, FolderPlus } from "lucide-react";
 
 const FoldersTab: React.FC = () => {
+  const { onOpen } = useModal();
   const [searchQuery, setSearchQuery] = useState("");
+
+  const handleCreateFolder = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    onOpen("createFolder", {
+      anchorRect: {
+        top: rect.top,
+        left: rect.left,
+        bottom: rect.bottom,
+        right: rect.right,
+        width: rect.width,
+        height: rect.height,
+      }
+    });
+  };
 
   return (
     <div className="organizer-flex organizer-flex-col organizer-h-full">
@@ -22,6 +38,7 @@ const FoldersTab: React.FC = () => {
 
       <div className="organizer-flex organizer-justify-end organizer-mb-4">
         <button
+          onClick={handleCreateFolder}
           className="organizer-p-2 organizer-rounded-lg organizer-bg-[#2a2a2a] organizer-border organizer-border-[#3a3a3a] organizer-text-gray-400 hover:organizer-text-white hover:organizer-bg-[#3a3a3a] organizer-transition-all"
           title="Create folder"
         >
