@@ -1,6 +1,7 @@
 import cssText from "data-text:~style.css"
 import type { PlasmoCSConfig } from "plasmo"
 import { useState } from "react"
+import { ModalProvider } from "./context/ModalContext"
 
 import SidebarButton from "./components/SidebarButton"
 import Sidebar from "./components/Sidebar"
@@ -39,12 +40,12 @@ const PlasmoOverlay = () => {
   }
 
   return (
-    <>
+    <ModalProvider>
       <div className="organizer-z-50 organizer-flex organizer-fixed organizer-top-[72px] organizer-right-4">
         <SidebarButton onClick={toggleSidebar} />
       </div>
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-    </>
+    </ModalProvider>
   )
 }
 
