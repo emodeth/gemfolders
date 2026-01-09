@@ -2,12 +2,12 @@ import React from 'react';
 import { useModal } from '../context/ModalContext';
 import CreateFolderModal from '~components/modals/CreateFolderModal';
 import ColorPickerModal from '~components/modals/ColorPickerModal';
+import DeleteFolderModal from '~components/modals/DeleteFolderModal';
 
 const ModalManager: React.FC = () => {
   const { type, isOpen, onClose } = useModal();
 
   if (!isOpen || !type) return null;
-
 
   return (
     <>
@@ -19,6 +19,7 @@ const ModalManager: React.FC = () => {
         <div className="organizer-pointer-events-auto">
           {type === 'createFolder' && <CreateFolderModal />}
           {type === 'colorPicker' && <ColorPickerModal />}
+          {type === 'deleteFolder' && <DeleteFolderModal />}
         </div>
       </div>
     </>
