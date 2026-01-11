@@ -1,27 +1,28 @@
 import { Tree } from "react-arborist";
 import Node from "./Node";
+import { useFolder } from "../context/FolderContext";
 
 const FolderTree = () => {
+  const { folders, onCreate } = useFolder();
 
-  const data = [
-    {
-      id: "1",
-      name: "public",
-      children: [{ id: "c1-1", name: "index.html" }]
-    },
-    {
-      id: "2",
-      name: "src",
-      children: [
-        { id: "c2-1", name: "App.js" },
-        { id: "c2-2", name: "index.js" },
-        { id: "c2-3", name: "styles.css" }
-      ]
-    },
-  ];
+  const handleCreate = async ({ parentId, index, type }: { parentId: string | null, index: number, type: "internal" | "leaf" }) => {
+    const result = await onCreate({
+      parentId,
+      index,
+      type: type === "internal" ? "folder" : "chat"
+    });
+    return result ?? null;
+  };
+
+  if (!folders) return null;
 
   return (
-    <Tree width={"100%"} rowHeight={36} initialData={data} >
+    <Tree
+      width={"100%"}
+      rowHeight={36}
+      data={folders}
+      onCreate={handleCreate}
+    >
       {Node}
     </Tree >
   )
