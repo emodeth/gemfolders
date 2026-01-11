@@ -1,12 +1,19 @@
 import { ChevronDown, ChevronRight, GripVertical, MessageSquareText } from "lucide-react";
+import { isLightColor } from "../constants/colors";
 
 
 const Node = ({ node, style, dragHandle }: any) => {
   function renderFolder() {
+    const bgColor = node.data.color || "#60a5fa";
+    const textColor = isLightColor(bgColor) ? "#333" : "#fff";
+
     return (
       <>
         {node.isOpen ? <ChevronDown className="organizer-mr-2" size={16} /> : <ChevronRight className="organizer-mr-2" size={16} />}
-        <div className="organizer-flex-1 organizer-flex organizer-items-center organizer-justify-between organizer-bg-[#60a5fa] organizer-h-full organizer-px-2 organizer-py-1 organizer-rounded-md ">
+        <div
+          className="organizer-flex-1 organizer-flex organizer-items-center organizer-justify-between organizer-h-full organizer-px-2 organizer-py-1 organizer-rounded-md"
+          style={{ backgroundColor: bgColor, color: textColor }}
+        >
           <span>{node.data.name}</span>
           {node.data.children.length > 0 ? (
             <span className="organizer-text-xs">{node.data.children.length} {node.data.children.length === 1 ? "item" : "items"}</span>
