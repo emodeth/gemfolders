@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useModal } from "../context/ModalContext";
 import { Search, FolderPlus } from "lucide-react";
+import FolderTree from "./FolderTree";
 
 const FoldersTab: React.FC = () => {
   const { onOpen } = useModal();
   const [searchQuery, setSearchQuery] = useState("");
+
 
   const handleCreateFolder = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -19,6 +21,18 @@ const FoldersTab: React.FC = () => {
       }
     });
   };
+
+  const renderEmpty = () => {
+    return (
+      <div className="organizer-flex organizer-flex-col organizer-items-center organizer-justify-center organizer-flex-1 organizer-text-center">
+        <p className="organizer-text-gray-300 organizer-font-medium organizer-mb-1">
+          No folders yet
+        </p>
+        <p className="organizer-text-gray-500 organizer-text-sm">
+          Create a folder to organize your chats
+        </p>
+      </div>)
+  }
 
   return (
     <div className="organizer-flex organizer-flex-col organizer-h-full">
@@ -46,14 +60,7 @@ const FoldersTab: React.FC = () => {
         </button>
       </div>
 
-      <div className="organizer-flex organizer-flex-col organizer-items-center organizer-justify-center organizer-flex-1 organizer-text-center">
-        <p className="organizer-text-gray-300 organizer-font-medium organizer-mb-1">
-          No folders yet
-        </p>
-        <p className="organizer-text-gray-500 organizer-text-sm">
-          Create a folder to organize your chats
-        </p>
-      </div>
+      <FolderTree />
     </div>
   );
 };
