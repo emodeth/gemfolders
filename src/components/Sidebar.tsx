@@ -13,6 +13,8 @@ import BookmarksTab from "./BookmarksTab";
 import ProfileTab from "./ProfileTab";
 import SettingsTab from "./SettingsTab";
 import TabButton from "./TabButton";
+import FolderContextMenu from "./FolderContextMenu";
+import { useFolder } from "../context/FolderContext";
 
 type TabType = "folders" | "bookmarks" | "profile" | "settings";
 
@@ -23,6 +25,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<TabType>("folders");
+  const { contextMenu } = useFolder();
 
   const tabs: { id: TabType; icon: React.ReactNode; label: string }[] = [
     { id: "folders", icon: <Folders size={18} />, label: "Folders" },
@@ -82,6 +85,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       <div className="organizer-flex-1 organizer-overflow-y-auto">
         {renderTabContent()}
       </div>
+
+      {/* Context Menu - rendered at sidebar level to avoid overflow clipping */}
+      {contextMenu.isOpen && <FolderContextMenu />}
     </div>
   );
 };
