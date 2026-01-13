@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { useModal } from "../context/ModalContext";
 import { Search, FolderPlus } from "lucide-react";
 import FolderTree from "./FolderTree";
 
 const FoldersTab: React.FC = () => {
   const { onOpen } = useModal();
-  const [searchQuery, setSearchQuery] = useState("");
-
 
   const handleCreateFolder = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -22,18 +20,6 @@ const FoldersTab: React.FC = () => {
     });
   };
 
-  const renderEmpty = () => {
-    return (
-      <div className="organizer-flex organizer-flex-col organizer-items-center organizer-justify-center organizer-flex-1 organizer-text-center">
-        <p className="organizer-text-gray-300 organizer-font-medium organizer-mb-1">
-          No folders yet
-        </p>
-        <p className="organizer-text-gray-500 organizer-text-sm">
-          Create a folder to organize your chats
-        </p>
-      </div>)
-  }
-
   return (
     <div className="organizer-flex organizer-flex-col organizer-h-full">
       <div className="organizer-relative organizer-mb-2">
@@ -44,8 +30,6 @@ const FoldersTab: React.FC = () => {
         <input
           type="text"
           placeholder="Search folders..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
           className="organizer-w-full organizer-bg-[#2a2a2a] organizer-border organizer-border-[#3a3a3a] organizer-rounded-lg organizer-py-2 organizer-pl-10 organizer-pr-4 organizer-text-sm organizer-text-gray-200 organizer-placeholder-gray-500 focus:organizer-outline-none focus:organizer-border-blue-500 organizer-transition-colors"
         />
       </div>

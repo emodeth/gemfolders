@@ -27,7 +27,6 @@ const AddChatModal: React.FC = () => {
   };
 
   const handleSave = () => {
-    console.log("Saving chats:", selectedChats);
     onClose();
   };
 
