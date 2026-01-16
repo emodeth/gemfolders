@@ -90,3 +90,24 @@ export const updateFolderColor = async (folderId: string, color: string): Promis
   await saveFolders(folders);
   return folders;
 };
+
+export const deleteFolder = async (folderId: string): Promise<Folder[]> => {
+  const folders = await getFolders();
+  
+  const removeFromTree = (nodes: Folder[]): Folder[] => {
+    return nodes.filter((node) => {
+      if (node.id === folderId) {
+        return false;
+      }
+
+      if (node.children && node.children.length > 0) {
+        node.children = removeFromTree(node.children);
+      }
+      return true;
+    });
+  };
+
+  const updatedFolders = removeFromTree(folders);
+  await saveFolders(updatedFolders);
+  return updatedFolders;
+};

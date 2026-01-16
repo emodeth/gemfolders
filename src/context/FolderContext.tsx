@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import { createFolder, getFolders, type Folder } from "../lib/storage"
+import { createFolder, deleteFolder, getFolders, type Folder } from "../lib/storage"
 import { useModal } from "./ModalContext"
 
 // Context menu state interface
@@ -147,6 +147,14 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       folderId,
       folderName,
       itemCount,
+      onDelete: async () => {
+        try {
+          const updatedFolders = await deleteFolder(folderId)
+          setFolders(updatedFolders)
+        } catch (error) {
+          console.error("Failed to delete folder:", error)
+        }
+      },
     })
     closeContextMenu()
   }
