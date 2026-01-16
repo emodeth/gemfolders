@@ -13,16 +13,9 @@ interface ContextMenuState {
   itemCount: number
 }
 
-interface ChatContextMenuState {
-  isOpen: boolean
-  x: number
-  y: number
-  chatId: string
-  chatName: string
-}
-
 interface FolderContextType {
   folders: Folder[]
+  setFolders: React.Dispatch<React.SetStateAction<Folder[]>>
   onCreate: (props: { parentId: string | null; index: number; type: "folder" | "chat"; name?: string }) => Promise<{ id: string } | null>
   onAddChatsToFolder: (folderId: string, chats: ChatToAdd[]) => Promise<void>
   loading: boolean
@@ -36,13 +29,6 @@ interface FolderContextType {
   handleRename: () => void
   handleChangeColor: () => void
   handleDelete: () => void
-  // Chat context menu state and handlers
-  chatContextMenu: ChatContextMenuState
-  openChatContextMenu: (e: React.MouseEvent, chat: { id: string; name: string }) => void
-  closeChatContextMenu: () => void
-  handleChatMoveTo: () => void
-  handleChatRename: () => void
-  handleChatDelete: () => void
 }
 
 const initialContextMenuState: ContextMenuState = {
@@ -55,21 +41,12 @@ const initialContextMenuState: ContextMenuState = {
   itemCount: 0,
 }
 
-const initialChatContextMenuState: ChatContextMenuState = {
-  isOpen: false,
-  x: 0,
-  y: 0,
-  chatId: "",
-  chatName: "",
-}
-
 const FolderContext = createContext<FolderContextType | undefined>(undefined)
 
 export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [folders, setFolders] = useState<Folder[]>([])
   const [loading, setLoading] = useState(true)
   const [contextMenu, setContextMenu] = useState<ContextMenuState>(initialContextMenuState)
-  const [chatContextMenu, setChatContextMenu] = useState<ChatContextMenuState>(initialChatContextMenuState)
   const { onOpen } = useModal()
 
   const refreshFolders = async () => {
@@ -235,46 +212,11 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     closeContextMenu()
   }
 
-  // Chat context menu handlers
-
-  const openChatContextMenu = (
-    e: React.MouseEvent,
-    chat: { id: string; name: string }
-  ) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setChatContextMenu({
-      isOpen: true,
-      x: e.clientX,
-      y: e.clientY,
-      chatId: chat.id,
-      chatName: chat.name,
-    })
-  }
-
-  const closeChatContextMenu = () => {
-    setChatContextMenu(initialChatContextMenuState)
-  }
-
-  const handleChatMoveTo = () => {
-    // Not implemented yet
-    closeChatContextMenu()
-  }
-
-  const handleChatRename = () => {
-    // Not implemented yet
-    closeChatContextMenu()
-  }
-
-  const handleChatDelete = () => {
-    // Not implemented yet
-    closeChatContextMenu()
-  }
-
   return (
     <FolderContext.Provider
       value={{
         folders,
+        setFolders,
         onCreate,
         onAddChatsToFolder,
         loading,
@@ -287,12 +229,6 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         handleRename,
         handleChangeColor,
         handleDelete,
-        chatContextMenu,
-        openChatContextMenu,
-        closeChatContextMenu,
-        handleChatMoveTo,
-        handleChatRename,
-        handleChatDelete,
       }}
     >
       {children}
@@ -307,3 +243,4 @@ export const useFolder = () => {
   }
   return context
 }
+

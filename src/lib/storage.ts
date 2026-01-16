@@ -170,3 +170,22 @@ export const addChatsToFolder = async (
   await saveFolders(folders);
   return folders;
 };
+
+export const renameChat = async (chatId: string, newName: string): Promise<Folder[]> => {
+  const folders = await getFolders();
+  
+  const updateName = (nodes: Folder[]): boolean => {
+    for (const node of nodes) {
+      if (node.id === chatId && node.type === 'chat') {
+        node.name = newName;
+        return true;
+      }
+      if (node.children && updateName(node.children)) return true;
+    }
+    return false;
+  };
+
+  updateName(folders);
+  await saveFolders(folders);
+  return folders;
+};
