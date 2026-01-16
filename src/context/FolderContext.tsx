@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import { createFolder, deleteFolder, getFolders, renameFolder, type Folder } from "../lib/storage"
+import { createFolder, deleteFolder, getFolders, renameFolder, updateFolderColor, type Folder } from "../lib/storage"
 import { useModal } from "./ModalContext"
 
 // Context menu state interface
@@ -145,6 +145,14 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       folderId,
       folderName,
       currentColor: folderColor,
+      onChangeColor: async (id: string, newColor: string) => {
+        try {
+          const updatedFolders = await updateFolderColor(id, newColor)
+          setFolders(updatedFolders)
+        } catch (error) {
+          console.error("Failed to change folder color:", error)
+        }
+      },
     })
     closeContextMenu()
   }
