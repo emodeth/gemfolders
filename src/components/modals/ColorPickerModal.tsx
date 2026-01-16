@@ -7,7 +7,7 @@ import { PRESET_COLORS, isLightColor } from "../../constants/colors";
 
 const ColorPickerModal: React.FC = () => {
   const { onClose, data } = useModal();
-  const { folderName, currentColor = "#1976d2" } = data || {};
+  const { folderId, folderName, currentColor = "#1976d2", onChangeColor } = data || {};
 
   const [selectedColor, setSelectedColor] = useState(currentColor);
 
@@ -17,6 +17,9 @@ const ColorPickerModal: React.FC = () => {
 
 
   const handleSave = async () => {
+    if (onChangeColor && folderId) {
+      await onChangeColor(folderId, selectedColor);
+    }
     onClose();
   };
 
