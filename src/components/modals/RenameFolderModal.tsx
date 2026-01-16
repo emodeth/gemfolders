@@ -11,12 +11,12 @@ const RenameFolderModal: React.FC = () => {
     setNewName(folderName);
   }, [folderName]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName.trim()) return;
 
     if (onRename) {
-      onRename(folderId, newName.trim());
+      await onRename(folderId, newName.trim());
     }
     onClose();
   };
