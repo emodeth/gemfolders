@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 interface FolderContextMenuItemProps {
   icon: React.ReactNode;
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
+  onClickWithRect?: (rect: DOMRect) => void;
   isDanger?: boolean;
 }
 
@@ -32,9 +33,11 @@ const FolderContextMenuItem: React.FC<FolderContextMenuItemProps> = ({
   icon,
   label,
   onClick,
+  onClickWithRect,
   isDanger = false,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const itemRef = useRef<HTMLDivElement>(null);
 
   const itemStyle: React.CSSProperties = {
     ...styles.item,
@@ -47,10 +50,20 @@ const FolderContextMenuItem: React.FC<FolderContextMenuItemProps> = ({
     opacity: isHovered ? 1 : 0.8,
   };
 
+  const handleClick = () => {
+    if (onClickWithRect && itemRef.current) {
+      const rect = itemRef.current.getBoundingClientRect();
+      onClickWithRect(rect);
+    } else if (onClick) {
+      onClick();
+    }
+  };
+
   return (
     <div
+      ref={itemRef}
       style={itemStyle}
-      onClick={onClick}
+      onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -61,3 +74,4 @@ const FolderContextMenuItem: React.FC<FolderContextMenuItemProps> = ({
 };
 
 export default FolderContextMenuItem;
+

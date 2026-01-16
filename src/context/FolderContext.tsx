@@ -23,7 +23,7 @@ interface FolderContextType {
   contextMenu: ContextMenuState
   openContextMenu: (e: React.MouseEvent, folder: { id: string; name: string; color?: string; childrenCount: number }) => void
   closeContextMenu: () => void
-  handleAddSubfolder: () => void
+  handleAddSubfolder: (buttonRect: DOMRect) => void
   handleAddChat: () => void
   handleRename: () => void
   handleChangeColor: () => void
@@ -109,9 +109,13 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setContextMenu(initialContextMenuState)
   }
 
-  const handleAddSubfolder = () => {
-    // Leave for now - will be implemented later
-    closeContextMenu()
+  const handleAddSubfolder = (buttonRect: DOMRect) => {
+    const { folderId } = contextMenu
+    onOpen("addSubfolder", {
+      buttonRect,
+      parentId: folderId,
+    })
+    // Keep context menu open
   }
 
   const onAddChatsToFolder = async (folderId: string, chats: ChatToAdd[]) => {

@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import FolderContextMenuItem from "./FolderContextMenuItem";
 import { useFolder } from "../context/FolderContext";
+import { useModal } from "../context/ModalContext";
 
 // Inline styles (required since this needs to work outside Tailwind context)
 const styles = {
@@ -54,6 +55,7 @@ const FolderContextMenu: React.FC = () => {
     handleChangeColor,
     handleDelete,
   } = useFolder();
+  const { type, onClose: closeModal } = useModal();
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
@@ -61,14 +63,25 @@ const FolderContextMenu: React.FC = () => {
 
   const { x, y, folderName } = contextMenu;
 
-  // Handle click outside to close
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Check if the click is inside the menu
-      if (menuRef.current && menuRef.current.contains(event.target as Node)) {
-        return; // Don't close if clicking inside menu
+      const target = event.target as HTMLElement;
+
+      if (menuRef.current?.contains(target)) {
+        return;
       }
+
+      // Check if the click is inside any modal content
+      const modalWrapper = document.querySelector('[class*="organizer-pointer-events-auto"]');
+      if (modalWrapper?.contains(target)) {
+        return;
+      }
+
+      // Close both context menu and addSubfolder modal
       closeContextMenu();
+      if (type === 'addSubfolder') {
+        closeModal();
+      }
     };
 
     const handleScroll = () => {
@@ -81,7 +94,6 @@ const FolderContextMenu: React.FC = () => {
       }
     };
 
-    // Use mousedown instead of click, but NOT in capture phase
     const timer = setTimeout(() => {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("scroll", handleScroll, true);
@@ -94,7 +106,7 @@ const FolderContextMenu: React.FC = () => {
       document.removeEventListener("scroll", handleScroll, true);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [closeContextMenu]);
+  }, [closeContextMenu, type, closeModal]);
 
   // Calculate position relative to viewport, accounting for sidebar offset
   useLayoutEffect(() => {
@@ -155,7 +167,7 @@ const FolderContextMenu: React.FC = () => {
       <FolderContextMenuItem
         icon={<FolderPlus size={16} />}
         label="Add subfolder"
-        onClick={handleAddSubfolder}
+        onClickWithRect={handleAddSubfolder}
       />
 
       {/* Add Chat */}
