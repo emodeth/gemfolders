@@ -189,3 +189,23 @@ export const renameChat = async (chatId: string, newName: string): Promise<Folde
   await saveFolders(folders);
   return folders;
 };
+
+export const deleteChat = async (chatId: string): Promise<Folder[]> => {
+  const folders = await getFolders();
+  
+  const removeChat = (nodes: Folder[]): Folder[] => {
+    return nodes.filter((node) => {
+      if (node.id === chatId && node.type === 'chat') {
+        return false;
+      }
+      if (node.children && node.children.length > 0) {
+        node.children = removeChat(node.children);
+      }
+      return true;
+    });
+  };
+
+  const updatedFolders = removeChat(folders);
+  await saveFolders(updatedFolders);
+  return updatedFolders;
+};

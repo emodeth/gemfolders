@@ -7,13 +7,14 @@ import AddChatModal from '~components/modals/AddChatModal';
 import RenameFolderModal from '~components/modals/RenameFolderModal';
 import AddSubfolderModal from '~components/modals/AddSubfolderModal';
 import RenameChatModal from '~components/modals/RenameChatModal';
+import DeleteChatModal from '~components/modals/DeleteChatModal';
 
 const ModalManager: React.FC = () => {
   const { type, isOpen, onClose } = useModal();
 
   if (!isOpen || !type) return null;
 
-  const isSmallModal = type === 'deleteFolder' || type === 'renameFolderModal' || type === 'renameChatModal';
+  const isSmallModal = type === 'deleteFolder' || type === 'renameFolderModal' || type === 'renameChatModal' || type === 'deleteChatModal';
   const isPositionedModal = type === 'createFolder' || type === 'addSubfolder';
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -47,6 +48,7 @@ const ModalManager: React.FC = () => {
           {type === 'renameFolderModal' && <RenameFolderModal />}
           {type === 'addSubfolder' && <AddSubfolderModal />}
           {type === 'renameChatModal' && <RenameChatModal />}
+          {type === 'deleteChatModal' && <DeleteChatModal />}
         </div>
       </div>
     </>
