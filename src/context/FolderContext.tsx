@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import { createFolder, deleteFolder, getFolders, renameFolder, updateFolderColor, type Folder } from "../lib/storage"
+import { createFolder, deleteFolder, getFolders, renameFolder, updateFolderColor, addChatsToFolder, type Folder, type ChatToAdd } from "../lib/storage"
+import { fetchGeminiChats } from "../lib/geminiChats"
 import { useModal } from "./ModalContext"
 
-// Context menu state interface
 interface ContextMenuState {
   isOpen: boolean
   x: number
@@ -16,6 +16,7 @@ interface ContextMenuState {
 interface FolderContextType {
   folders: Folder[]
   onCreate: (props: { parentId: string | null; index: number; type: "folder" | "chat"; name?: string }) => Promise<{ id: string } | null>
+  onAddChatsToFolder: (folderId: string, chats: ChatToAdd[]) => Promise<void>
   loading: boolean
   refreshFolders: () => Promise<void>
   // Context menu state and handlers
@@ -113,13 +114,44 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     closeContextMenu()
   }
 
-  const handleAddChat = () => {
+  const onAddChatsToFolder = async (folderId: string, chats: ChatToAdd[]) => {
+    try {
+      const updatedFolders = await addChatsToFolder(folderId, chats)
+      setFolders(updatedFolders)
+    } catch (error) {
+      console.error("Failed to add chats to folder:", error)
+    }
+  }
+
+  const handleAddChat = async () => {
     const { folderId, folderName } = contextMenu
+    closeContextMenu()
+
+    const findFolder = (nodes: Folder[]): Folder | null => {
+      for (const node of nodes) {
+        if (node.id === folderId) return node
+        if (node.children) {
+          const found = findFolder(node.children)
+          if (found) return found
+        }
+      }
+      return null
+    }
+
+    const folder = findFolder(folders)
+    const existingChatIds = folder?.children
+      .filter((child) => child.type === 'chat')
+      .map((child) => child.id) || []
+
+    const chats = await fetchGeminiChats()
+
     onOpen("addChat", {
       folderId,
       folderName,
+      existingChatIds,
+      initialChats: chats,
+      onAddChatsToFolder,
     })
-    closeContextMenu()
   }
 
   const handleRename = () => {
@@ -180,6 +212,7 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       value={{
         folders,
         onCreate,
+        onAddChatsToFolder,
         loading,
         refreshFolders,
         contextMenu,
