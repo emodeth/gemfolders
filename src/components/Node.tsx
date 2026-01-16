@@ -1,9 +1,11 @@
 import { ChevronDown, ChevronRight, GripVertical, MessageSquareText } from "lucide-react";
 import { isLightColor } from "../constants/colors";
 import { useFolder } from "../context/FolderContext";
+import { useChat } from "../context/ChatContext";
 
 const Node = ({ node, style, dragHandle }: any) => {
-  const { openContextMenu, openChatContextMenu } = useFolder();
+  const { openContextMenu } = useFolder();
+  const { openChatContextMenu } = useChat();
 
   const handleContextMenu = (e: React.MouseEvent) => {
     if (node.data.type === 'chat') {

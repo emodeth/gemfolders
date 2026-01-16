@@ -16,6 +16,7 @@ import TabButton from "./TabButton";
 import FolderContextMenu from "./FolderContextMenu";
 import ChatContextMenu from "./ChatContextMenu";
 import { useFolder } from "../context/FolderContext";
+import { useChat } from "../context/ChatContext";
 
 type TabType = "folders" | "bookmarks" | "profile" | "settings";
 
@@ -26,7 +27,8 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<TabType>("folders");
-  const { contextMenu, chatContextMenu } = useFolder();
+  const { contextMenu } = useFolder();
+  const { chatContextMenu } = useChat();
 
   const tabs: { id: TabType; icon: React.ReactNode; label: string }[] = [
     { id: "folders", icon: <Folders size={18} />, label: "Folders" },

@@ -3,6 +3,7 @@ import type { PlasmoCSConfig } from "plasmo"
 import { useState } from "react"
 import { ModalProvider } from "~context/ModalContext"
 import { FolderProvider } from "~context/FolderContext"
+import { ChatProvider } from "~context/ChatContext"
 
 import SidebarButton from "./components/SidebarButton"
 import Sidebar from "./components/Sidebar"
@@ -44,14 +45,17 @@ const PlasmoOverlay = () => {
   return (
     <ModalProvider>
       <FolderProvider>
-        <div className="organizer-z-50 organizer-flex organizer-fixed organizer-top-[72px] organizer-right-4">
-          <SidebarButton onClick={toggleSidebar} />
-        </div>
-        <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-        <ModalManager />
+        <ChatProvider>
+          <div className="organizer-z-50 organizer-flex organizer-fixed organizer-top-[72px] organizer-right-4">
+            <SidebarButton onClick={toggleSidebar} />
+          </div>
+          <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+          <ModalManager />
+        </ChatProvider>
       </FolderProvider>
     </ModalProvider>
   )
 }
 
 export default PlasmoOverlay
+

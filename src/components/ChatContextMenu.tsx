@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { FolderInput, Pencil, Trash2 } from "lucide-react";
 import ContextMenuItem from "./ContextMenuItem";
-import { useFolder } from "../context/FolderContext";
+import { useChat } from "../context/ChatContext";
 
 const styles = {
   menu: {
@@ -39,7 +39,7 @@ const ChatContextMenu: React.FC = () => {
     handleChatMoveTo,
     handleChatRename,
     handleChatDelete,
-  } = useFolder();
+  } = useChat();
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
