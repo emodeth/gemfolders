@@ -22,6 +22,7 @@ const FolderTree = () => {
       rowHeight={36}
       data={folders}
       onCreate={handleCreate}
+      openByDefault={false}
     >
       {Node}
     </Tree >

@@ -1,38 +1,111 @@
 import React, { useState } from "react";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import ChatItem from "../ChatItem";
+import { loadMoreGeminiChats, type GeminiChat } from "~lib/geminiChats";
+import type { ChatToAdd } from "~lib/storage";
 
-const DUMMY_CHATS = [
-  { id: 1, title: "Pasaport başvurusu gereksinimleri", date: "05.01.2026 04:45:54" },
-  { id: 2, title: "Logo design request", date: "29.12.2025 03:00:06" },
-  { id: 3, title: "Logo design request", date: "29.12.2025 02:56:51" },
-  { id: 4, title: "Radix UI button fix", date: "15.12.2025 03:27:31" },
-  { id: 5, title: "Create project life cycle answer", date: "14.12.2025 20:12:37" },
-  { id: 6, title: "Füzyon algoritması özeti", date: "10.11.2025 17:30:28" },
-  { id: 7, title: "Hasan Çifci e-posta arama", date: "08.11.2025 16:35:51" },
-  { id: 8, title: "TypeScript types for sidebar", date: "07.11.2025 19:50:43" },
-];
+interface LoadState {
+  isLoadingMore: boolean;
+  progress: number;
+}
 
 const AddChatModal: React.FC = () => {
   const { onClose, data } = useModal();
-  const { folderName = "folder" } = data || {};
-  const [selectedChats, setSelectedChats] = useState<number[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const {
+    folderName = "folder",
+    folderId,
+    existingChatIds = [],
+    initialChats = [],
+    onAddChatsToFolder
+  } = data || {};
 
-  const toggleChat = (id: number) => {
+  const [selectedChats, setSelectedChats] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [chats, setChats] = useState<GeminiChat[]>(initialChats);
+  const [loadState, setLoadState] = useState<LoadState>({
+    isLoadingMore: false,
+    progress: 0,
+  });
+
+
+  const handleLoadMore = async () => {
+    setLoadState({ isLoadingMore: true, progress: chats.length });
+    try {
+      const allChats = await loadMoreGeminiChats((loaded) => {
+        setLoadState((prev) => ({ ...prev, progress: loaded }));
+      });
+      setChats(allChats);
+    } catch (error) {
+      console.error("Failed to load more chats:", error);
+    } finally {
+      setLoadState((prev) => ({ ...prev, isLoadingMore: false }));
+    }
+  };
+
+  const toggleChat = (id: string) => {
     setSelectedChats((prev) =>
       prev.includes(id) ? prev.filter((chatId) => chatId !== id) : [...prev, id]
     );
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!folderId || !onAddChatsToFolder || selectedChats.length === 0) {
+      onClose();
+      return;
+    }
+
+    const chatsToAdd: ChatToAdd[] = selectedChats
+      .map((chatId) => {
+        const chat = chats.find((c) => c.id === chatId);
+        if (!chat) return null;
+        return { id: chat.id, title: chat.title, url: chat.url };
+      })
+      .filter((chat): chat is ChatToAdd => chat !== null);
+
+    await onAddChatsToFolder(folderId, chatsToAdd);
     onClose();
   };
 
-  const filteredChats = DUMMY_CHATS.filter((chat) =>
-    chat.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredChats = chats
+    .filter((chat) => !existingChatIds.includes(chat.id))
+    .filter((chat) => chat.title.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  const getEmptyStateMessage = () => {
+    if (chats.length === 0) {
+      return "No chats found. Open the sidebar to load your chat history.";
+    }
+    return "No chats match your search.";
+  };
+
+  const renderChatList = () => {
+    if (filteredChats.length === 0) {
+      return (
+        <div className="organizer-text-center organizer-py-8">
+          <p className="organizer-text-gray-400 organizer-text-sm">
+            {getEmptyStateMessage()}
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="organizer-flex organizer-flex-col organizer-gap-1">
+        {filteredChats.map((chat) => (
+          <ChatItem
+            key={chat.id}
+            chat={{
+              id: chat.id,
+              title: chat.title,
+              date: chat.lastUpdated,
+            }}
+            isSelected={selectedChats.includes(chat.id)}
+            onToggle={toggleChat}
+          />
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div
@@ -42,9 +115,9 @@ const AddChatModal: React.FC = () => {
     >
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-p-5 organizer-pb-2">
         <div className="organizer-text-lg organizer-font-medium organizer-text-white">
-          Add chats to&nbsp;
+          Add chats to{" "}
           <span className="organizer-text-[#60a5fa]">{folderName}</span>
-          &nbsp;folder
+          {" "}folder
         </div>
         <button
           className="organizer-text-gray-400 hover:organizer-text-white organizer-transition-colors"
@@ -67,40 +140,47 @@ const AddChatModal: React.FC = () => {
 
         <div className="organizer-text-center organizer-mb-4">
           <p className="organizer-text-white organizer-text-xs organizer-mb-1">
-            Chat history is only partially imported. Some chats may not be shown.
+            {loadState.isLoadingMore
+              ? `Loading chats... (${loadState.progress} found)`
+              : "Chat history is scraped from the sidebar. Some chats may not be shown."}
           </p>
-          <button className="organizer-text-[#60a5fa] organizer-text-xs organizer-p-2 hover:organizer-bg-neutral-800 organizer-rounded-lg organizer-text-decoration-none organizer-mt-1">
-            Import all chats
+          <button
+            className="organizer-text-[#60a5fa] organizer-text-xs organizer-p-2 hover:organizer-bg-neutral-800 organizer-rounded-lg organizer-text-decoration-none organizer-mt-1 organizer-inline-flex organizer-items-center organizer-gap-1.5 disabled:organizer-opacity-50 disabled:organizer-cursor-not-allowed"
+            onClick={handleLoadMore}
+            disabled={loadState.isLoadingMore}
+          >
+            {loadState.isLoadingMore && <Loader2 size={12} className="organizer-animate-spin" />}
+            {loadState.isLoadingMore ? "Loading..." : "Import all chats"}
           </button>
         </div>
 
         <div className="organizer-overflow-y-auto organizer-flex-1 organizer-pr-2 organizer-scrollbar-thin">
-          <div className="organizer-flex organizer-flex-col organizer-gap-1">
-            {filteredChats.map((chat) => (
-              <ChatItem
-                key={chat.id}
-                chat={chat}
-                isSelected={selectedChats.includes(chat.id)}
-                onToggle={toggleChat}
-              />
-            ))}
-          </div>
+          {renderChatList()}
         </div>
       </div>
 
-      <div className="organizer-p-5 organizer-pt-2 organizer-flex organizer-justify-end organizer-gap-4">
-        <button
-          className="organizer-text-gray-300 hover:organizer-text-white organizer-text-sm organizer-font-medium organizer-transition-colors"
-          onClick={() => setSelectedChats([])}
-        >
-          Clear
-        </button>
-        <button
-          className="organizer-px-4 organizer-py-2 organizer-rounded-lg organizer-bg-neutral-700 hover:organizer-bg-neutral-600 organizer-text-white organizer-text-sm organizer-font-medium organizer-transition-colors"
-          onClick={handleSave}
-        >
-          Save
-        </button>
+      <div className="organizer-p-5 organizer-pt-2 organizer-flex organizer-justify-between organizer-items-center">
+        <div className="organizer-text-sm organizer-text-gray-400">
+          {selectedChats.length > 0 && (
+            <span>{selectedChats.length} chat{selectedChats.length === 1 ? '' : 's'} selected</span>
+          )}
+        </div>
+        <div className="organizer-flex organizer-gap-4">
+          <button
+            className="organizer-text-gray-300 hover:organizer-text-white organizer-text-sm organizer-font-medium organizer-transition-colors disabled:organizer-opacity-50"
+            onClick={() => setSelectedChats([])}
+            disabled={selectedChats.length === 0}
+          >
+            Clear
+          </button>
+          <button
+            className="organizer-px-4 organizer-py-2 organizer-rounded-lg organizer-bg-neutral-700 hover:organizer-bg-neutral-600 organizer-text-white organizer-text-sm organizer-font-medium organizer-transition-colors disabled:organizer-opacity-50 disabled:organizer-cursor-not-allowed"
+            onClick={handleSave}
+            disabled={selectedChats.length === 0}
+          >
+            Save
+          </button>
+        </div>
       </div>
     </div>
   );

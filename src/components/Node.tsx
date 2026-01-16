@@ -6,8 +6,7 @@ const Node = ({ node, style, dragHandle }: any) => {
   const { openContextMenu } = useFolder();
 
   const handleContextMenu = (e: React.MouseEvent) => {
-    // Only show context menu for folders, not chats
-    if (node.isLeaf) return;
+    if (node.data.type === 'chat') return;
 
     openContextMenu(e, {
       id: node.data.id,
@@ -40,9 +39,9 @@ const Node = ({ node, style, dragHandle }: any) => {
   function renderChat() {
     return (
       <>
-        <MessageSquareText className="organizer-ml-1" size={16} />
-        <div className="organizer-flex-1 organizer-flex organizer-items-center organizer-px-2 organizer-py-1 organizer-h-full">
-          <span>{node.data.name}</span>
+        <MessageSquareText className="organizer-ml-1 organizer-shrink-0" size={16} />
+        <div className="organizer-flex-1 organizer-flex organizer-items-center organizer-px-2 organizer-py-1 organizer-h-full organizer-overflow-hidden">
+          <span className="organizer-truncate">{node.data.name}</span>
         </div>
       </>
     )
@@ -57,7 +56,7 @@ const Node = ({ node, style, dragHandle }: any) => {
       ref={dragHandle}
     >
       <GripVertical className="organizer-mr-1 organizer-text-neutral-700" size={14} />
-      {node.isLeaf ? renderChat() : renderFolder()}
+      {node.data.type === 'chat' ? renderChat() : renderFolder()}
     </div>
   );
 }

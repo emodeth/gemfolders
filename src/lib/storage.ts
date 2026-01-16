@@ -7,6 +7,7 @@ export interface Folder {
   type: 'folder' | 'chat';
   children: Folder[];
   color?: string;
+  chatUrl?: string; // Original Gemini chat URL for chat items
 }
 
 const STORAGE_KEY = 'gemini-folders';
@@ -127,6 +128,45 @@ export const renameFolder = async (folderId: string, newName: string): Promise<F
   };
 
   updateName(folders);
+  await saveFolders(folders);
+  return folders;
+};
+
+export interface ChatToAdd {
+  id: string;
+  title: string;
+  url: string;
+}
+
+export const addChatsToFolder = async (
+  folderId: string,
+  chats: ChatToAdd[]
+): Promise<Folder[]> => {
+  const folders = await getFolders();
+  
+  const addChats = (nodes: Folder[]): boolean => {
+    for (const node of nodes) {
+      if (node.id === folderId && node.type === 'folder') {
+        const chatNodes: Folder[] = chats.map((chat) => ({
+          id: chat.id,
+          name: chat.title,
+          type: 'chat' as const,
+          children: [],
+          chatUrl: chat.url,
+        }));
+        
+        const existingIds = new Set(node.children.map((child) => child.id));
+        const newChats = chatNodes.filter((chat) => !existingIds.has(chat.id));
+        
+        node.children.push(...newChats);
+        return true;
+      }
+      if (node.children && addChats(node.children)) return true;
+    }
+    return false;
+  };
+
+  addChats(folders);
   await saveFolders(folders);
   return folders;
 };

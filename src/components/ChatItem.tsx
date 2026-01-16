@@ -2,12 +2,12 @@ import React from "react";
 
 interface ChatItemProps {
   chat: {
-    id: number;
+    id: string;
     title: string;
-    date: string;
+    date?: string;
   };
   isSelected: boolean;
-  onToggle: (id: number) => void;
+  onToggle: (id: string) => void;
 }
 
 const ChatItem: React.FC<ChatItemProps> = ({ chat, isSelected, onToggle }) => {
@@ -43,9 +43,11 @@ const ChatItem: React.FC<ChatItemProps> = ({ chat, isSelected, onToggle }) => {
         <div className="organizer-text-sm organizer-text-gray-200 organizer-font-medium">
           {chat.title}
         </div>
-        <div className="organizer-text-xs organizer-text-gray-500">
-          Updated at: {chat.date}
-        </div>
+        {chat.date && (
+          <div className="organizer-text-xs organizer-text-gray-500">
+            Updated at: {chat.date}
+          </div>
+        )}
       </div>
     </div>
   );
