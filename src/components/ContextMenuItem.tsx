@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 
-interface FolderContextMenuItemProps {
+interface ContextMenuItemProps {
   icon: React.ReactNode;
   label: string;
   onClick?: () => void;
@@ -29,7 +29,7 @@ const styles = {
   },
 };
 
-const FolderContextMenuItem: React.FC<FolderContextMenuItemProps> = ({
+const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
   icon,
   label,
   onClick,
@@ -73,5 +73,5 @@ const FolderContextMenuItem: React.FC<FolderContextMenuItemProps> = ({
   );
 };
 
-export default FolderContextMenuItem;
+export default ContextMenuItem;
 
