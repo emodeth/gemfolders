@@ -5,6 +5,7 @@ import ColorPickerModal from '~components/modals/ColorPickerModal';
 import DeleteFolderModal from '~components/modals/DeleteFolderModal';
 import AddChatModal from '~components/modals/AddChatModal';
 import RenameFolderModal from '~components/modals/RenameFolderModal';
+import AddSubfolderModal from '~components/modals/AddSubfolderModal';
 
 const ModalManager: React.FC = () => {
   const { type, isOpen, onClose } = useModal();
@@ -12,17 +13,29 @@ const ModalManager: React.FC = () => {
   if (!isOpen || !type) return null;
 
   const isSmallModal = type === 'deleteFolder' || type === 'renameFolderModal';
+  const isPositionedModal = type === 'createFolder' || type === 'addSubfolder';
+
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    // For addSubfolder, don't close on overlay click (context menu should stay open)
+    if (type === 'addSubfolder') {
+      e.stopPropagation();
+      return;
+    }
+    onClose();
+  };
 
   return (
     <>
       <div
-        className={`organizer-fixed organizer-inset-0 organizer-z-[10000] ${type === 'createFolder' ? 'organizer-bg-transparent' : 'organizer-bg-black/50'}`}
-        onClick={onClose}
+        data-modal-overlay="true"
+        className={`organizer-fixed organizer-inset-0 organizer-z-[10000] ${isPositionedModal ? 'organizer-bg-transparent organizer-pointer-events-none' : 'organizer-bg-black/50'}`}
+        onClick={handleOverlayClick}
       />
       <div
         className={`organizer-fixed organizer-inset-0 organizer-z-[10001] organizer-pointer-events-none
-          ${type === 'createFolder' ? '' : 'organizer-flex organizer-justify-center'}
-          ${isSmallModal ? 'organizer-items-start organizer-pt-[20vh]' : (type !== 'createFolder' ? 'organizer-items-center' : '')}
+          ${isPositionedModal ? '' : 'organizer-flex organizer-justify-center'}
+          ${isSmallModal ? 'organizer-items-start organizer-pt-[20vh]' : ''}
+          ${!isSmallModal && !isPositionedModal ? 'organizer-items-center' : ''}
         `}
       >
         <div className="organizer-pointer-events-auto">
@@ -31,6 +44,7 @@ const ModalManager: React.FC = () => {
           {type === 'deleteFolder' && <DeleteFolderModal />}
           {type === 'addChat' && <AddChatModal />}
           {type === 'renameFolderModal' && <RenameFolderModal />}
+          {type === 'addSubfolder' && <AddSubfolderModal />}
         </div>
       </div>
     </>
