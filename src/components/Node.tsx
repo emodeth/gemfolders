@@ -3,10 +3,16 @@ import { isLightColor } from "../constants/colors";
 import { useFolder } from "../context/FolderContext";
 
 const Node = ({ node, style, dragHandle }: any) => {
-  const { openContextMenu } = useFolder();
+  const { openContextMenu, openChatContextMenu } = useFolder();
 
   const handleContextMenu = (e: React.MouseEvent) => {
-    if (node.data.type === 'chat') return;
+    if (node.data.type === 'chat') {
+      openChatContextMenu(e, {
+        id: node.data.id,
+        name: node.data.name,
+      });
+      return;
+    }
 
     openContextMenu(e, {
       id: node.data.id,

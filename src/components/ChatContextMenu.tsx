@@ -1,21 +1,13 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
-import {
-  FolderPlus,
-  MessageSquarePlus,
-  Pencil,
-  Palette,
-  Trash2,
-} from "lucide-react";
+import { FolderInput, Pencil, Trash2 } from "lucide-react";
 import ContextMenuItem from "./ContextMenuItem";
 import { useFolder } from "../context/FolderContext";
-import { useModal } from "../context/ModalContext";
 
-// Inline styles (required since this needs to work outside Tailwind context)
 const styles = {
   menu: {
     position: "absolute" as const,
     zIndex: 100000,
-    minWidth: 220,
+    minWidth: 200,
     backgroundColor: "#1e1e1e",
     border: "1px solid #333",
     borderRadius: 8,
@@ -38,30 +30,22 @@ const styles = {
     textOverflow: "ellipsis" as const,
     maxWidth: 200,
   },
-  divider: {
-    height: 1,
-    backgroundColor: "#333",
-    margin: "4px 0",
-  },
 };
 
-const FolderContextMenu: React.FC = () => {
+const ChatContextMenu: React.FC = () => {
   const {
-    contextMenu,
-    closeContextMenu,
-    handleAddSubfolder,
-    handleAddChat,
-    handleRename,
-    handleChangeColor,
-    handleDelete,
+    chatContextMenu,
+    closeChatContextMenu,
+    handleChatMoveTo,
+    handleChatRename,
+    handleChatDelete,
   } = useFolder();
-  const { type, onClose: closeModal } = useModal();
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
 
-  const { x, y, folderName } = contextMenu;
+  const { x, y, chatName } = chatContextMenu;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -71,26 +55,16 @@ const FolderContextMenu: React.FC = () => {
         return;
       }
 
-      // Check if the click is inside any modal content
-      const modalWrapper = document.querySelector('[class*="organizer-pointer-events-auto"]');
-      if (modalWrapper?.contains(target)) {
-        return;
-      }
-
-      // Close both context menu and addSubfolder modal
-      closeContextMenu();
-      if (type === 'addSubfolder') {
-        closeModal();
-      }
+      closeChatContextMenu();
     };
 
     const handleScroll = () => {
-      closeContextMenu();
+      closeChatContextMenu();
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        closeContextMenu();
+        closeChatContextMenu();
       }
     };
 
@@ -106,16 +80,14 @@ const FolderContextMenu: React.FC = () => {
       document.removeEventListener("scroll", handleScroll, true);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [closeContextMenu, type, closeModal]);
+  }, [closeChatContextMenu]);
 
-  // Calculate position relative to viewport, accounting for sidebar offset
   useLayoutEffect(() => {
     if (menuRef.current) {
       const menuRect = menuRef.current.getBoundingClientRect();
-      const menuWidth = menuRect.width || 220;
-      const menuHeight = menuRect.height || 300;
+      const menuWidth = menuRect.width || 200;
+      const menuHeight = menuRect.height || 200;
 
-      // Get the sidebar element to calculate offset
       const sidebar = menuRef.current.closest('[class*="organizer-fixed"]');
       let offsetX = 0;
       let offsetY = 0;
@@ -126,11 +98,9 @@ const FolderContextMenu: React.FC = () => {
         offsetY = sidebarRect.top;
       }
 
-      // Calculate position relative to the sidebar
       let newLeft = x - offsetX;
       let newTop = y - offsetY;
 
-      // Adjust if overflowing viewport
       if (x + menuWidth > window.innerWidth - 10) {
         newLeft = x - offsetX - menuWidth;
       }
@@ -139,7 +109,6 @@ const FolderContextMenu: React.FC = () => {
         newTop = y - offsetY - menuHeight;
       }
 
-      // Ensure menu doesn't go off-screen
       newTop = Math.max(10 - offsetY, newTop);
       newLeft = Math.max(10 - offsetX, newLeft);
 
@@ -160,52 +129,32 @@ const FolderContextMenu: React.FC = () => {
       onMouseDown={(e) => e.stopPropagation()}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Folder name header */}
-      <div style={styles.header}>{folderName}</div>
+      {/* Chat name header */}
+      <div style={styles.header}>{chatName}</div>
 
-      {/* Add Subfolder */}
+      {/* Move to... */}
       <ContextMenuItem
-        icon={<FolderPlus size={16} />}
-        label="Add subfolder"
-        onClickWithRect={handleAddSubfolder}
-      />
-
-      {/* Add Chat */}
-      <ContextMenuItem
-        icon={<MessageSquarePlus size={16} />}
-        label="Add chat"
-        onClick={handleAddChat}
-      />
-
-      {/* Divider */}
-      <div style={styles.divider} />
-
-      {/* Change Color */}
-      <ContextMenuItem
-        icon={<Palette size={16} />}
-        label="Change color"
-        onClick={handleChangeColor}
+        icon={<FolderInput size={16} />}
+        label="Move to..."
+        onClick={handleChatMoveTo}
       />
 
       {/* Rename */}
       <ContextMenuItem
         icon={<Pencil size={16} />}
         label="Rename"
-        onClick={handleRename}
+        onClick={handleChatRename}
       />
-
-      {/* Divider */}
-      <div style={styles.divider} />
 
       {/* Delete */}
       <ContextMenuItem
         icon={<Trash2 size={16} />}
         label="Delete"
         isDanger
-        onClick={handleDelete}
+        onClick={handleChatDelete}
       />
     </div>
   );
 };
 
-export default FolderContextMenu;
+export default ChatContextMenu;
