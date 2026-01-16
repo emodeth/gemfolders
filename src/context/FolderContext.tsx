@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import { createFolder, deleteFolder, getFolders, type Folder } from "../lib/storage"
+import { createFolder, deleteFolder, getFolders, renameFolder, type Folder } from "../lib/storage"
 import { useModal } from "./ModalContext"
 
 // Context menu state interface
@@ -127,6 +127,14 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     onOpen("renameFolderModal", {
       folderId,
       folderName,
+      onRename: async (id: string, newName: string) => {
+        try {
+          const updatedFolders = await renameFolder(id, newName)
+          setFolders(updatedFolders)
+        } catch (error) {
+          console.error("Failed to rename folder:", error)
+        }
+      },
     })
     closeContextMenu()
   }

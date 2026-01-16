@@ -111,3 +111,22 @@ export const deleteFolder = async (folderId: string): Promise<Folder[]> => {
   await saveFolders(updatedFolders);
   return updatedFolders;
 };
+
+export const renameFolder = async (folderId: string, newName: string): Promise<Folder[]> => {
+  const folders = await getFolders();
+  
+  const updateName = (nodes: Folder[]): boolean => {
+    for (const node of nodes) {
+      if (node.id === folderId) {
+        node.name = newName;
+        return true;
+      }
+      if (node.children && updateName(node.children)) return true;
+    }
+    return false;
+  };
+
+  updateName(folders);
+  await saveFolders(folders);
+  return folders;
+};
