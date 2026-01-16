@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, type ReactNode } from "react"
-import { renameChat, type Folder } from "../lib/storage"
+import { renameChat, deleteChat, type Folder } from "../lib/storage"
 import { useModal } from "./ModalContext"
 import { useFolder } from "./FolderContext"
 
@@ -19,6 +19,7 @@ interface ChatContextType {
   handleChatRename: () => void
   handleChatDelete: () => void
   onRenameChat: (chatId: string, newName: string) => Promise<Folder[]>
+  onDeleteChat: (chatId: string) => Promise<Folder[]>
 }
 
 const initialChatContextMenuState: ChatContextMenuState = {
@@ -61,6 +62,12 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return updatedFolders
   }
 
+  const onDeleteChat = async (chatId: string): Promise<Folder[]> => {
+    const updatedFolders = await deleteChat(chatId)
+    setFolders(updatedFolders)
+    return updatedFolders
+  }
+
   const handleChatMoveTo = () => {
     // Not implemented yet
     closeChatContextMenu()
@@ -77,7 +84,14 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const handleChatDelete = () => {
-    // Not implemented yet
+    const { chatId, chatName } = chatContextMenu
+    onOpen("deleteChatModal", {
+      chatId,
+      chatName,
+      onDelete: async () => {
+        await onDeleteChat(chatId)
+      },
+    })
     closeChatContextMenu()
   }
 
@@ -90,6 +104,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       handleChatRename,
       handleChatDelete,
       onRenameChat,
+      onDeleteChat,
     }),
     [chatContextMenu]
   )
