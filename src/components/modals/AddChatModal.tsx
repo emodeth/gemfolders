@@ -67,9 +67,23 @@ const AddChatModal: React.FC = () => {
     onClose();
   };
 
+  const formatDate = (isoString?: string): string => {
+    if (!isoString) return '';
+    try {
+      return new Date(isoString).toLocaleString();
+    } catch {
+      return isoString;
+    }
+  };
+
   const filteredChats = chats
     .filter((chat) => !existingChatIds.includes(chat.id))
-    .filter((chat) => chat.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    .filter((chat) => chat.title.toLowerCase().includes(searchQuery.toLowerCase()))
+    .sort((a, b) => {
+      const indexA = a.sortIndex ?? Number.MAX_SAFE_INTEGER;
+      const indexB = b.sortIndex ?? Number.MAX_SAFE_INTEGER;
+      return indexA - indexB;
+    });
 
   const getEmptyStateMessage = () => {
     if (chats.length === 0) {
@@ -97,7 +111,7 @@ const AddChatModal: React.FC = () => {
             chat={{
               id: chat.id,
               title: chat.title,
-              date: chat.lastUpdated,
+              date: formatDate(chat.lastUpdated),
             }}
             isSelected={selectedChats.includes(chat.id)}
             onToggle={toggleChat}
