@@ -31,7 +31,7 @@ const Node = ({ node, style, dragHandle }: any) => {
 
     const renderIcon = () => {
       if (!hasChildren) {
-        return <Folder className="organizer-mr-2" size={16} style={{ color: bgColor }} />;
+        return <Folder className="organizer-mr-2" size={16} style={{ color: bgColor }} fill={bgColor} />;
       }
       return node.isOpen
         ? <ChevronDown className="organizer-mr-2" size={16} />
