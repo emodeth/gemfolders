@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import { createFolder, deleteFolder, getFolders, renameFolder, updateFolderColor, addChatsToFolder, type Folder, type ChatToAdd } from "../lib/storage"
+import { createFolder, deleteFolder, getFolders, renameFolder, updateFolderColor, addChatsToFolder, moveNodes, type Folder, type ChatToAdd } from "../lib/storage"
 import { fetchGeminiChats } from "../lib/geminiChats"
 import { useModal } from "./ModalContext"
 
@@ -17,6 +17,7 @@ interface FolderContextType {
   folders: Folder[]
   setFolders: React.Dispatch<React.SetStateAction<Folder[]>>
   onCreate: (props: { parentId: string | null; index: number; type: "folder" | "chat"; name?: string }) => Promise<{ id: string } | null>
+  onMove: (props: { dragIds: string[]; parentId: string | null; index: number }) => Promise<void>
   onAddChatsToFolder: (folderId: string, chats: ChatToAdd[]) => Promise<void>
   loading: boolean
   refreshFolders: () => Promise<void>
@@ -84,6 +85,23 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     } catch (error) {
       console.error("Failed to create folder/chat:", error)
       return null
+    }
+  }
+
+  const onMove = async ({
+    dragIds,
+    parentId,
+    index,
+  }: {
+    dragIds: string[]
+    parentId: string | null
+    index: number
+  }) => {
+    try {
+      const updatedFolders = await moveNodes(dragIds, parentId, index)
+      setFolders(updatedFolders)
+    } catch (error) {
+      console.error("Failed to move nodes:", error)
     }
   }
 
@@ -218,6 +236,7 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         folders,
         setFolders,
         onCreate,
+        onMove,
         onAddChatsToFolder,
         loading,
         refreshFolders,
