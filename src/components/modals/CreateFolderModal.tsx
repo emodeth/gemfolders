@@ -14,6 +14,17 @@ const CreateFolderModal: React.FC = () => {
     });
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   const { onCreate } = useFolder();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,6 +50,7 @@ const CreateFolderModal: React.FC = () => {
   return (
     <div
       style={style}
+      onClick={(e) => e.stopPropagation()}
       className={`organizer-w-[215px] organizer-bg-[#2a2a2a] organizer-rounded-lg organizer-p-4 organizer-relative organizer-transition-all organizer-duration-200 organizer-ease-out organizer-delay-100 ${isVisible
         ? 'organizer-opacity-100 organizer-translate-y-0 organizer-scale-100'
         : 'organizer-opacity-0 -organizer-translate-y-2 organizer-scale-95'
