@@ -67,7 +67,7 @@ const AddSubfolderModal: React.FC = () => {
     <div
       ref={modalRef}
       style={style}
-      className="organizer-w-[215px] organizer-bg-bg-surface organizer-rounded-md organizer-p-4 organizer-border organizer-border-border-default organizer-shadow-lg"
+      className="organizer-w-[215px] organizer-bg-bg-background organizer-rounded-md organizer-p-4 organizer-shadow-lg"
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
     >
@@ -77,6 +77,7 @@ const AddSubfolderModal: React.FC = () => {
           placeholder="New Folder"
           value={folderName}
           onChange={(e) => setFolderName(e.target.value)}
+          variant="ghost"
           className="organizer-mb-3 organizer-rounded-lg"
           autoFocus
         />

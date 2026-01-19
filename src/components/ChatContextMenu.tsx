@@ -7,28 +7,28 @@ const styles = {
   menu: {
     position: "absolute" as const,
     zIndex: 100000,
-    minWidth: 200,
-    backgroundColor: "var(--bg-surface)",
+    minWidth: 150,
+    backgroundColor: "var(--bg-background)",
     border: "1px solid var(--border-default)",
-    borderRadius: 8,
+    borderRadius: 6,
     boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-    padding: 6,
+    padding: 4,
     display: "flex",
     flexDirection: "column" as const,
-    gap: 2,
+    gap: 1,
     fontFamily: "var(--font-sans)",
   },
   header: {
-    padding: "8px 12px",
-    fontSize: 13,
+    padding: "6px 10px",
+    fontSize: 14,
     fontWeight: 600,
-    color: "var(--text-secondary)",
-    borderBottom: "1px solid var(--border-default)",
+    color: "var(--text-primary)",
     marginBottom: 4,
     whiteSpace: "nowrap" as const,
     overflow: "hidden" as const,
     textOverflow: "ellipsis" as const,
-    maxWidth: 200,
+    maxWidth: 140,
+
   },
 };
 
@@ -129,24 +129,20 @@ const ChatContextMenu: React.FC = () => {
       onMouseDown={(e) => e.stopPropagation()}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Chat name header */}
       <div style={styles.header}>{chatName}</div>
 
-      {/* Move to... */}
       <ContextMenuItem
         icon={<FolderInput size={16} />}
         label="Move to..."
         onClick={handleChatMoveTo}
       />
 
-      {/* Rename */}
       <ContextMenuItem
         icon={<Pencil size={16} />}
         label="Rename"
         onClick={handleChatRename}
       />
 
-      {/* Delete */}
       <ContextMenuItem
         icon={<Trash2 size={16} />}
         label="Delete"

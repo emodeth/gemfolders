@@ -53,14 +53,14 @@ const CreateFolderModal: React.FC = () => {
     <div
       style={style}
       onClick={(e) => e.stopPropagation()}
-      className={`organizer-w-[215px] organizer-bg-bg-surface organizer-rounded-lg organizer-p-4 organizer-relative organizer-transition-all organizer-duration-200 organizer-ease-out organizer-delay-100 ${isVisible
+      className={`organizer-w-[215px] organizer-bg-bg-input organizer-rounded-lg organizer-p-4 organizer-relative organizer-transition-all organizer-duration-200 organizer-ease-out organizer-delay-100 ${isVisible
         ? 'organizer-opacity-100 organizer-translate-y-0 organizer-scale-100'
         : 'organizer-opacity-0 -organizer-translate-y-2 organizer-scale-95'
         }`}
     >
       {rect && (
         <div
-          className="organizer-absolute organizer-w-3 organizer-h-3 organizer-bg-bg-surface organizer-border-l organizer-border-t organizer-border-border-default organizer-transform organizer-rotate-45"
+          className="organizer-absolute organizer-w-3 organizer-h-3 organizer-bg-bg-input organizer-transform organizer-rotate-45"
           style={{
             top: '-7px',
             right: (rect.width / 2) - 6,
@@ -76,13 +76,13 @@ const CreateFolderModal: React.FC = () => {
           placeholder="New Folder"
           value={folderName}
           onChange={(e) => setFolderName(e.target.value)}
-          variant="ghost"
+          variant="secondary"
           className="organizer-mb-3 organizer-rounded-lg"
           autoFocus
         />
         <Button
           type="submit"
-          className="organizer-w-full organizer-bg-bg-input hover:organizer-bg-bg-surface-hover organizer-text-text-primary organizer-font-medium organizer-py-2 organizer-text-sm"
+          className="organizer-w-full !organizer-bg-bg-background organizer-text-text-primary organizer-font-medium organizer-py-2 organizer-text-sm"
         >
           Add Folder
         </Button>
