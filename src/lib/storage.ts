@@ -220,6 +220,68 @@ export const deleteChat = async (chatId: string): Promise<Folder[]> => {
   return updatedFolders
 }
 
+export const moveChat = async (
+  chatId: string,
+  targetFolderId: string
+): Promise<Folder[]> => {
+  const folders = await getFolders()
+
+  // Helper to find and extract a chat from the tree
+  let extractedChat: Folder | null = null
+
+  const extractChat = (nodes: Folder[]): Folder[] => {
+    return nodes.map((node) => {
+      if (node.type === "folder" && node.children) {
+        const chatIndex = node.children.findIndex(
+          (child) => child.id === chatId && child.type === "chat"
+        )
+        if (chatIndex !== -1) {
+          extractedChat = node.children[chatIndex]
+          return {
+            ...node,
+            children: node.children.filter((_, idx) => idx !== chatIndex)
+          }
+        }
+        return {
+          ...node,
+          children: extractChat(node.children)
+        }
+      }
+      return node
+    })
+  }
+
+  // Helper to insert chat into target folder
+  const insertChat = (nodes: Folder[], chat: Folder): Folder[] => {
+    return nodes.map((node) => {
+      if (node.id === targetFolderId && node.type === "folder") {
+        return {
+          ...node,
+          children: [...(node.children || []), chat]
+        }
+      }
+      if (node.type === "folder" && node.children) {
+        return {
+          ...node,
+          children: insertChat(node.children, chat)
+        }
+      }
+      return node
+    })
+  }
+
+  // Step 1: Extract the chat from its current location
+  let updatedFolders = extractChat(folders)
+
+  // Step 2: Insert the chat into the target folder
+  if (extractedChat) {
+    updatedFolders = insertChat(updatedFolders, extractedChat)
+  }
+
+  await saveFolders(updatedFolders)
+  return updatedFolders
+}
+
 export const moveNodes = async (
   dragIds: string[],
   parentId: string | null,

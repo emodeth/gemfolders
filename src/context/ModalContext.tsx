@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, type ReactNode } from 'react';
 
-export type ModalType = 'createFolder' | 'renameFolder' | 'deleteFolder' | 'colorPicker' | 'addChat' | 'renameFolderModal' | 'addSubfolder' | 'renameChatModal' | 'deleteChatModal';
+export type ModalType = 'createFolder' | 'renameFolder' | 'deleteFolder' | 'colorPicker' | 'addChat' | 'renameFolderModal' | 'addSubfolder' | 'renameChatModal' | 'deleteChatModal' | 'moveChatModal';
 
 interface ModalContextType {
   type: ModalType;

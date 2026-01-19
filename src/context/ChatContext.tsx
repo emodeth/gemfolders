@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, type ReactNode } from "react"
-import { renameChat, deleteChat, type Folder } from "../lib/storage"
+import { renameChat, deleteChat, moveChat, type Folder } from "../lib/storage"
 import { useModal } from "./ModalContext"
 import { useFolder } from "./FolderContext"
 
@@ -35,7 +35,7 @@ const ChatContext = createContext<ChatContextType | undefined>(undefined)
 export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [chatContextMenu, setChatContextMenu] = useState<ChatContextMenuState>(initialChatContextMenuState)
   const { onOpen } = useModal()
-  const { setFolders } = useFolder()
+  const { setFolders, folders } = useFolder()
 
   const openChatContextMenu = (
     e: React.MouseEvent,
@@ -69,7 +69,38 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const handleChatMoveTo = () => {
-    // Not implemented yet
+    const { chatId, chatName } = chatContextMenu
+
+    // Find the current folder that contains this chat
+    const findCurrentFolderId = (nodes: Folder[], targetChatId: string): string | null => {
+      for (const node of nodes) {
+        if (node.type === "folder" && node.children) {
+          const hasChat = node.children.some(
+            (child) => child.id === targetChatId && child.type === "chat"
+          )
+          if (hasChat) return node.id
+          const found = findCurrentFolderId(node.children, targetChatId)
+          if (found) return found
+        }
+      }
+      return null
+    }
+
+    const currentFolderId = findCurrentFolderId(folders, chatId)
+
+    onOpen("moveChatModal", {
+      chatId,
+      chatName,
+      currentFolderId,
+      onMove: async (id: string, targetFolderId: string) => {
+        try {
+          const updatedFolders = await moveChat(id, targetFolderId)
+          setFolders(updatedFolders)
+        } catch (error) {
+          console.error("Failed to move chat:", error)
+        }
+      },
+    })
     closeChatContextMenu()
   }
 
