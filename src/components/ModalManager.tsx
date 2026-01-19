@@ -8,6 +8,7 @@ import RenameFolderModal from '~components/modals/RenameFolderModal';
 import AddSubfolderModal from '~components/modals/AddSubfolderModal';
 import RenameChatModal from '~components/modals/RenameChatModal';
 import DeleteChatModal from '~components/modals/DeleteChatModal';
+import MoveChatModal from '~components/modals/MoveChatModal';
 
 const ModalManager: React.FC = () => {
   const { type, isOpen, onClose } = useModal();
@@ -49,6 +50,7 @@ const ModalManager: React.FC = () => {
           {type === 'addSubfolder' && <AddSubfolderModal />}
           {type === 'renameChatModal' && <RenameChatModal />}
           {type === 'deleteChatModal' && <DeleteChatModal />}
+          {type === 'moveChatModal' && <MoveChatModal />}
         </div>
       </div>
     </>
