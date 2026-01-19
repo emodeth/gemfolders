@@ -2,6 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-background: #1e1e1e;
+  --bg-surface: #2a2a2a;
+  --bg-surface-hover: #333333;
+  --bg-input: #212121;
+  --font-sans: "apple-system", BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+
+  --border-default: #3a3a3a;
+
+  --color-primary: #3b82f6;
+}
+
+[data-theme="light"] {
+  --bg-background: #f0f4f9;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #e5e7eb;
+  --bg-input: #f0f2f5;
+
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+
+  --border-default: #e5e7eb;
+
+  --color-primary: #2563eb;
+}
+
 #plasmo-shadow-container {
   all: initial;
   box-sizing: border-box;
@@ -26,4 +58,23 @@ plasmo-csui > * {
 .organizer-font-sans {
   font-family: "apple-system", BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
 }

@@ -22,7 +22,7 @@ const TabButton: React.FC<TabButtonProps> = ({
     <Tooltip text={tab.label}>
       <button
         onClick={onClick}
-        className={`organizer-relative organizer-px-2 organizer-py-3 organizer-rounded-lg organizer-transition-all organizer-text-white hover:organizer-text-white/70`}
+        className={`organizer-relative organizer-px-2 organizer-py-3 organizer-rounded-lg organizer-transition-all organizer-text-text-primary hover:organizer-text-text-secondary`}
       >
         {tab.icon}
         {active && (

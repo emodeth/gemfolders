@@ -24,15 +24,15 @@ const RenameFolderModal: React.FC = () => {
 
   return (
     <div
-      className="organizer-w-[400px] organizer-bg-[#2a2a2a] organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden organizer-fixed organizer-top-[20%] organizer-left-1/2 -organizer-translate-x-1/2"
+      className="organizer-w-[400px] organizer-bg-bg-surface organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden organizer-fixed organizer-top-[20%] organizer-left-1/2 -organizer-translate-x-1/2"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-4 organizer-py-3">
-        <div className="organizer-text-[14px] organizer-font-medium organizer-text-white">
+        <div className="organizer-text-[14px] organizer-font-medium organizer-text-text-primary">
           Rename Folder
         </div>
         <button
-          className="organizer-text-gray-400 hover:organizer-text-white organizer-transition-colors"
+          className="organizer-text-text-primary organizer-transition-colors"
           onClick={onClose}
         >
           <X size={18} />
@@ -46,7 +46,7 @@ const RenameFolderModal: React.FC = () => {
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Enter folder name"
-            className="organizer-w-full organizer-bg-[#212121] organizer-rounded-md organizer-px-3 organizer-py-2 organizer-text-white organizer-text-sm organizer-border organizer-border-[#212121] organizer-outline-none focus:organizer-border-blue-500 organizer-placeholder-neutral-500"
+            className="organizer-w-full organizer-bg-bg-input organizer-rounded-md organizer-px-3 organizer-py-2 organizer-text-text-primary organizer-text-sm organizer-border organizer-border-bg-input organizer-outline-none focus:organizer-border-blue-500 organizer-placeholder-text-muted"
             autoFocus
           />
         </div>

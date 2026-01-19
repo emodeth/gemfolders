@@ -25,13 +25,13 @@ const ColorPickerModal: React.FC = () => {
 
   return (
     <div
-      className="organizer-w-[520px] organizer-bg-[#202123] organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden"
+      className="organizer-w-[520px] organizer-bg-bg-surface organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-p-5 organizer-pb-2">
-        <div className="organizer-text-lg organizer-font-medium organizer-text-white">Change folder color</div>
+        <div className="organizer-text-lg organizer-font-medium organizer-text-text-primary">Change folder color</div>
         <button
-          className="organizer-text-gray-400 hover:organizer-text-white organizer-transition-colors"
+          className="organizer-text-text-primary hover:organizer-text-text-primary organizer-transition-colors"
           onClick={onClose}
         >
           <X size={20} />
@@ -40,12 +40,12 @@ const ColorPickerModal: React.FC = () => {
 
       <div className="organizer-px-5 organizer-pb-4">
         <div className="organizer-mb-4">
-          <span className="organizer-block organizer-text-sm organizer-font-medium organizer-text-gray-200 organizer-mb-2">Preview:</span>
+          <span className="organizer-block organizer-text-sm organizer-font-medium organizer-text-text-primary organizer-mb-1">Preview:</span>
           <div
             className="organizer-w-full organizer-h-8 organizer-p-2 organizer-rounded organizer-flex organizer-items-center organizer-justify-between"
             style={{
               backgroundColor: selectedColor,
-              color: isLightColor(selectedColor) ? "#333" : "#fff"
+              color: isLightColor(selectedColor) ? "#1f2937" : "#fff"
             }}
           >
             <div className="organizer-font-medium organizer-text-sm">{folderName || "Folder Name"}</div>
@@ -53,7 +53,7 @@ const ColorPickerModal: React.FC = () => {
           </div>
         </div>
 
-        <div className="organizer-h-px organizer-bg-gray-700 organizer-mb-4" />
+        <div className="organizer-h-px organizer-bg-border-default organizer-mb-4" />
 
         <div className="organizer-grid organizer-grid-cols-9 organizer-gap-x-1 organizer-gap-y-4">
           {PRESET_COLORS.map((group, groupIndex) => (
@@ -62,7 +62,7 @@ const ColorPickerModal: React.FC = () => {
                 <button
                   key={color}
                   className={`organizer-w-10 organizer-h-6 organizer-rounded-sm organizer-transition-all ${selectedColor === color
-                    ? "organizer-ring-2 organizer-ring-white organizer-ring-offset-1 organizer-ring-offset-[#202123]"
+                    ? "organizer-ring-2 organizer-ring-white organizer-ring-offset-1 organizer-ring-offset-bg-surface"
                     : "hover:organizer-opacity-80"
                     }`}
                   style={{ backgroundColor: color }}

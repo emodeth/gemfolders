@@ -4,6 +4,7 @@ import { useModal } from "~context/ModalContext";
 import ChatItem from "../ChatItem";
 import { loadMoreGeminiChats, type GeminiChat } from "~lib/geminiChats";
 import type { ChatToAdd } from "~lib/storage";
+import { Button } from "~components/ui/Button";
 
 interface LoadState {
   isLoadingMore: boolean;
@@ -96,7 +97,7 @@ const AddChatModal: React.FC = () => {
     if (filteredChats.length === 0) {
       return (
         <div className="organizer-text-center organizer-py-8">
-          <p className="organizer-text-gray-400 organizer-text-sm">
+          <p className="organizer-text-text-muted organizer-text-sm">
             {getEmptyStateMessage()}
           </p>
         </div>
@@ -123,18 +124,18 @@ const AddChatModal: React.FC = () => {
 
   return (
     <div
-      className="organizer-w-[520px] organizer-bg-[#141414] organizer-rounded-md organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col organizer-fixed organizer-top-[10%] organizer-left-1/2 -organizer-translate-x-1/2"
+      className="organizer-w-[520px] organizer-bg-bg-background organizer-border organizer-border-border-default organizer-rounded-md organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col organizer-fixed organizer-top-[10%] organizer-left-1/2 -organizer-translate-x-1/2"
       style={{ maxHeight: "80vh" }}
       onClick={(e) => e.stopPropagation()}
     >
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-p-5 organizer-pb-2">
-        <div className="organizer-text-lg organizer-font-medium organizer-text-white">
+        <div className="organizer-text-lg organizer-font-medium organizer-text-text-primary">
           Add chats to{" "}
-          <span className="organizer-text-[#60a5fa]">{folderName}</span>
+          <span className="organizer-text-primary">{folderName}</span>
           {" "}folder
         </div>
         <button
-          className="organizer-text-gray-400 hover:organizer-text-white organizer-transition-colors"
+          className="organizer-text-text-primary  organizer-transition-colors"
           onClick={onClose}
         >
           <X size={20} />
@@ -148,18 +149,18 @@ const AddChatModal: React.FC = () => {
             placeholder="Filter chats by title..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="organizer-w-full organizer-bg-[#202123] organizer-rounded-lg organizer-px-4 organizer-py-2.5 organizer-text-gray-200 organizer-placeholder-gray-500 organizer-outline-none organizer-border organizer-border-[#202123] focus:organizer-border-blue-500 organizer-text-sm"
+            className="organizer-w-full organizer-bg-bg-input organizer-rounded-lg organizer-px-4 organizer-py-2.5 organizer-text-text-primary organizer-placeholder-text-muted organizer-outline-none organizer-border organizer-border-border-default focus:organizer-border-primary organizer-text-sm"
           />
         </div>
 
         <div className="organizer-text-center organizer-mb-4">
-          <p className="organizer-text-white organizer-text-xs organizer-mb-1">
+          <p className="organizer-text-text-primary organizer-text-xs organizer-mb-1">
             {loadState.isLoadingMore
               ? `Loading chats... (${loadState.progress} found)`
               : "Chat history is scraped from the sidebar. Some chats may not be shown."}
           </p>
           <button
-            className="organizer-text-[#60a5fa] organizer-text-xs organizer-p-2 hover:organizer-bg-neutral-800 organizer-rounded-lg organizer-text-decoration-none organizer-mt-1 organizer-inline-flex organizer-items-center organizer-gap-1.5 disabled:organizer-opacity-50 disabled:organizer-cursor-not-allowed"
+            className="organizer-text-primary organizer-text-xs organizer-p-2 hover:organizer-bg-bg-surface-hover organizer-rounded-lg organizer-text-decoration-none organizer-mt-1 organizer-inline-flex organizer-items-center organizer-gap-1.5 disabled:organizer-opacity-50 disabled:organizer-cursor-not-allowed"
             onClick={handleLoadMore}
             disabled={loadState.isLoadingMore}
           >
@@ -174,26 +175,26 @@ const AddChatModal: React.FC = () => {
       </div>
 
       <div className="organizer-p-5 organizer-pt-2 organizer-flex organizer-justify-between organizer-items-center">
-        <div className="organizer-text-sm organizer-text-gray-400">
+        <div className="organizer-text-sm organizer-text-text-muted">
           {selectedChats.length > 0 && (
             <span>{selectedChats.length} chat{selectedChats.length === 1 ? '' : 's'} selected</span>
           )}
         </div>
         <div className="organizer-flex organizer-gap-4">
-          <button
-            className="organizer-text-gray-300 hover:organizer-text-white organizer-text-sm organizer-font-medium organizer-transition-colors disabled:organizer-opacity-50"
+          <Button
+            variant="cancel"
             onClick={() => setSelectedChats([])}
             disabled={selectedChats.length === 0}
           >
             Clear
-          </button>
-          <button
-            className="organizer-px-4 organizer-py-2 organizer-rounded-lg organizer-bg-neutral-700 hover:organizer-bg-neutral-600 organizer-text-white organizer-text-sm organizer-font-medium organizer-transition-colors disabled:organizer-opacity-50 disabled:organizer-cursor-not-allowed"
+          </Button>
+          <Button
+            variant="default"
             onClick={handleSave}
             disabled={selectedChats.length === 0}
           >
             Save
-          </button>
+          </Button>
         </div>
       </div>
     </div>

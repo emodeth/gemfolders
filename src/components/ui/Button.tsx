@@ -8,13 +8,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'organizer-px-3 organizer-py-1.5 organizer-rounded-md organizer-text-white organizer-bg-neutral-700 hover:organizer-bg-neutral-600 organizer-text-white',
+          'organizer-px-3 organizer-py-1.5 organizer-rounded-md organizer-text-text-primary organizer-bg-bg-surface-hover hover:organizer-opacity-90 organizer-text-text-primary organizer-cursor-pointer',
         cancel:
-          'organizer-px-3 organizer-py-1.5 organizer-rounded-md organizer-text-white hover:organizer-bg-neutral-600 ',
+          'organizer-px-3 organizer-py-1.5 organizer-rounded-md organizer-text-text-primary hover:organizer-text-text-primary hover:organizer-bg-bg-surface-hover organizer-cursor-pointer',
         destructive:
-          'organizer-px-3 organizer-py-1.5 organizer-rounded-md organizer-text-white organizer-bg-red-600 hover:organizer-bg-red-500',
+          'organizer-px-3 organizer-py-1.5 organizer-rounded-md organizer-text-white organizer-bg-red-600 hover:organizer-bg-red-500 organizer-cursor-pointer',
         icon:
-          'organizer-p-2 organizer-rounded-lg organizer-bg-[#2f2f2f] organizer-text-white hover:organizer-bg-[#212121] organizer-flex organizer-items-center organizer-justify-center',
+          'organizer-p-2 organizer-rounded-lg organizer-bg-bg-input organizer-text-text-primary hover:organizer-bg-bg-surface-hover organizer-flex organizer-items-center organizer-justify-center organizer-cursor-pointer',
       },
     },
     defaultVariants: {

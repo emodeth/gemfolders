@@ -13,13 +13,13 @@ interface ChatItemProps {
 const ChatItem: React.FC<ChatItemProps> = ({ chat, isSelected, onToggle }) => {
   return (
     <div
-      className="organizer-flex organizer-items-start organizer-gap-3 organizer-p-2 hover:organizer-bg-[#202123] organizer-rounded-md organizer-cursor-pointer organizer-group"
+      className="organizer-flex organizer-items-start organizer-gap-3 organizer-p-2 hover:organizer-bg-bg-surface-hover organizer-rounded-md organizer-cursor-pointer organizer-group"
       onClick={() => onToggle(chat.id)}
     >
       <div className="organizer-pt-1">
         <div
-          className={`organizer-w-4 organizer-h-4 organizer-rounded-sm organizer-bg-neutral-800 organizer-flex organizer-items-center organizer-justify-center organizer-transition-colors ${isSelected
-            ? "!organizer-bg-[#60a5fa] organizer-border-[#60a5fa]"
+          className={`organizer-w-4 organizer-h-4 organizer-rounded-sm organizer-bg-bg-input organizer-border organizer-border-border-default organizer-flex organizer-items-center organizer-justify-center organizer-transition-colors ${isSelected
+            ? "!organizer-bg-primary !organizer-border-primary"
             : ""
             }`}
         >
@@ -40,11 +40,11 @@ const ChatItem: React.FC<ChatItemProps> = ({ chat, isSelected, onToggle }) => {
         </div>
       </div>
       <div className="organizer-flex-1 organizer-gap-2 organizer-flex organizer-flex-col ">
-        <div className="organizer-text-sm organizer-text-gray-200 organizer-font-medium">
+        <div className="organizer-text-sm organizer-text-text-primary organizer-font-medium">
           {chat.title}
         </div>
         {chat.date && (
-          <div className="organizer-text-xs organizer-text-gray-500">
+          <div className="organizer-text-xs organizer-text-text-muted">
             Updated at: {chat.date}
           </div>
         )}

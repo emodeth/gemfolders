@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useModal } from '../../context/ModalContext';
 import { useFolder } from '../../context/FolderContext';
+import { Button } from '../ui/Button';
 
 const CreateFolderModal: React.FC = () => {
   const { onClose, data } = useModal();
@@ -51,21 +52,21 @@ const CreateFolderModal: React.FC = () => {
     <div
       style={style}
       onClick={(e) => e.stopPropagation()}
-      className={`organizer-w-[215px] organizer-bg-[#2a2a2a] organizer-rounded-lg organizer-p-4 organizer-relative organizer-transition-all organizer-duration-200 organizer-ease-out organizer-delay-100 ${isVisible
+      className={`organizer-w-[215px] organizer-bg-bg-surface organizer-rounded-lg organizer-p-4 organizer-relative organizer-transition-all organizer-duration-200 organizer-ease-out organizer-delay-100 ${isVisible
         ? 'organizer-opacity-100 organizer-translate-y-0 organizer-scale-100'
         : 'organizer-opacity-0 -organizer-translate-y-2 organizer-scale-95'
         }`}
     >
       {rect && (
         <div
-          className="organizer-absolute organizer-w-3 organizer-h-3 organizer-bg-[#2a2a2a] organizer-border-l organizer-border-t organizer-border-[#333] organizer-transform organizer-rotate-45"
+          className="organizer-absolute organizer-w-3 organizer-h-3 organizer-bg-bg-surface organizer-border-l organizer-border-t organizer-border-border-default organizer-transform organizer-rotate-45"
           style={{
             top: '-7px',
             right: (rect.width / 2) - 6,
           }}
         />
       )}
-      <h3 className="organizer-text-white organizer-font-medium organizer-mb-3 organizer-text-sm">
+      <h3 className="organizer-text-text-primary organizer-font-medium organizer-mb-3 organizer-text-sm">
         Enter folder name
       </h3>
       <form onSubmit={handleSubmit}>
@@ -74,15 +75,15 @@ const CreateFolderModal: React.FC = () => {
           placeholder="New Folder"
           value={folderName}
           onChange={(e) => setFolderName(e.target.value)}
-          className="organizer-w-full organizer-bg-[#212121] organizer-rounded-lg organizer-px-3 organizer-py-2 organizer-text-white organizer-text-sm organizer-mb-3 organizer-border organizer-border-[#212121] organizer-outline-none  focus:organizer-border-blue-500 organizer-placeholder-neutral-400"
+          className="organizer-w-full organizer-bg-bg-input organizer-rounded-lg organizer-px-3 organizer-py-2 organizer-text-text-primary organizer-text-sm organizer-mb-3 organizer-border organizer-border-bg-input organizer-outline-none  focus:organizer-border-blue-500 organizer-placeholder-text-muted"
           autoFocus
         />
-        <button
+        <Button
           type="submit"
-          className="organizer-w-full organizer-bg-[#212121] organizer-text-white organizer-font-medium organizer-py-2 organizer-rounded-lg organizer-text-sm organizer-transition-colors "
+          className="organizer-w-full organizer-bg-bg-input hover:organizer-bg-bg-surface-hover organizer-text-text-primary organizer-font-medium organizer-py-2 organizer-text-sm"
         >
           Add Folder
-        </button>
+        </Button>
       </form>
     </div>
   );

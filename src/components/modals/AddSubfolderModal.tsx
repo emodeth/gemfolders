@@ -1,6 +1,7 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
 import { useModal } from '../../context/ModalContext';
 import { useFolder } from '../../context/FolderContext';
+import { Button } from '../ui/Button';
 
 const AddSubfolderModal: React.FC = () => {
   const { onClose, data } = useModal();
@@ -65,7 +66,7 @@ const AddSubfolderModal: React.FC = () => {
     <div
       ref={modalRef}
       style={style}
-      className="organizer-w-[215px] organizer-bg-[#2a2a2a] organizer-rounded-md organizer-p-4 organizer-border organizer-border-[#333] organizer-shadow-lg"
+      className="organizer-w-[215px] organizer-bg-bg-surface organizer-rounded-md organizer-p-4 organizer-border organizer-border-border-default organizer-shadow-lg"
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
     >
@@ -75,15 +76,15 @@ const AddSubfolderModal: React.FC = () => {
           placeholder="New Folder"
           value={folderName}
           onChange={(e) => setFolderName(e.target.value)}
-          className="organizer-w-full organizer-bg-[#212121] organizer-rounded-lg organizer-px-3 organizer-py-2 organizer-text-white organizer-text-sm organizer-mb-3 organizer-border organizer-border-[#333] organizer-outline-none focus:organizer-border-blue-500 organizer-placeholder-neutral-400"
+          className="organizer-w-full organizer-bg-bg-input organizer-rounded-lg organizer-px-3 organizer-py-2 organizer-text-text-primary organizer-text-sm organizer-mb-3 organizer-border organizer-border-border-default organizer-outline-none focus:organizer-border-blue-500 organizer-placeholder-text-muted"
           autoFocus
         />
-        <button
+        <Button
           type="submit"
-          className="organizer-w-full organizer-bg-[#212121] organizer-text-white organizer-font-medium organizer-py-2 organizer-rounded-lg organizer-text-sm organizer-transition-colors hover:organizer-bg-[#333]"
+          className="organizer-w-full organizer-bg-bg-input hover:organizer-bg-bg-surface-hover organizer-text-text-primary organizer-font-medium organizer-py-2 organizer-text-sm"
         >
           Add Subfolder
-        </button>
+        </Button>
       </form>
     </div>
   );

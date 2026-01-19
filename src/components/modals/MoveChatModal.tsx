@@ -49,19 +49,19 @@ const MoveChatModal: React.FC = () => {
 
   return (
     <div
-      className="organizer-w-[520px] organizer-min-h-[600px] organizer-bg-[#1e1e1e] organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col organizer-fixed organizer-top-[15%] organizer-left-1/2 -organizer-translate-x-1/2"
+      className="organizer-w-[520px] organizer-min-h-[600px] organizer-bg-bg-surface organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col organizer-fixed organizer-top-[15%] organizer-left-1/2 -organizer-translate-x-1/2"
       style={{ maxHeight: "70vh" }}
       onClick={(e) => e.stopPropagation()}
     >
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-4 organizer-py-3">
         <div className="organizer-flex organizer-items-center organizer-gap-2">
-          <MessageSquareText size={18} className="organizer-text-gray-400" />
-          <span className="organizer-text-[14px] organizer-font-medium organizer-text-white">
+          <MessageSquareText size={18} className="organizer-text-text-secondary" />
+          <span className="organizer-text-[14px] organizer-font-medium organizer-text-text-primary">
             Move "{chatName}" to
           </span>
         </div>
         <button
-          className="organizer-text-gray-400 hover:organizer-text-white organizer-transition-colors"
+          className="organizer-text-text-secondary hover:organizer-text-text-primary organizer-transition-colors"
           onClick={onClose}
         >
           <X size={18} />
@@ -72,14 +72,14 @@ const MoveChatModal: React.FC = () => {
         <div className="organizer-relative">
           <Search
             size={16}
-            className="organizer-absolute organizer-left-3 organizer-top-1/2 -organizer-translate-y-1/2 organizer-text-gray-500"
+            className="organizer-absolute organizer-left-3 organizer-top-1/2 -organizer-translate-y-1/2 organizer-text-text-muted"
           />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Filter folders by name..."
-            className="organizer-w-full organizer-bg-[#2a2a2a] organizer-rounded-md organizer-pl-9 organizer-pr-3 organizer-py-2 organizer-text-white organizer-text-sm organizer-border organizer-border-[#333] organizer-outline-none focus:organizer-border-blue-500 organizer-placeholder-gray-500"
+            className="organizer-w-full organizer-bg-bg-input organizer-rounded-md organizer-pl-9 organizer-pr-3 organizer-py-2 organizer-text-text-primary organizer-text-sm organizer-border organizer-border-bg-input organizer-outline-none focus:organizer-border-blue-500 organizer-placeholder-text-muted"
             autoFocus
           />
         </div>
@@ -88,7 +88,7 @@ const MoveChatModal: React.FC = () => {
       <div className="organizer-flex-1 organizer-overflow-y-auto organizer-px-4 organizer-pb-4 organizer-min-h-[200px] organizer-max-h-[300px]">
         {filteredFolders.length === 0 ? (
           <div className="organizer-text-center organizer-py-8">
-            <p className="organizer-text-gray-400 organizer-text-sm">
+            <p className="organizer-text-text-secondary organizer-text-sm">
               {searchQuery ? "No folders match your search." : "No folders available."}
             </p>
           </div>
