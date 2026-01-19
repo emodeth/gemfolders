@@ -4,9 +4,14 @@ import { Search, FolderPlus } from "lucide-react";
 import FolderTree from "./FolderTree";
 
 const FoldersTab: React.FC = () => {
-  const { onOpen } = useModal();
+  const { onOpen, onClose, isOpen, type } = useModal();
 
   const handleCreateFolder = (e: React.MouseEvent) => {
+    if (isOpen && type === 'createFolder') {
+      onClose();
+      return;
+    }
+
     const rect = e.currentTarget.getBoundingClientRect();
     onOpen("createFolder", {
       anchorRect: {
