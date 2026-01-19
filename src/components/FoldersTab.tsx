@@ -35,6 +35,7 @@ const FoldersTab: React.FC = () => {
           type="text"
           placeholder="Search folders..."
           className="organizer-rounded-lg"
+          variant="ghost"
         />
       </div>
 

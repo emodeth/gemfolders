@@ -125,7 +125,7 @@ const AddChatModal: React.FC = () => {
 
   return (
     <div
-      className="organizer-w-[520px] organizer-bg-bg-background organizer-border organizer-border-border-default organizer-rounded-md organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col organizer-fixed organizer-top-[10%] organizer-left-1/2 -organizer-translate-x-1/2"
+      className="organizer-w-[520px] organizer-bg-bg-background organizer-rounded-md organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col organizer-fixed organizer-top-[10%] organizer-left-1/2 -organizer-translate-x-1/2"
       style={{ maxHeight: "80vh" }}
       onClick={(e) => e.stopPropagation()}
     >
@@ -150,6 +150,7 @@ const AddChatModal: React.FC = () => {
             placeholder="Filter chats by title..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            variant="ghost"
             className="organizer-rounded-lg organizer-px-4 organizer-py-2.5"
           />
         </div>

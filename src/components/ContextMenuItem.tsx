@@ -12,9 +12,9 @@ const styles = {
   item: {
     display: "flex",
     alignItems: "center",
-    padding: "8px 12px",
-    fontSize: 13,
-    color: "var(--text-secondary)",
+    padding: "6px 12px",
+    fontSize: 14,
+    color: "var(--text-primary)",
     cursor: "pointer",
     borderRadius: 4,
     transition: "all 0.15s ease",
@@ -22,8 +22,8 @@ const styles = {
     backgroundColor: "transparent",
   },
   icon: {
-    marginRight: 10,
-    opacity: 0.8,
+    marginRight: 8,
+    opacity: 0.9,
     display: "flex",
     alignItems: "center",
   },
@@ -42,7 +42,7 @@ const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
   const itemStyle: React.CSSProperties = {
     ...styles.item,
     backgroundColor: isHovered ? (isDanger ? "#d32f2f" : "var(--bg-surface-hover)") : "transparent",
-    color: isHovered ? (isDanger ? "#fff" : "var(--text-primary)") : "var(--text-secondary)",
+    color: isDanger && isHovered ? "#fff" : "var(--text-primary)",
   };
 
   const iconStyle: React.CSSProperties = {

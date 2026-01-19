@@ -12,7 +12,7 @@ import FoldersTab from "./FoldersTab";
 import BookmarksTab from "./BookmarksTab";
 import ProfileTab from "./ProfileTab";
 import SettingsTab from "./SettingsTab";
-import TabButton from "./TabButton";
+import TabBar from "./TabBar";
 import FolderContextMenu from "./FolderContextMenu";
 import ChatContextMenu from "./ChatContextMenu";
 import { useFolder } from "../context/FolderContext";
@@ -68,14 +68,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         </Tooltip>
 
         <div className="organizer-flex organizer-items-center organizer-gap-2 organizer-mx-auto">
-          {tabs.map((tab) => (
-            <TabButton
-              key={tab.id}
-              active={activeTab === tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              tab={tab}
-            />
-          ))}
+          <TabBar
+            tabs={tabs}
+            activeTab={activeTab}
+            onTabChange={(tabId) => setActiveTab(tabId as TabType)}
+          />
         </div>
       </div>
 
@@ -89,7 +86,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {renderTabContent()}
       </div>
 
-      {/* Context Menus - rendered at sidebar level to avoid overflow clipping */}
       {contextMenu.isOpen && <FolderContextMenu />}
       {chatContextMenu.isOpen && <ChatContextMenu />}
     </div>

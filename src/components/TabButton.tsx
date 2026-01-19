@@ -21,19 +21,14 @@ const TabButton: React.FC<TabButtonProps> = ({
   return (
     <Tooltip text={tab.label} position="bottom">
       <button
+        data-tab-button
         onClick={onClick}
-        className={`organizer-relative organizer-px-2 organizer-py-3 organizer-rounded-lg organizer-transition-all organizer-text-text-primary hover:organizer-text-text-secondary`}
+        className={`organizer-relative organizer-px-2 organizer-py-3 organizer-rounded-lg organizer-transition-all ${active
+            ? "organizer-text-text-primary"
+            : "organizer-text-text-secondary hover:organizer-text-text-primary"
+          }`}
       >
         {tab.icon}
-        {active && (
-          <div
-            className="organizer-absolute organizer-bottom-0 organizer-left-1/2 organizer--translate-x-1/2 organizer-h-[2px] organizer-rounded-full"
-            style={{
-              background: "linear-gradient(90deg, #60a5fa, #a78bfa)",
-              width: "20px",
-            }}
-          />
-        )}
       </button>
     </Tooltip>
   );
