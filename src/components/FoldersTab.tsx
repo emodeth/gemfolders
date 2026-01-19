@@ -3,6 +3,7 @@ import { useModal } from "../context/ModalContext";
 import { Search, FolderPlus } from "lucide-react";
 import { Button } from "./ui/Button";
 import FolderTree from "./FolderTree";
+import Tooltip from "./Tooltip";
 
 const FoldersTab: React.FC = () => {
   const { onOpen, onClose, isOpen, type } = useModal();
@@ -40,15 +41,16 @@ const FoldersTab: React.FC = () => {
         />
       </div>
 
-      <div className="organizer-flex organizer-justify-end organizer-mb-4">
-        <Button
-          variant="icon"
-          onClick={handleCreateFolder}
-          className="organizer-text-text-secondary hover:organizer-text-text-primary"
-          title="Create folder"
-        >
-          <FolderPlus size={18} />
-        </Button>
+      <div className="organizer-flex organizer-items-center organizer-justify-end organizer-mb-4">
+        <Tooltip text="Create folder" position="left" >
+          <Button
+            variant="icon"
+            onClick={handleCreateFolder}
+            className="organizer-text-text-secondary hover:organizer-text-text-primary"
+          >
+            <FolderPlus size={18} />
+          </Button>
+        </Tooltip>
       </div>
 
       <FolderTree />

@@ -31,7 +31,11 @@ module.exports = {
         border: {
           default: "var(--border-default)"
         },
-        primary: "var(--color-primary)"
+        primary: "var(--color-primary)",
+        tooltip: {
+          bg: "var(--tooltip-bg)",
+          text: "var(--tooltip-text)"
+        }
       }
     }
   }
