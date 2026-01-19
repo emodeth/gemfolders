@@ -31,12 +31,12 @@ const FoldersTab: React.FC = () => {
       <div className="organizer-relative organizer-mb-2">
         <Search
           size={16}
-          className="organizer-absolute organizer-left-3 organizer-top-1/2 organizer-transform organizer--translate-y-1/2 organizer-text-gray-500"
+          className="organizer-absolute organizer-left-3 organizer-top-1/2 organizer-transform organizer--translate-y-1/2 organizer-text-text-muted"
         />
         <input
           type="text"
           placeholder="Search folders..."
-          className="organizer-w-full organizer-bg-[#2a2a2a] organizer-border organizer-border-[#3a3a3a] organizer-rounded-lg organizer-py-2 organizer-pl-10 organizer-pr-4 organizer-text-sm organizer-text-gray-200 organizer-placeholder-gray-500 focus:organizer-outline-none focus:organizer-border-blue-500 organizer-transition-colors"
+          className="organizer-w-full organizer-bg-bg-input organizer-border organizer-border-border-default organizer-rounded-lg organizer-py-2 organizer-pl-10 organizer-pr-4 organizer-text-sm organizer-text-text-primary organizer-placeholder-text-muted focus:organizer-outline-none focus:organizer-border-blue-500 organizer-transition-colors"
         />
       </div>
 
@@ -44,6 +44,8 @@ const FoldersTab: React.FC = () => {
         <Button
           variant="icon"
           onClick={handleCreateFolder}
+          className="organizer-text-text-secondary hover:organizer-text-text-primary"
+          title="Create folder"
         >
           <FolderPlus size={18} />
         </Button>

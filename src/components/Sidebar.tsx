@@ -54,14 +54,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className={`organizer-px-6 organizer-py-8 organizer-fixed organizer-top-0 organizer-right-0 organizer-h-full organizer-w-96 organizer-bg-[#1e1e1e] organizer-shadow-2xl organizer-transform organizer-transition-transform organizer-duration-300 organizer-ease-in-out organizer-z-[9999] organizer-flex organizer-flex-col ${isOpen ? "organizer-translate-x-0" : "organizer-translate-x-full"
+      className={`organizer-px-6 organizer-py-8 organizer-fixed organizer-top-0 organizer-right-0 organizer-h-full organizer-w-96 organizer-bg-bg-background organizer-shadow-2xl organizer-transform organizer-transition-transform organizer-duration-300 organizer-ease-in-out organizer-z-[9999] organizer-flex organizer-flex-col ${isOpen ? "organizer-translate-x-0" : "organizer-translate-x-full"
         }`}
     >
       <div className="organizer-flex organizer-items-center  ">
         <Tooltip text="Hide">
           <button
             onClick={onClose}
-            className="organizer-rounded-lg organizer-text-white hover:organizer-text-white/70 organizer-transition-all organizer-p-2"
+            className="organizer-rounded-lg organizer-text-text-primary hover:organizer-text-text-secondary organizer-transition-all organizer-p-2"
           >
             <ArrowRightFromLineIcon size={18} />
           </button>
@@ -80,7 +80,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       </div>
 
       <div className="organizer-mt-4">
-        <h2 className="organizer-text-white organizer-font-semibold organizer-text-lg organizer-mb-2">
+        <h2 className="organizer-text-text-primary organizer-font-semibold organizer-text-lg organizer-mb-2">
           {tabs.find((t) => t.id === activeTab)?.label}
         </h2>
       </div>

@@ -26,7 +26,7 @@ const Node = ({ node, style, dragHandle }: any) => {
 
   function renderFolder() {
     const bgColor = node.data.color || "#60a5fa";
-    const textColor = isLightColor(bgColor) ? "#333" : "#fff";
+    const textColor = isLightColor(bgColor) ? "#1f2937" : "#fff";
     const hasChildren = node.data.children?.length > 0;
 
     const renderIcon = () => {
@@ -70,10 +70,10 @@ const Node = ({ node, style, dragHandle }: any) => {
       onClick={() => node.isInternal && node.toggle()}
       onContextMenu={handleContextMenu}
       style={style}
-      className="organizer-text-sm organizer-font-semibold organizer-flex organizer-items-center organizer-h-8 organizer-mb-1 organizer-text-white organizer-cursor-pointer hover:organizer-brightness-[85%]"
+      className="organizer-text-sm organizer-font-semibold organizer-flex organizer-items-center organizer-h-8 organizer-mb-1 organizer-text-text-primary organizer-cursor-pointer hover:organizer-brightness-110 dark:hover:organizer-brightness-[85%]"
       ref={dragHandle}
     >
-      <GripVertical className="organizer-mr-1 organizer-text-neutral-700" size={14} />
+      <GripVertical className="organizer-mr-1 organizer-text-text-muted" size={14} />
       {node.data.type === 'chat' ? renderChat() : renderFolder()}
     </div>
   );

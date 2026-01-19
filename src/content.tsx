@@ -4,6 +4,8 @@ import { useState } from "react"
 import { ModalProvider } from "~context/ModalContext"
 import { FolderProvider } from "~context/FolderContext"
 import { ChatProvider } from "~context/ChatContext"
+import { ThemeProvider } from "~context/ThemeContext"
+import { ThemeWrapper } from "~components/ThemeWrapper"
 
 import SidebarButton from "./components/SidebarButton"
 import Sidebar from "./components/Sidebar"
@@ -18,7 +20,7 @@ export const getStyle = (): HTMLStyleElement => {
 
   let updatedCssText = cssText.replaceAll(":root", ":host(plasmo-csui)")
   const remRegex = /([\d.]+)rem/g
-  updatedCssText = updatedCssText.replace(remRegex, (match, remValue) => {
+  updatedCssText = updatedCssText.replaceAll(remRegex, (match, remValue) => {
     const pixelsValue = Number.parseFloat(remValue) * baseFontSize
 
     return `${pixelsValue}px`
@@ -43,17 +45,21 @@ const PlasmoOverlay = () => {
   }
 
   return (
-    <ModalProvider>
-      <FolderProvider>
-        <ChatProvider>
-          <div className="organizer-z-50 organizer-flex organizer-fixed organizer-top-[72px] organizer-right-4">
-            <SidebarButton onClick={toggleSidebar} />
-          </div>
-          <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-          <ModalManager />
-        </ChatProvider>
-      </FolderProvider>
-    </ModalProvider>
+    <ThemeProvider>
+      <ThemeWrapper>
+        <ModalProvider>
+          <FolderProvider>
+            <ChatProvider>
+              <div className="organizer-z-50 organizer-flex organizer-fixed organizer-top-[72px] organizer-right-4">
+                <SidebarButton onClick={toggleSidebar} />
+              </div>
+              <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+              <ModalManager />
+            </ChatProvider>
+          </FolderProvider>
+        </ModalProvider>
+      </ThemeWrapper>
+    </ThemeProvider>
   )
 }
 
