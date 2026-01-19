@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         }`}
     >
       <div className="organizer-flex organizer-items-center  ">
-        <Tooltip text="Hide">
+        <Tooltip text="Hide" position="bottom">
           <button
             onClick={onClose}
             className="organizer-rounded-lg organizer-text-text-primary hover:organizer-text-text-secondary organizer-transition-all organizer-p-2"

@@ -19,7 +19,7 @@ const TabButton: React.FC<TabButtonProps> = ({
   onClick,
 }) => {
   return (
-    <Tooltip text={tab.label}>
+    <Tooltip text={tab.label} position="bottom">
       <button
         onClick={onClick}
         className={`organizer-relative organizer-px-2 organizer-py-3 organizer-rounded-lg organizer-transition-all organizer-text-text-primary hover:organizer-text-text-secondary`}

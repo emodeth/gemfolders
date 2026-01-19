@@ -17,6 +17,9 @@
   --border-default: #3a3a3a;
 
   --color-primary: #3b82f6;
+
+  --tooltip-bg: #121212;
+  --tooltip-text: #ffffff;
 }
 
 [data-theme="light"] {
@@ -32,6 +35,9 @@
   --border-default: #e5e7eb;
 
   --color-primary: #2563eb;
+
+  --tooltip-bg: #4b5563;
+  --tooltip-text: #ffffff;
 }
 
 #plasmo-shadow-container {
