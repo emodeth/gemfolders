@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useModal } from "~context/ModalContext";
+import { Button } from "../ui/Button";
 
 const RenameChatModal: React.FC = () => {
   const { onClose, data } = useModal();
@@ -54,19 +55,12 @@ const RenameChatModal: React.FC = () => {
 
         {/* Footer with buttons */}
         <div className="organizer-px-4 organizer-pb-4 organizer-flex organizer-justify-end organizer-gap-2">
-          <button
-            type="button"
-            className="organizer-px-3 organizer-py-1.5 organizer-text-gray-300 hover:organizer-text-white organizer-text-sm organizer-font-medium organizer-transition-colors"
-            onClick={onClose}
-          >
+          <Button variant="cancel" type="button" onClick={onClose}>
             Cancel
-          </button>
-          <button
-            type="submit"
-            className="organizer-px-3 organizer-py-1.5 organizer-rounded-md organizer-bg-neutral-700 hover:organizer-bg-neutral-600 organizer-text-white organizer-text-sm organizer-font-medium organizer-transition-colors"
-          >
+          </Button>
+          <Button type="submit">
             Rename
-          </button>
+          </Button>
         </div>
       </form>
     </div>
@@ -74,3 +68,4 @@ const RenameChatModal: React.FC = () => {
 };
 
 export default RenameChatModal;
+

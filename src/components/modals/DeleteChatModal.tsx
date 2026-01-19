@@ -1,7 +1,7 @@
 import React from "react";
 import { X, MessageSquareText } from "lucide-react";
 import { useModal } from "~context/ModalContext";
-import CancelButton from "../CancelButton";
+import { Button } from "../ui/Button";
 
 const DeleteChatModal: React.FC = () => {
   const { onClose, data } = useModal();
@@ -37,16 +37,16 @@ const DeleteChatModal: React.FC = () => {
       </div>
 
       <div className="organizer-p-5 organizer-pt-6 organizer-flex organizer-justify-end organizer-gap-3">
-        <CancelButton onClick={onClose} />
-        <button
-          className="organizer-px-4 organizer-py-2 organizer-rounded-lg organizer-bg-neutral-700 hover:organizer-bg-neutral-600 organizer-text-white organizer-text-sm organizer-font-medium organizer-transition-colors"
-          onClick={handleDelete}
-        >
+        <Button variant="cancel" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button variant="default" onClick={handleDelete}>
           Delete
-        </button>
+        </Button>
       </div>
     </div>
   );
 };
 
 export default DeleteChatModal;
+

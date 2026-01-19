@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useModal } from "~context/ModalContext";
-import CancelButton from "../CancelButton";
+import { Button } from "../ui/Button";
 
 import { PRESET_COLORS, isLightColor } from "../../constants/colors";
 
@@ -77,16 +77,16 @@ const ColorPickerModal: React.FC = () => {
       </div>
 
       <div className="organizer-p-5 organizer-pt-2 organizer-flex organizer-justify-end organizer-gap-3">
-        <CancelButton onClick={onClose} />
-        <button
-          className="organizer-px-4 organizer-py-2 organizer-rounded-lg organizer-bg-neutral-700 hover:organizer-bg-neutral-600 organizer-text-white organizer-text-sm organizer-font-medium organizer-transition-colors"
-          onClick={handleSave}
-        >
+        <Button variant="cancel" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button onClick={handleSave}>
           Save
-        </button>
+        </Button>
       </div>
     </div>
   );
 };
 
 export default ColorPickerModal;
+
