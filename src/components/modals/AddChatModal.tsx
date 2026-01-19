@@ -5,6 +5,7 @@ import ChatItem from "../ChatItem";
 import { loadMoreGeminiChats, type GeminiChat } from "~lib/geminiChats";
 import type { ChatToAdd } from "~lib/storage";
 import { Button } from "~components/ui/Button";
+import { Input } from "~components/ui/Input";
 
 interface LoadState {
   isLoadingMore: boolean;
@@ -144,12 +145,12 @@ const AddChatModal: React.FC = () => {
 
       <div className="organizer-pb-5 organizer-px-3 organizer-pt-4 organizer-flex-1 organizer-overflow-hidden organizer-flex organizer-flex-col">
         <div className="organizer-relative organizer-mb-4 organizer-px-2">
-          <input
+          <Input
             type="text"
             placeholder="Filter chats by title..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="organizer-w-full organizer-bg-bg-input organizer-rounded-lg organizer-px-4 organizer-py-2.5 organizer-text-text-primary organizer-placeholder-text-muted organizer-outline-none organizer-border organizer-border-border-default focus:organizer-border-primary organizer-text-sm"
+            className="organizer-rounded-lg organizer-px-4 organizer-py-2.5"
           />
         </div>
 

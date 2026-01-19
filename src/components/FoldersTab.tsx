@@ -1,7 +1,8 @@
 import React from "react";
 import { useModal } from "../context/ModalContext";
-import { Search, FolderPlus } from "lucide-react";
+import { FolderPlus } from "lucide-react";
 import { Button } from "./ui/Button";
+import { Input } from "./ui/Input";
 import FolderTree from "./FolderTree";
 import Tooltip from "./Tooltip";
 
@@ -30,14 +31,10 @@ const FoldersTab: React.FC = () => {
   return (
     <div className="organizer-flex organizer-flex-col organizer-h-full">
       <div className="organizer-relative organizer-mb-2">
-        <Search
-          size={16}
-          className="organizer-absolute organizer-left-3 organizer-top-1/2 organizer-transform organizer--translate-y-1/2 organizer-text-text-muted"
-        />
-        <input
+        <Input
           type="text"
           placeholder="Search folders..."
-          className="organizer-w-full organizer-bg-bg-input organizer-border organizer-border-border-default organizer-rounded-lg organizer-py-2 organizer-pl-10 organizer-pr-4 organizer-text-sm organizer-text-text-primary organizer-placeholder-text-muted focus:organizer-outline-none focus:organizer-border-blue-500 organizer-transition-colors"
+          className="organizer-rounded-lg"
         />
       </div>
 

@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from "react";
-import { X, Search, MessageSquareText } from "lucide-react";
+import { X, MessageSquareText } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { useFolder } from "~context/FolderContext";
 import type { Folder as FolderType } from "~lib/storage";
 import MoveChatModalItem from "./MoveChatModalItem";
+import { Input } from "../ui/Input";
 
 const MoveChatModal: React.FC = () => {
   const { onClose, data } = useModal();
@@ -12,7 +13,6 @@ const MoveChatModal: React.FC = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Flatten all folders recursively
   const flattenFolders = (folderList: FolderType[]): FolderType[] => {
     return folderList.flatMap((item) => {
       if (item.type === "folder") {
@@ -37,7 +37,6 @@ const MoveChatModal: React.FC = () => {
   const handleSelectFolder = async (folderId: string) => {
     if (!chatId || !onMove) return;
 
-    // Don't move to the same folder
     if (folderId === currentFolderId) {
       onClose();
       return;
@@ -70,16 +69,12 @@ const MoveChatModal: React.FC = () => {
 
       <div className="organizer-px-4 organizer-py-3">
         <div className="organizer-relative">
-          <Search
-            size={16}
-            className="organizer-absolute organizer-left-3 organizer-top-1/2 -organizer-translate-y-1/2 organizer-text-text-muted"
-          />
-          <input
+          <Input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Filter folders by name..."
-            className="organizer-w-full organizer-bg-bg-input organizer-rounded-md organizer-pl-9 organizer-pr-3 organizer-py-2 organizer-text-text-primary organizer-text-sm organizer-border organizer-border-bg-input organizer-outline-none focus:organizer-border-blue-500 organizer-placeholder-text-muted"
+            variant="ghost"
             autoFocus
           />
         </div>

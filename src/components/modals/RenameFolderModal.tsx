@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { Button } from "../ui/Button";
+import { Input } from "../ui/Input";
 
 const RenameFolderModal: React.FC = () => {
   const { onClose, data } = useModal();
@@ -41,12 +42,12 @@ const RenameFolderModal: React.FC = () => {
 
       <form onSubmit={handleSubmit}>
         <div className="organizer-px-4 organizer-pb-3">
-          <input
+          <Input
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Enter folder name"
-            className="organizer-w-full organizer-bg-bg-input organizer-rounded-md organizer-px-3 organizer-py-2 organizer-text-text-primary organizer-text-sm organizer-border organizer-border-bg-input organizer-outline-none focus:organizer-border-blue-500 organizer-placeholder-text-muted"
+            variant="ghost"
             autoFocus
           />
         </div>

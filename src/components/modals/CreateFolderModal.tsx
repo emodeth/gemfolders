@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useModal } from '../../context/ModalContext';
 import { useFolder } from '../../context/FolderContext';
 import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
 
 const CreateFolderModal: React.FC = () => {
   const { onClose, data } = useModal();
@@ -70,12 +71,13 @@ const CreateFolderModal: React.FC = () => {
         Enter folder name
       </h3>
       <form onSubmit={handleSubmit}>
-        <input
+        <Input
           type="text"
           placeholder="New Folder"
           value={folderName}
           onChange={(e) => setFolderName(e.target.value)}
-          className="organizer-w-full organizer-bg-bg-input organizer-rounded-lg organizer-px-3 organizer-py-2 organizer-text-text-primary organizer-text-sm organizer-mb-3 organizer-border organizer-border-bg-input organizer-outline-none  focus:organizer-border-blue-500 organizer-placeholder-text-muted"
+          variant="ghost"
+          className="organizer-mb-3 organizer-rounded-lg"
           autoFocus
         />
         <Button
