@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useModal } from '../context/ModalContext';
 import CreateFolderModal from '~components/modals/CreateFolderModal';
 import ColorPickerModal from '~components/modals/ColorPickerModal';
@@ -12,6 +12,22 @@ import MoveChatModal from '~components/modals/MoveChatModal';
 
 const ModalManager: React.FC = () => {
   const { type, isOpen, onClose } = useModal();
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen || !type) return null;
 
