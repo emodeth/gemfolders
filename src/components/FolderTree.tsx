@@ -2,7 +2,7 @@ import { Tree } from "react-arborist";
 import Node from "./Node";
 import { useFolder } from "../context/FolderContext";
 
-const FolderTree = () => {
+const FolderTree = ({ searchTerm }: { searchTerm?: string }) => {
   const { folders, onCreate, onMove } = useFolder();
 
   const handleCreate = async ({ parentId, index, type }: { parentId: string | null, index: number, type: "internal" | "leaf" }) => {
@@ -28,6 +28,10 @@ const FolderTree = () => {
       onCreate={handleCreate}
       onMove={handleMove}
       openByDefault={false}
+      searchTerm={searchTerm}
+      searchMatch={(node, term) =>
+        node.data.name.toLowerCase().includes(term.toLowerCase())
+      }
       disableDrop={({ parentNode }) =>
         parentNode?.data.type === 'chat'
       }
