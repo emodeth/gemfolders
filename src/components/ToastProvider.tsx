@@ -16,13 +16,15 @@ const ToastProvider: React.FC = () => {
       toastOptions={{
         duration: 3000,
         style: {
-          background: isDark ? "#1e1e1e" : "#1f2937",
-          color: "#ffffff",
+          background: isDark ? "#1e1e1e" : "#ffffff",
+          color: isDark ? "#ffffff" : "#1f2937",
           borderRadius: "8px",
           padding: "12px 16px",
           fontSize: "14px",
           fontFamily: "var(--font-sans)",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.4)",
+          boxShadow: isDark
+            ? "0 4px 12px rgba(0, 0, 0, 0.4)"
+            : "0 4px 12px rgba(0, 0, 0, 0.15)",
         },
       }}
     >
