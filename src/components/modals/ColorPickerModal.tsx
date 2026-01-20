@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import { X } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { Button } from "../ui/Button";
-
 import { PRESET_COLORS, isLightColor } from "../../constants/colors";
 
 const ColorPickerModal: React.FC = () => {
@@ -20,6 +20,7 @@ const ColorPickerModal: React.FC = () => {
     if (onChangeColor && folderId) {
       await onChangeColor(folderId, selectedColor);
     }
+    toast.success("Folder color updated");
     onClose();
   };
 

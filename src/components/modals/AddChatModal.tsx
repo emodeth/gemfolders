@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import { X, Loader2 } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import ChatItem from "../ChatItem";
@@ -38,8 +39,10 @@ const AddChatModal: React.FC = () => {
         setLoadState((prev) => ({ ...prev, progress: loaded }));
       });
       setChats(allChats);
+      toast.success(`Loaded ${allChats.length} chats`);
     } catch (error) {
       console.error("Failed to load more chats:", error);
+      toast.error("Failed to load chats");
     } finally {
       setLoadState((prev) => ({ ...prev, isLoadingMore: false }));
     }
@@ -66,6 +69,7 @@ const AddChatModal: React.FC = () => {
       .filter((chat): chat is ChatToAdd => chat !== null);
 
     await onAddChatsToFolder(folderId, chatsToAdd);
+    toast.success(`${chatsToAdd.length} chat${chatsToAdd.length === 1 ? '' : 's'} added to folder`);
     onClose();
   };
 

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import toast from "react-hot-toast";
 import { X, MessageSquareText } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { useFolder } from "~context/FolderContext";
@@ -42,7 +43,9 @@ const MoveChatModal: React.FC = () => {
       return;
     }
 
+    const targetFolder = allFlatFolders.find(f => f.id === folderId);
     await onMove(chatId, folderId);
+    toast.success(`Moved to "${targetFolder?.name || 'folder'}"`);
     onClose();
   };
 

@@ -1,6 +1,8 @@
 import { Tree } from "react-arborist";
+import toast from "react-hot-toast";
 import Node from "./Node";
 import { useFolder } from "../context/FolderContext";
+import type { Folder } from "~lib/storage";
 
 const FolderTree = ({ searchTerm }: { searchTerm?: string }) => {
   const { folders, onCreate, onMove } = useFolder();
@@ -14,8 +16,29 @@ const FolderTree = ({ searchTerm }: { searchTerm?: string }) => {
     return result ?? null;
   };
 
+  const findFolderName = (folderId: string | null, nodes: Folder[]): string | null => {
+    if (!folderId) return "root";
+    for (const node of nodes) {
+      if (node.id === folderId) return node.name;
+      if (node.children) {
+        const found = findFolderName(folderId, node.children);
+        if (found && found !== "root") return found;
+      }
+    }
+    return null;
+  };
+
   const handleMove = async ({ dragIds, parentId, index }: { dragIds: string[], parentId: string | null, index: number }) => {
     await onMove({ dragIds, parentId, index });
+
+    const targetName = findFolderName(parentId, folders);
+    const itemCount = dragIds.length;
+
+    if (targetName === "root") {
+      toast.success(`Moved ${itemCount} item${itemCount > 1 ? 's' : ''} to root`);
+    } else if (targetName) {
+      toast.success(`Moved ${itemCount} item${itemCount > 1 ? 's' : ''} to "${targetName}"`);
+    }
   };
 
   if (!folders) return null;

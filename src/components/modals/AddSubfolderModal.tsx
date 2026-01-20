@@ -1,4 +1,5 @@
 import React, { useState, useRef, useLayoutEffect } from 'react';
+import toast from 'react-hot-toast';
 import { useModal } from '../../context/ModalContext';
 import { useFolder } from '../../context/FolderContext';
 import { Button } from '../ui/Button';
@@ -50,6 +51,7 @@ const AddSubfolderModal: React.FC = () => {
       parentId: parentId || null,
       index: 0,
     });
+    toast.success(`Subfolder "${folderName}" created`);
     closeContextMenu();
     onClose();
   };
