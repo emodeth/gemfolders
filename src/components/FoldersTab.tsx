@@ -8,6 +8,7 @@ import Tooltip from "./Tooltip";
 
 const FoldersTab: React.FC = () => {
   const { onOpen, onClose, isOpen, type } = useModal();
+  const [searchTerm, setSearchTerm] = React.useState("");
 
   const handleCreateFolder = (e: React.MouseEvent) => {
     if (isOpen && type === 'createFolder') {
@@ -36,6 +37,8 @@ const FoldersTab: React.FC = () => {
           placeholder="Search folders..."
           className="organizer-rounded-lg"
           variant="ghost"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 
@@ -51,7 +54,7 @@ const FoldersTab: React.FC = () => {
         </Tooltip>
       </div>
 
-      <FolderTree />
+      <FolderTree searchTerm={searchTerm} />
     </div>
   );
 };
