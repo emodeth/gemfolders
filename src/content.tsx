@@ -6,6 +6,7 @@ import { FolderProvider } from "~context/FolderContext"
 import { ChatProvider } from "~context/ChatContext"
 import { ThemeProvider } from "~context/ThemeContext"
 import { ThemeWrapper } from "~components/ThemeWrapper"
+import ToastProvider from "~components/ToastProvider"
 
 import SidebarButton from "./components/SidebarButton"
 import Sidebar from "./components/Sidebar"
@@ -47,6 +48,7 @@ const PlasmoOverlay = () => {
   return (
     <ThemeProvider>
       <ThemeWrapper>
+        <ToastProvider />
         <ModalProvider>
           <FolderProvider>
             <ChatProvider>

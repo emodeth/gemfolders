@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import { X } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { Button } from "../ui/Button";
@@ -20,6 +21,7 @@ const RenameChatModal: React.FC = () => {
     if (onRename) {
       await onRename(chatId, newName.trim());
     }
+    toast.success(`Chat renamed to "${newName.trim()}"`);
     onClose();
   };
 

@@ -1,4 +1,5 @@
 import React from "react";
+import toast from "react-hot-toast";
 import { X, Folder } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { Button } from "../ui/Button";
@@ -11,6 +12,7 @@ const DeleteFolderModal: React.FC = () => {
     if (onDelete) {
       onDelete();
     }
+    toast.success(`"${folderName}" deleted`);
     onClose();
   };
 

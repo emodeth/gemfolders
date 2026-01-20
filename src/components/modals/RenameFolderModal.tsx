@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import { X } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { Button } from "../ui/Button";
@@ -20,6 +21,7 @@ const RenameFolderModal: React.FC = () => {
     if (onRename) {
       await onRename(folderId, newName.trim());
     }
+    toast.success(`Folder renamed to "${newName.trim()}"`);
     onClose();
   };
 

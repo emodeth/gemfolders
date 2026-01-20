@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { useModal } from '../../context/ModalContext';
 import { useFolder } from '../../context/FolderContext';
 import { Button } from '../ui/Button';
@@ -39,6 +40,7 @@ const CreateFolderModal: React.FC = () => {
       parentId: data?.parentId || null,
       index: 0,
     });
+    toast.success(`Folder "${folderName}" created`);
     onClose();
   };
 
