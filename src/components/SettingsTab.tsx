@@ -1,12 +1,13 @@
 import React from "react";
 import { useTheme } from "~context/ThemeContext";
-import { Moon, Sun, Monitor } from "lucide-react";
+import { Moon, Sun, Monitor, Sparkles } from "lucide-react";
 import { cn } from "~lib/utils";
 
 const SettingsTab: React.FC = () => {
   const { theme, setTheme } = useTheme();
 
   const options = [
+    { value: "gemini", label: "Gemini", icon: Sparkles },
     { value: "light", label: "Light", icon: Sun },
     { value: "dark", label: "Dark", icon: Moon },
     { value: "system", label: "System", icon: Monitor },
