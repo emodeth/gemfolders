@@ -1,17 +1,12 @@
 import React, { useState } from "react";
 import { Bookmark, Search, Sparkles } from "lucide-react";
 import { Input } from "./ui/Input";
-
-interface BookmarkedChat {
-  id: string;
-  title: string;
-  url: string;
-  bookmarkedAt: Date;
-}
+import { useBookmark } from "../context/BookmarkContext";
+import BookmarkItem from "./BookmarkItem";
 
 const BookmarksTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const bookmarks: BookmarkedChat[] = [];
+  const { bookmarks, isLoading, removeBookmark } = useBookmark();
 
   const filteredBookmarks = bookmarks.filter((bookmark) =>
     bookmark.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -20,24 +15,29 @@ const BookmarksTab: React.FC = () => {
   const hasBookmarks = bookmarks.length > 0;
   const hasSearchResults = filteredBookmarks.length > 0;
 
+  const handleRemoveBookmark = async (e: React.MouseEvent, chatId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await removeBookmark(chatId);
+  };
+
   const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="organizer-flex organizer-items-center organizer-justify-center organizer-flex-1">
+          <div className="organizer-animate-spin organizer-w-6 organizer-h-6 organizer-border-2 organizer-border-blue-500 organizer-border-t-transparent organizer-rounded-full" />
+        </div>
+      );
+    }
+
     return hasSearchResults ? (
       <div className="organizer-flex organizer-flex-col organizer-gap-2 organizer-overflow-y-auto organizer-flex-1">
         {filteredBookmarks.map((bookmark) => (
-          <a
+          <BookmarkItem
             key={bookmark.id}
-            href={bookmark.url}
-            className="organizer-flex organizer-items-center organizer-gap-3 organizer-p-3 organizer-rounded-lg organizer-bg-bg-surface hover:organizer-bg-bg-surface-hover organizer-transition-all organizer-duration-200 organizer-group"
-          >
-            <Bookmark
-              size={16}
-              className="organizer-text-blue-500 organizer-flex-shrink-0"
-              fill="currentColor"
-            />
-            <span className="organizer-text-text-primary organizer-text-sm organizer-truncate organizer-flex-1 group-hover:organizer-text-blue-400 organizer-transition-colors">
-              {bookmark.title}
-            </span>
-          </a>
+            bookmark={bookmark}
+            onRemove={handleRemoveBookmark}
+          />
         ))}
       </div>
     ) : (
@@ -80,7 +80,7 @@ const BookmarksTab: React.FC = () => {
 
       <div className="organizer-mt-6 organizer-flex organizer-items-center organizer-gap-2 organizer-text-text-placeholder organizer-text-xs organizer-bg-bg-surface organizer-px-3 organizer-py-2 organizer-rounded-full">
         <Bookmark size={12} />
-        <span>Click to bookmark a chat</span>
+        <span>Right-click a chat to bookmark it</span>
       </div>
     </div>)
   }
@@ -97,8 +97,8 @@ const BookmarksTab: React.FC = () => {
         />
       </div>
       {hasBookmarks && renderContent()}
-      {!hasBookmarks && renderEmptyState()}
-
+      {!hasBookmarks && !isLoading && renderEmptyState()}
+      {isLoading && renderContent()}
     </div>
   );
 };

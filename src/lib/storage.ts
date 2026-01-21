@@ -359,3 +359,67 @@ export const moveNodes = async (
   await saveFolders(updatedFolders)
   return updatedFolders
 }
+
+export interface BookmarkedChat {
+  id: string
+  title: string
+  url: string
+  bookmarkedAt: number
+}
+
+const BOOKMARKS_STORAGE_KEY = "gemini-bookmarks"
+
+export const getBookmarks = async (): Promise<BookmarkedChat[]> => {
+  return new Promise((resolve) => {
+    chrome.storage.local.get([BOOKMARKS_STORAGE_KEY], (result) => {
+      resolve(result[BOOKMARKS_STORAGE_KEY] || [])
+    })
+  })
+}
+
+export const saveBookmarks = async (
+  bookmarks: BookmarkedChat[]
+): Promise<void> => {
+  return new Promise((resolve) => {
+    chrome.storage.local.set({ [BOOKMARKS_STORAGE_KEY]: bookmarks }, () => {
+      resolve()
+    })
+  })
+}
+
+export const addBookmark = async (chat: {
+  id: string
+  title: string
+  url: string
+}): Promise<BookmarkedChat[]> => {
+  const bookmarks = await getBookmarks()
+
+  if (bookmarks.some((b) => b.id === chat.id)) {
+    return bookmarks
+  }
+
+  const newBookmark: BookmarkedChat = {
+    id: chat.id,
+    title: chat.title,
+    url: chat.url,
+    bookmarkedAt: Date.now()
+  }
+
+  const updatedBookmarks = [newBookmark, ...bookmarks]
+  await saveBookmarks(updatedBookmarks)
+  return updatedBookmarks
+}
+
+export const removeBookmark = async (
+  chatId: string
+): Promise<BookmarkedChat[]> => {
+  const bookmarks = await getBookmarks()
+  const updatedBookmarks = bookmarks.filter((b) => b.id !== chatId)
+  await saveBookmarks(updatedBookmarks)
+  return updatedBookmarks
+}
+
+export const isBookmarked = async (chatId: string): Promise<boolean> => {
+  const bookmarks = await getBookmarks()
+  return bookmarks.some((b) => b.id === chatId)
+}

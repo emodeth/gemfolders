@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
-import { FolderInput, Pencil, Trash2 } from "lucide-react";
+import { Bookmark, FolderInput, Pencil, Trash2 } from "lucide-react";
 import ContextMenuItem from "./ContextMenuItem";
 import { useChat } from "../context/ChatContext";
+import { useBookmark } from "../context/BookmarkContext";
 
 const styles = {
   menu: {
@@ -39,13 +40,17 @@ const ChatContextMenu: React.FC = () => {
     handleChatMoveTo,
     handleChatRename,
     handleChatDelete,
+    handleChatBookmark,
   } = useChat();
+
+  const { isBookmarked } = useBookmark();
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
 
-  const { x, y, chatName } = chatContextMenu;
+  const { x, y, chatName, chatId } = chatContextMenu;
+  const bookmarked = isBookmarked(chatId);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -132,6 +137,12 @@ const ChatContextMenu: React.FC = () => {
       <div style={styles.header}>{chatName}</div>
 
       <ContextMenuItem
+        icon={<Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />}
+        label={bookmarked ? "Remove Bookmark" : "Bookmark"}
+        onClick={handleChatBookmark}
+      />
+
+      <ContextMenuItem
         icon={<FolderInput size={16} />}
         label="Move to..."
         onClick={handleChatMoveTo}
@@ -154,3 +165,4 @@ const ChatContextMenu: React.FC = () => {
 };
 
 export default ChatContextMenu;
+

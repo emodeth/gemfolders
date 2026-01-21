@@ -4,6 +4,7 @@ import { useState } from "react"
 import { ModalProvider } from "~context/ModalContext"
 import { FolderProvider } from "~context/FolderContext"
 import { ChatProvider } from "~context/ChatContext"
+import { BookmarkProvider } from "~context/BookmarkContext"
 import { ThemeProvider } from "~context/ThemeContext"
 import { ThemeWrapper } from "~components/ThemeWrapper"
 import ToastProvider from "~components/ToastProvider"
@@ -51,13 +52,15 @@ const PlasmoOverlay = () => {
         <ToastProvider />
         <ModalProvider>
           <FolderProvider>
-            <ChatProvider>
-              <div className="organizer-z-50 organizer-flex organizer-fixed organizer-top-[72px] organizer-right-4">
-                <SidebarButton onClick={toggleSidebar} />
-              </div>
-              <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-              <ModalManager />
-            </ChatProvider>
+            <BookmarkProvider>
+              <ChatProvider>
+                <div className="organizer-z-50 organizer-flex organizer-fixed organizer-top-[72px] organizer-right-4">
+                  <SidebarButton onClick={toggleSidebar} />
+                </div>
+                <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+                <ModalManager />
+              </ChatProvider>
+            </BookmarkProvider>
           </FolderProvider>
         </ModalProvider>
       </ThemeWrapper>

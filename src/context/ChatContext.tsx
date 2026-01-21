@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, type ReactNode } from "reac
 import { renameChat, deleteChat, moveChat, type Folder } from "../lib/storage"
 import { useModal } from "./ModalContext"
 import { useFolder } from "./FolderContext"
+import { useBookmark } from "./BookmarkContext"
 
 interface ChatContextMenuState {
   isOpen: boolean
@@ -9,15 +10,17 @@ interface ChatContextMenuState {
   y: number
   chatId: string
   chatName: string
+  chatUrl: string
 }
 
 interface ChatContextType {
   chatContextMenu: ChatContextMenuState
-  openChatContextMenu: (e: React.MouseEvent, chat: { id: string; name: string }) => void
+  openChatContextMenu: (e: React.MouseEvent, chat: { id: string; name: string; url?: string }) => void
   closeChatContextMenu: () => void
   handleChatMoveTo: () => void
   handleChatRename: () => void
   handleChatDelete: () => void
+  handleChatBookmark: () => void
   onRenameChat: (chatId: string, newName: string) => Promise<Folder[]>
   onDeleteChat: (chatId: string) => Promise<Folder[]>
 }
@@ -28,6 +31,7 @@ const initialChatContextMenuState: ChatContextMenuState = {
   y: 0,
   chatId: "",
   chatName: "",
+  chatUrl: "",
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined)
@@ -36,10 +40,11 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [chatContextMenu, setChatContextMenu] = useState<ChatContextMenuState>(initialChatContextMenuState)
   const { onOpen } = useModal()
   const { setFolders, folders } = useFolder()
+  const { toggleBookmark } = useBookmark()
 
   const openChatContextMenu = (
     e: React.MouseEvent,
-    chat: { id: string; name: string }
+    chat: { id: string; name: string; url?: string }
   ) => {
     e.preventDefault()
     e.stopPropagation()
@@ -49,6 +54,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       y: e.clientY,
       chatId: chat.id,
       chatName: chat.name,
+      chatUrl: chat.url || "",
     })
   }
 
@@ -126,6 +132,16 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     closeChatContextMenu()
   }
 
+  const handleChatBookmark = () => {
+    const { chatId, chatName, chatUrl } = chatContextMenu
+    toggleBookmark({
+      id: chatId,
+      title: chatName,
+      url: chatUrl,
+    })
+    closeChatContextMenu()
+  }
+
   const value = React.useMemo(
     () => ({
       chatContextMenu,
@@ -134,6 +150,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       handleChatMoveTo,
       handleChatRename,
       handleChatDelete,
+      handleChatBookmark,
       onRenameChat,
       onDeleteChat,
     }),

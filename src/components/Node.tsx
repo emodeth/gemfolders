@@ -12,6 +12,7 @@ const Node = ({ node, style, dragHandle }: any) => {
       openChatContextMenu(e, {
         id: node.data.id,
         name: node.data.name,
+        url: node.data.chatUrl,
       });
       return;
     }
