@@ -10,6 +10,7 @@ import { ThemeProvider } from "~context/ThemeContext"
 import { ThemeWrapper } from "~components/ThemeWrapper"
 import ToastProvider from "~components/ToastProvider"
 import { injectBookmarkButtons } from "~lib/injectBookmarkButtons"
+import { setupFolderWidgetInjection } from "~lib/injectFolderWidget"
 
 import SidebarButton from "./components/SidebarButton"
 import Sidebar from "./components/Sidebar"
@@ -40,6 +41,10 @@ export const getStyle = (): HTMLStyleElement => {
 const PlasmoOverlay = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
+  const openSidebar = () => {
+    setIsSidebarOpen(true)
+  }
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
   }
@@ -55,6 +60,28 @@ const PlasmoOverlay = () => {
     }, 1000)
 
     return () => clearTimeout(timeoutId)
+  }, [])
+
+  // Inject folder widget into Gemini's native sidebar
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setupFolderWidgetInjection()
+    }, 1500)
+
+    return () => clearTimeout(timeoutId)
+  }, [])
+
+  // Listen for open sidebar event from the folder widget
+  useEffect(() => {
+    const handleOpenSidebar = () => {
+      openSidebar()
+    }
+
+    globalThis.addEventListener("gemini-organizer-open-sidebar", handleOpenSidebar)
+
+    return () => {
+      globalThis.removeEventListener("gemini-organizer-open-sidebar", handleOpenSidebar)
+    }
   }, [])
 
   // Listen for bookmark changes from Gemini's sidebar and show toasts

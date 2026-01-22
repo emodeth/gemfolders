@@ -1,3 +1,4 @@
+import React from "react";
 import { Tree } from "react-arborist";
 import toast from "react-hot-toast";
 import Node from "./Node";
@@ -41,26 +42,72 @@ const FolderTree = ({ searchTerm }: { searchTerm?: string }) => {
     }
   };
 
+  const [treeHeight, setTreeHeight] = React.useState(200);
+  const wrapperRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (folders) {
+      setTreeHeight(Math.max(folders.length * 36, 100));
+    }
+  }, [folders?.length]);
+
+  React.useEffect(() => {
+    if (!wrapperRef.current) return;
+
+    const findAndObserveList = () => {
+      const treeContainer = wrapperRef.current?.firstElementChild;
+      if (!treeContainer) return false;
+
+
+      const scroller = treeContainer.firstElementChild;
+      const list = scroller?.firstElementChild;
+
+      if (list instanceof HTMLElement) {
+        const observer = new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            const newHeight = entry.contentRect.height;
+            setTreeHeight(h => Math.abs(h - newHeight) > 2 ? newHeight : h);
+          }
+        });
+        observer.observe(list);
+        return () => observer.disconnect();
+      }
+      return false;
+    };
+
+    const cleanup = findAndObserveList();
+    if (cleanup) return cleanup;
+
+    const timer = setTimeout(findAndObserveList, 100);
+    return () => {
+      clearTimeout(timer);
+      if (typeof cleanup === 'function') cleanup();
+    };
+  }, [folders, searchTerm]);
+
   if (!folders) return null;
 
   return (
-    <Tree
-      width={"100%"}
-      rowHeight={36}
-      data={folders}
-      onCreate={handleCreate}
-      onMove={handleMove}
-      openByDefault={false}
-      searchTerm={searchTerm}
-      searchMatch={(node, term) =>
-        node.data.name.toLowerCase().includes(term.toLowerCase())
-      }
-      disableDrop={({ parentNode }) =>
-        parentNode?.data.type === 'chat'
-      }
-    >
-      {Node}
-    </Tree >
+    <div ref={wrapperRef}>
+      <Tree
+        width={"100%"}
+        height={treeHeight}
+        rowHeight={36}
+        data={folders}
+        onCreate={handleCreate}
+        onMove={handleMove}
+        openByDefault={false}
+        searchTerm={searchTerm}
+        searchMatch={(node, term) =>
+          node.data.name.toLowerCase().includes(term.toLowerCase())
+        }
+        disableDrop={({ parentNode }) =>
+          parentNode?.data.type === 'chat'
+        }
+      >
+        {Node}
+      </Tree >
+    </div>
   )
 }
 

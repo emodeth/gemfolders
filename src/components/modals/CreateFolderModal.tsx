@@ -44,12 +44,20 @@ const CreateFolderModal: React.FC = () => {
     onClose();
   };
 
-  const style: React.CSSProperties = rect ? {
-    position: 'absolute',
-    top: rect.bottom + 12,
-    left: rect.right - 215,
-    margin: 0
-  } : {};
+  const placement = data?.placement;
+
+  const style: React.CSSProperties = rect ? (
+    placement === 'right-start' ? {
+      position: 'absolute',
+      left: rect.right + 14,
+      margin: 0
+    } : {
+      position: 'absolute',
+      top: rect.bottom + 12,
+      left: rect.right - 215,
+      margin: 0
+    }
+  ) : {};
 
   return (
     <div
@@ -63,8 +71,11 @@ const CreateFolderModal: React.FC = () => {
       {rect && (
         <div
           className="organizer-absolute organizer-w-3 organizer-h-3 organizer-bg-bg-input organizer-transform organizer-rotate-45"
-          style={{
-            top: '-7px',
+          style={placement === 'right-start' ? {
+            top: '16px',
+            left: '-6px',
+          } : {
+            top: '-6px',
             right: (rect.width / 2) - 6,
           }}
         />
