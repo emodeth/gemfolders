@@ -41,13 +41,13 @@ const Tooltip = ({
   return (
     <div
       className={cn(
-        "organizer-group organizer-relative organizer-flex organizer-items-center organizer-justify-center",
+        "organizer-group/tooltip organizer-relative organizer-flex organizer-items-center organizer-justify-center",
         className
       )}>
       {children}
 
       <div
-        className={`organizer-absolute organizer-flex organizer-items-center organizer-z-50 organizer-transition-all organizer-duration-200 organizer-ease-in-out group-hover:organizer-delay-300 organizer-opacity-0 organizer-invisible group-hover:organizer-opacity-100 group-hover:organizer-visible organizer-scale-95 group-hover:organizer-scale-100 organizer-drop-shadow-md ${positionClasses[position]} ${originClasses[position]}`}>
+        className={`organizer-absolute organizer-flex organizer-items-center organizer-z-50 organizer-transition-all organizer-duration-200 organizer-ease-in-out group-hover/tooltip:organizer-delay-300 organizer-opacity-0 organizer-invisible group-hover/tooltip:organizer-opacity-100 group-hover/tooltip:organizer-visible organizer-scale-95 group-hover/tooltip:organizer-scale-100 organizer-drop-shadow-md ${positionClasses[position]} ${originClasses[position]}`}>
         <div
           className={`organizer-z-20 organizer-h-2 organizer-w-2 organizer-rotate-45 organizer-bg-tooltip-bg ${arrowClasses[position]}`}
         />
