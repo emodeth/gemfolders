@@ -35,6 +35,21 @@ export const BookmarkProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
 
     loadBookmarks()
+
+    const handleExternalBookmarkChange = async () => {
+      try {
+        const savedBookmarks = await getBookmarks()
+        setBookmarks(savedBookmarks)
+      } catch (error) {
+        console.error("Failed to refresh bookmarks:", error)
+      }
+    }
+
+    globalThis.addEventListener("gemini-bookmark-changed", handleExternalBookmarkChange)
+
+    return () => {
+      globalThis.removeEventListener("gemini-bookmark-changed", handleExternalBookmarkChange)
+    }
   }, [])
 
   const addBookmark = async (chat: { id: string; title: string; url: string }) => {

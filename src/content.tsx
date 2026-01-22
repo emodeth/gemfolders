@@ -1,6 +1,7 @@
 import cssText from "data-text:~style.css"
 import type { PlasmoCSConfig } from "plasmo"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import toast from "react-hot-toast"
 import { ModalProvider } from "~context/ModalContext"
 import { FolderProvider } from "~context/FolderContext"
 import { ChatProvider } from "~context/ChatContext"
@@ -8,6 +9,7 @@ import { BookmarkProvider } from "~context/BookmarkContext"
 import { ThemeProvider } from "~context/ThemeContext"
 import { ThemeWrapper } from "~components/ThemeWrapper"
 import ToastProvider from "~components/ToastProvider"
+import { injectBookmarkButtons } from "~lib/injectBookmarkButtons"
 
 import SidebarButton from "./components/SidebarButton"
 import Sidebar from "./components/Sidebar"
@@ -45,6 +47,33 @@ const PlasmoOverlay = () => {
   const closeSidebar = () => {
     setIsSidebarOpen(false)
   }
+
+  // Inject bookmark buttons into Gemini's native sidebar conversations
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      injectBookmarkButtons()
+    }, 1000)
+
+    return () => clearTimeout(timeoutId)
+  }, [])
+
+  // Listen for bookmark changes from Gemini's sidebar and show toasts
+  useEffect(() => {
+    const handleBookmarkChange = (event: CustomEvent) => {
+      const { action } = event.detail
+      if (action === "added") {
+        toast.success("Chat bookmarked")
+      } else if (action === "removed") {
+        toast.success("Bookmark removed")
+      }
+    }
+
+    globalThis.addEventListener("gemini-bookmark-changed", handleBookmarkChange as EventListener)
+
+    return () => {
+      globalThis.removeEventListener("gemini-bookmark-changed", handleBookmarkChange as EventListener)
+    }
+  }, [])
 
   return (
     <ThemeProvider>
