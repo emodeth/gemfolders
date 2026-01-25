@@ -46,18 +46,27 @@ const CreateFolderModal: React.FC = () => {
 
   const placement = data?.placement;
 
-  const style: React.CSSProperties = rect ? (
-    placement === 'right-start' ? {
-      position: 'absolute',
-      left: rect.right + 14,
-      margin: 0
-    } : {
+  const getModalStyle = (): React.CSSProperties => {
+    if (!rect) return {};
+
+    if (placement === 'right-start') {
+      return {
+        position: 'absolute',
+        top: rect.top - 10,
+        left: rect.right + 14,
+        margin: 0
+      };
+    }
+
+    return {
       position: 'absolute',
       top: rect.bottom + 12,
       left: rect.right - 215,
       margin: 0
-    }
-  ) : {};
+    };
+  };
+
+  const style = getModalStyle();
 
   return (
     <div
