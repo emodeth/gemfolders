@@ -6,7 +6,7 @@ import { useBookmark } from "../context/BookmarkContext";
 
 const styles = {
   menu: {
-    position: "absolute" as const,
+    position: "fixed" as const,
     zIndex: 100000,
     minWidth: 150,
     backgroundColor: "var(--bg-background)",
@@ -93,31 +93,38 @@ const ChatContextMenu: React.FC = () => {
       const menuWidth = menuRect.width || 200;
       const menuHeight = menuRect.height || 200;
 
-      const sidebar = menuRef.current.closest('[class*="organizer-fixed"]');
-      let offsetX = 0;
-      let offsetY = 0;
+      let parentTransformX = 0;
+      let parentTransformY = 0;
+      let el = menuRef.current.parentElement;
 
-      if (sidebar) {
-        const sidebarRect = sidebar.getBoundingClientRect();
-        offsetX = sidebarRect.left;
-        offsetY = sidebarRect.top;
+      while (el) {
+        const style = window.getComputedStyle(el);
+        if (style.transform !== "none") {
+          const rect = el.getBoundingClientRect();
+          parentTransformX = rect.left;
+          parentTransformY = rect.top;
+          break;
+        }
+        el = el.parentElement;
       }
 
-      let newLeft = x - offsetX;
-      let newTop = y - offsetY;
-
+      let targetGlobalX = x;
       if (x + menuWidth > window.innerWidth - 10) {
-        newLeft = x - offsetX - menuWidth;
+        targetGlobalX = x - menuWidth;
       }
 
+      let targetGlobalY = y;
       if (y + menuHeight > window.innerHeight - 10) {
-        newTop = y - offsetY - menuHeight;
+        targetGlobalY = y - menuHeight;
       }
 
-      newTop = Math.max(10 - offsetY, newTop);
-      newLeft = Math.max(10 - offsetX, newLeft);
+      targetGlobalY = Math.max(10, targetGlobalY);
+      targetGlobalX = Math.max(10, targetGlobalX);
 
-      setPosition({ top: newTop, left: newLeft });
+      const finalLeft = targetGlobalX - parentTransformX;
+      const finalTop = targetGlobalY - parentTransformY;
+
+      setPosition({ top: finalTop, left: finalLeft });
       setIsPositioned(true);
     }
   }, [x, y]);
