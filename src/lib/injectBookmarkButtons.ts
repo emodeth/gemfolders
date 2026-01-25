@@ -1,3 +1,4 @@
+import { createFolderButton } from "./injectFolderButtons"
 import {
   addBookmark,
   getBookmarks,
@@ -125,7 +126,8 @@ const injectButtonIntoConversation = (conversationElement: Element) => {
   ) as HTMLElement
   const chatTitle = titleElement?.textContent?.trim() || "Untitled Chat"
 
-  const button = createBookmarkButton(chatId, chatTitle)
+  const bookmarkButton = createBookmarkButton(chatId, chatTitle)
+  const folderButton = createFolderButton(chatId, chatTitle)
 
   const actionsContainer = parentContainer.querySelector(
     ".conversation-actions-container"
@@ -169,11 +171,12 @@ const injectButtonIntoConversation = (conversationElement: Element) => {
     })
   }
 
-  actionsWrapper.appendChild(button)
+  actionsWrapper.appendChild(bookmarkButton)
+  actionsWrapper.appendChild(folderButton)
   parentContainer.appendChild(actionsWrapper)
 
   if (titleElement) {
-    titleElement.style.maxWidth = "calc(100% - 40px)"
+    titleElement.style.maxWidth = "calc(100% - 70px)"
     titleElement.style.overflow = "hidden"
     titleElement.style.textOverflow = "ellipsis"
     titleElement.style.whiteSpace = "nowrap"
@@ -182,7 +185,7 @@ const injectButtonIntoConversation = (conversationElement: Element) => {
   const convEl = conversationElement as HTMLElement
   convEl.style.flex = "1"
   convEl.style.overflow = "hidden"
-  convEl.style.paddingRight = "40px"
+  convEl.style.paddingRight = "70px"
 }
 
 const updateAllBookmarkButtons = () => {
@@ -202,23 +205,18 @@ const updateAllBookmarkButtons = () => {
 }
 
 export const injectBookmarkButtons = async () => {
-  // Load bookmarks cache
   bookmarksCache = await getBookmarks()
 
-  // Inject buttons into existing conversations
   const conversations = document.querySelectorAll(".conversation")
   conversations.forEach(injectButtonIntoConversation)
 
-  // Set up a MutationObserver to handle dynamically loaded conversations
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (node instanceof Element) {
-          // Check if the added node is a conversation
           if (node.classList?.contains("conversation")) {
             injectButtonIntoConversation(node)
           }
-          // Check for conversations within added nodes
           const nestedConversations = node.querySelectorAll?.(".conversation")
           nestedConversations?.forEach(injectButtonIntoConversation)
         }
@@ -226,7 +224,6 @@ export const injectBookmarkButtons = async () => {
     })
   })
 
-  // Observe the sidebar area for new conversations
   const sidebarContainer =
     document.querySelector("infinite-scroller") ||
     document.querySelector('[role="navigation"]') ||
@@ -239,7 +236,6 @@ export const injectBookmarkButtons = async () => {
     })
   }
 
-  // Listen for storage changes to update button states
   chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === "local" && changes["gemini-bookmarks"]) {
       bookmarksCache = changes["gemini-bookmarks"].newValue || []
@@ -247,7 +243,6 @@ export const injectBookmarkButtons = async () => {
     }
   })
 
-  // Also listen for custom events from the extension
   globalThis.addEventListener("gemini-bookmark-sync", async () => {
     bookmarksCache = await getBookmarks()
     updateAllBookmarkButtons()

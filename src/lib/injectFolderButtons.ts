@@ -1,0 +1,60 @@
+const FOLDER_BUTTON_CLASS = "gemini-organizer-folder-btn"
+const FOLDER_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-plus-icon lucide-folder-plus"><path d="M12 10v6"/><path d="M9 13h6"/><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>`
+
+export const createFolderButton = (
+  chatId: string,
+  chatTitle: string
+): HTMLButtonElement => {
+  const button = document.createElement("button")
+  button.className = FOLDER_BUTTON_CLASS
+  button.dataset.chatId = chatId
+  button.title = "Add to folder"
+
+  button.style.cssText = `
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 1;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    color: var(--gem-sys-color--on-surface-variant, #5f6368);
+    flex-shrink: 0;
+    margin-right: 4px;
+  `
+
+  button.innerHTML = FOLDER_ICON
+
+  button.addEventListener("mouseenter", () => {
+    button.style.backgroundColor = "rgba(59, 130, 246, 0.1)"
+    button.style.color = "#3b82f6"
+  })
+
+  button.addEventListener("mouseleave", () => {
+    button.style.backgroundColor = "transparent"
+    button.style.color = "var(--gem-sys-color--on-surface-variant, #5f6368)"
+  })
+
+  button.addEventListener("click", async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    const chatUrl = `https://gemini.google.com/app/${chatId}`
+
+    globalThis.dispatchEvent(
+      new CustomEvent("gemini-add-to-folder", {
+        detail: {
+          chatId,
+          chatTitle,
+          chatUrl
+        }
+      })
+    )
+  })
+
+  return button
+}
