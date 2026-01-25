@@ -1,7 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import React, { createContext, useContext, useState, useEffect, useRef, type ReactNode } from "react"
 import { createFolder, deleteFolder, getFolders, renameFolder, updateFolderColor, addChatsToFolder, moveNodes, type Folder, type ChatToAdd } from "../lib/storage"
 import { fetchGeminiChats } from "../lib/geminiChats"
 import { useModal } from "./ModalContext"
+
+// Custom event name for cross-instance folder synchronization
+const FOLDERS_UPDATED_EVENT = "gemini-folders-updated"
 
 interface ContextMenuState {
   isOpen: boolean
@@ -15,7 +18,7 @@ interface ContextMenuState {
 
 interface FolderContextType {
   folders: Folder[]
-  setFolders: React.Dispatch<React.SetStateAction<Folder[]>>
+  setFolders: (folders: Folder[]) => void
   onCreate: (props: { parentId: string | null; index: number; type: "folder" | "chat"; name?: string }) => Promise<{ id: string } | null>
   onMove: (props: { dragIds: string[]; parentId: string | null; index: number }) => Promise<void>
   onAddChatsToFolder: (folderId: string, chats: ChatToAdd[]) => Promise<void>
@@ -50,6 +53,25 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [contextMenu, setContextMenu] = useState<ContextMenuState>(initialContextMenuState)
   const { onOpen } = useModal()
 
+  // Unique instance ID to prevent self-triggered refreshes
+  const instanceIdRef = useRef(`folder-provider-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`)
+
+  // Helper to dispatch sync event to other instances
+  const dispatchFoldersUpdate = (updatedFolders: Folder[]) => {
+    globalThis.dispatchEvent(new CustomEvent(FOLDERS_UPDATED_EVENT, {
+      detail: {
+        folders: updatedFolders,
+        sourceInstanceId: instanceIdRef.current
+      }
+    }))
+  }
+
+  // Wrapper for setFolders that also notifies other instances
+  const updateFoldersAndSync = (updatedFolders: Folder[]) => {
+    setFolders(updatedFolders)
+    dispatchFoldersUpdate(updatedFolders)
+  }
+
   const refreshFolders = async () => {
     setLoading(true)
     try {
@@ -61,6 +83,23 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       setLoading(false)
     }
   }
+
+  // Listen for updates from other instances
+  useEffect(() => {
+    const handleFoldersUpdate = (event: CustomEvent) => {
+      const { folders: updatedFolders, sourceInstanceId } = event.detail
+      // Only update if the event came from a different instance
+      if (sourceInstanceId !== instanceIdRef.current && updatedFolders) {
+        setFolders(updatedFolders)
+      }
+    }
+
+    globalThis.addEventListener(FOLDERS_UPDATED_EVENT, handleFoldersUpdate as EventListener)
+
+    return () => {
+      globalThis.removeEventListener(FOLDERS_UPDATED_EVENT, handleFoldersUpdate as EventListener)
+    }
+  }, [])
 
   useEffect(() => {
     refreshFolders()
@@ -80,7 +119,7 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     try {
       const newName = name || (type === "folder" ? "New Folder" : "New Chat")
       const { folders: updatedFolders, newFolder } = await createFolder(newName, type, parentId, index)
-      setFolders(updatedFolders)
+      updateFoldersAndSync(updatedFolders)
       return { id: newFolder.id }
     } catch (error) {
       console.error("Failed to create folder/chat:", error)
@@ -99,7 +138,7 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   }) => {
     try {
       const updatedFolders = await moveNodes(dragIds, parentId, index)
-      setFolders(updatedFolders)
+      updateFoldersAndSync(updatedFolders)
     } catch (error) {
       console.error("Failed to move nodes:", error)
     }
@@ -140,7 +179,7 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const onAddChatsToFolder = async (folderId: string, chats: ChatToAdd[]) => {
     try {
       const updatedFolders = await addChatsToFolder(folderId, chats)
-      setFolders(updatedFolders)
+      updateFoldersAndSync(updatedFolders)
     } catch (error) {
       console.error("Failed to add chats to folder:", error)
     }
@@ -185,7 +224,7 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       onRename: async (id: string, newName: string) => {
         try {
           const updatedFolders = await renameFolder(id, newName)
-          setFolders(updatedFolders)
+          updateFoldersAndSync(updatedFolders)
         } catch (error) {
           console.error("Failed to rename folder:", error)
         }
@@ -203,7 +242,7 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       onChangeColor: async (id: string, newColor: string) => {
         try {
           const updatedFolders = await updateFolderColor(id, newColor)
-          setFolders(updatedFolders)
+          updateFoldersAndSync(updatedFolders)
         } catch (error) {
           console.error("Failed to change folder color:", error)
         }
@@ -221,7 +260,7 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       onDelete: async () => {
         try {
           const updatedFolders = await deleteFolder(folderId)
-          setFolders(updatedFolders)
+          updateFoldersAndSync(updatedFolders)
         } catch (error) {
           console.error("Failed to delete folder:", error)
         }
@@ -234,7 +273,7 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     <FolderContext.Provider
       value={{
         folders,
-        setFolders,
+        setFolders: updateFoldersAndSync,
         onCreate,
         onMove,
         onAddChatsToFolder,
