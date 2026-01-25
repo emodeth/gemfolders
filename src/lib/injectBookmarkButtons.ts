@@ -108,6 +108,21 @@ const createBookmarkButton = (
   return button
 }
 
+const styleActionsContainer = (actionsContainer: HTMLElement) => {
+  actionsContainer.style.cssText = `
+    position: relative !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
+    display: flex !important;
+    align-items: center !important;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    margin: 0 !important;
+    padding: 0 !important;
+  `
+}
+
 const injectButtonIntoConversation = (conversationElement: Element) => {
   const parentContainer = conversationElement.parentElement
   if (!parentContainer) return
@@ -151,15 +166,7 @@ const injectButtonIntoConversation = (conversationElement: Element) => {
   `
 
   if (actionsContainer) {
-    actionsContainer.style.position = "relative"
-    actionsContainer.style.right = "auto"
-    actionsContainer.style.top = "auto"
-    actionsContainer.style.transform = "none"
-    actionsContainer.style.display = "flex"
-    actionsContainer.style.alignItems = "center"
-    actionsContainer.style.opacity = "0"
-    actionsContainer.style.transition = "opacity 0.2s ease"
-
+    styleActionsContainer(actionsContainer)
     actionsWrapper.appendChild(actionsContainer)
 
     parentContainer.addEventListener("mouseenter", () => {
@@ -210,6 +217,29 @@ export const injectBookmarkButtons = async () => {
   const conversations = document.querySelectorAll(".conversation")
   conversations.forEach(injectButtonIntoConversation)
 
+  const handleOrphanActionsContainer = (actionsContainer: Element) => {
+    const parentContainer = actionsContainer.parentElement
+    if (!parentContainer) return
+
+    const existingWrapper = parentContainer.querySelector(
+      ".gemini-organizer-actions-wrapper"
+    )
+    if (!existingWrapper) return
+
+    if (!actionsContainer.closest(".gemini-organizer-actions-wrapper")) {
+      const actionEl = actionsContainer as HTMLElement
+      styleActionsContainer(actionEl)
+      existingWrapper.insertBefore(actionsContainer, existingWrapper.firstChild)
+
+      parentContainer.addEventListener("mouseenter", () => {
+        actionEl.style.opacity = "1"
+      })
+      parentContainer.addEventListener("mouseleave", () => {
+        actionEl.style.opacity = "0"
+      })
+    }
+  }
+
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
@@ -219,6 +249,14 @@ export const injectBookmarkButtons = async () => {
           }
           const nestedConversations = node.querySelectorAll?.(".conversation")
           nestedConversations?.forEach(injectButtonIntoConversation)
+
+          if (node.classList?.contains("conversation-actions-container")) {
+            handleOrphanActionsContainer(node)
+          }
+          const nestedActions = node.querySelectorAll?.(
+            ".conversation-actions-container"
+          )
+          nestedActions?.forEach(handleOrphanActionsContainer)
         }
       })
     })
