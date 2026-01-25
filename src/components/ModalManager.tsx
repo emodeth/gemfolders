@@ -9,6 +9,7 @@ import AddSubfolderModal from '~components/modals/AddSubfolderModal';
 import RenameChatModal from '~components/modals/RenameChatModal';
 import DeleteChatModal from '~components/modals/DeleteChatModal';
 import MoveChatModal from '~components/modals/MoveChatModal';
+import AddToFolderModal from '~components/modals/AddToFolderModal';
 
 const ModalManager: React.FC = () => {
   const { type, isOpen, onClose } = useModal();
@@ -35,7 +36,6 @@ const ModalManager: React.FC = () => {
   const isTransparentOverlay = type === 'createFolder' || type === 'addSubfolder';
 
   const handleOverlayClick = (e: React.MouseEvent) => {
-    // For addSubfolder, don't close on overlay click (context menu should stay open)
     if (type === 'addSubfolder') {
       e.stopPropagation();
       return;
@@ -63,6 +63,7 @@ const ModalManager: React.FC = () => {
         {type === 'renameChatModal' && <RenameChatModal />}
         {type === 'deleteChatModal' && <DeleteChatModal />}
         {type === 'moveChatModal' && <MoveChatModal />}
+        {type === 'addToFolder' && <AddToFolderModal />}
       </div>
     </div>
   );

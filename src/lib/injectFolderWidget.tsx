@@ -180,9 +180,7 @@ export const injectFolderWidget = (): boolean => {
 };
 
 export const setupFolderWidgetInjection = () => {
-  const success = injectFolderWidget();
-
-  if (success) return;
+  injectFolderWidget();
 
   const observer = new MutationObserver((mutations) => {
     if (document.getElementById(WIDGET_CONTAINER_ID)) {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import FolderTree from "./FolderTree";
 import { Input } from "./ui/Input";
@@ -22,6 +22,23 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
   const { contextMenu } = useFolder();
   const { chatContextMenu } = useChat();
   const { onOpen } = useModal();
+
+  useEffect(() => {
+    const handleAddToFolder = (event: CustomEvent) => {
+      const { chatId, chatTitle, chatUrl } = event.detail;
+      onOpen('addToFolder', {
+        chatId,
+        chatTitle,
+        chatUrl
+      });
+    };
+
+    globalThis.addEventListener('gemini-add-to-folder', handleAddToFolder as EventListener);
+
+    return () => {
+      globalThis.removeEventListener('gemini-add-to-folder', handleAddToFolder as EventListener);
+    };
+  }, [onOpen]);
 
   const handleCreateFolder = (e: React.MouseEvent) => {
     e.stopPropagation();
