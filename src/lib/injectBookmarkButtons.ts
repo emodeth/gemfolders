@@ -24,6 +24,9 @@ const injectStyles = () => {
     body.gemini-organizer-hide-bookmarks .gemini-organizer-bookmark-btn {
       display: none !important;
     }
+    .pin-icon-container {
+      display: none !important;
+    }
   `
   document.head.appendChild(style)
 }
