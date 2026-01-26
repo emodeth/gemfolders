@@ -8,14 +8,7 @@ import { Input } from '../ui/Input';
 const CreateFolderModal: React.FC = () => {
   const { onClose, data } = useModal();
   const [folderName, setFolderName] = useState('');
-  const [isVisible, setIsVisible] = useState(false);
   const rect = data?.anchorRect;
-
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      setIsVisible(true);
-    });
-  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -72,10 +65,7 @@ const CreateFolderModal: React.FC = () => {
     <div
       style={style}
       onClick={(e) => e.stopPropagation()}
-      className={`organizer-w-[215px] organizer-bg-bg-input organizer-rounded-lg organizer-p-4 organizer-relative organizer-transition-all organizer-duration-200 organizer-ease-out organizer-delay-100 ${isVisible
-        ? 'organizer-opacity-100 organizer-translate-y-0 organizer-scale-100'
-        : 'organizer-opacity-0 -organizer-translate-y-2 organizer-scale-95'
-        }`}
+      className="organizer-w-[215px] organizer-bg-bg-input organizer-rounded-lg organizer-p-4 organizer-relative modal-animate-fade"
     >
       {rect && (
         <div

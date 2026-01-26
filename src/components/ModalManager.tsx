@@ -46,14 +46,18 @@ const ModalManager: React.FC = () => {
   return (
     <div
       data-modal-overlay="true"
-      className={`organizer-fixed organizer-inset-0 organizer-z-[10000] organizer-bg-transparent
+      className={`organizer-fixed organizer-inset-0 organizer-bg-transparent
         ${isTransparentOverlay ? '' : 'organizer-flex organizer-justify-center'}
         ${isSmallModal ? 'organizer-items-start organizer-pt-[20vh]' : ''}
         ${!isSmallModal && !isTransparentOverlay ? 'organizer-items-center' : ''}
       `}
+      style={{ zIndex: 2147483600 }}
       onClick={handleOverlayClick}
     >
-      <div className="organizer-pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+      <div
+        className={`organizer-pointer-events-auto ${!isTransparentOverlay ? 'modal-animate-enter' : ''}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         {type === 'createFolder' && <CreateFolderModal />}
         {type === 'colorPicker' && <ColorPickerModal />}
         {type === 'deleteFolder' && <DeleteFolderModal />}

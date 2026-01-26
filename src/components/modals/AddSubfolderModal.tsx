@@ -61,7 +61,7 @@ const AddSubfolderModal: React.FC = () => {
     top: position.top,
     left: position.left,
     margin: 0,
-    zIndex: 10002,
+    zIndex: 999999,
     visibility: isPositioned ? 'visible' : 'hidden',
   };
 
@@ -69,7 +69,7 @@ const AddSubfolderModal: React.FC = () => {
     <div
       ref={modalRef}
       style={style}
-      className="organizer-w-[215px] organizer-bg-bg-background organizer-rounded-md organizer-p-4 organizer-shadow-lg"
+      className="organizer-w-[215px] organizer-bg-bg-background organizer-rounded-md organizer-p-4 organizer-shadow-lg modal-animate-fade"
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
     >
