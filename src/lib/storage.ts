@@ -423,3 +423,15 @@ export const isBookmarked = async (chatId: string): Promise<boolean> => {
   const bookmarks = await getBookmarks()
   return bookmarks.some((b) => b.id === chatId)
 }
+
+export const updateBookmarkTitle = async (
+  chatId: string,
+  newTitle: string
+): Promise<BookmarkedChat[]> => {
+  const bookmarks = await getBookmarks()
+  const updatedBookmarks = bookmarks.map((b) =>
+    b.id === chatId ? { ...b, title: newTitle } : b
+  )
+  await saveBookmarks(updatedBookmarks)
+  return updatedBookmarks
+}
