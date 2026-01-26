@@ -59,7 +59,7 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
   return (
     <div className="organizer-flex organizer-flex-col organizer-h-auto organizer-font-sans organizer-scrollbar-gutter-stable">
       <div className="gemini-folder-widget-visible-content">
-        <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-2 organizer-py-2">
+        <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-2 organizer-py-2 organizer-pl-6">
           <div
             className="organizer-flex organizer-items-center organizer-gap-2 organizer-cursor-pointer"
             onClick={() => setIsExpanded(!isExpanded)}
@@ -82,7 +82,7 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
 
         {isExpanded && (
           <>
-            <div className="organizer-px-2 organizer-pb-2">
+            <div className="organizer-px-2 organizer-pb-2 organizer-pl-6">
               <Input
                 type="text"
                 placeholder="Search folders..."
@@ -93,7 +93,7 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
               />
             </div>
 
-            <div className="organizer-px-2">
+            <div className="organizer-px-2 organizer-pl-6">
               <FolderTree searchTerm={searchTerm} folders={displayedFolders} />
               {!searchTerm && !showAll && folders && folders.length > 3 && (
                 <button
