@@ -141,3 +141,7 @@ plasmo-csui > * {
 .organizer-scrollbar-gutter-stable {
   scrollbar-gutter: stable;
 }
+
+.organizer-overflow-x-hidden > div {
+  overflow-x: hidden !important;
+}
