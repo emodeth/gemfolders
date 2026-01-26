@@ -19,7 +19,8 @@ interface GeminiFolderWidgetProps {
 const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isExpanded, setIsExpanded] = useState(true);
-  const { contextMenu } = useFolder();
+  const [showAll, setShowAll] = useState(false);
+  const { contextMenu, folders } = useFolder();
   const { chatContextMenu } = useChat();
   const { onOpen } = useModal();
 
@@ -48,6 +49,12 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
       placement: 'right-start'
     });
   };
+
+  const displayedFolders = React.useMemo(() => {
+    if (!folders) return [];
+    if (searchTerm || showAll) return folders;
+    return folders.slice(0, 3);
+  }, [folders, searchTerm, showAll]);
 
   return (
     <div className="organizer-flex organizer-flex-col organizer-h-auto organizer-font-sans">
@@ -86,7 +93,16 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
           </div>
 
           <div className="organizer-px-2">
-            <FolderTree searchTerm={searchTerm} />
+            <FolderTree searchTerm={searchTerm} folders={displayedFolders} />
+            {!searchTerm && !showAll && folders && folders.length > 3 && (
+              <button
+                type="button"
+                onClick={() => setShowAll(true)}
+                className="organizer-w-full organizer-text-xs hover:organizer-text-primary/70 organizer-cursor-pointer organizer-text-center organizer-mt-2 organizer-text-text-primary organizer-transition-colors organizer-bg-transparent organizer-border-none organizer-outline-none"
+              >
+                Show {folders.length - 3} more
+              </button>
+            )}
           </div>
         </>
       )}

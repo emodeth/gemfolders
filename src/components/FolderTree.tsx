@@ -5,8 +5,14 @@ import Node from "./Node";
 import { useFolder } from "../context/FolderContext";
 import type { Folder } from "~lib/storage";
 
-const FolderTree = ({ searchTerm }: { searchTerm?: string }) => {
-  const { folders, onCreate, onMove } = useFolder();
+interface FolderTreeProps {
+  searchTerm?: string;
+  folders?: Folder[];
+}
+
+const FolderTree = ({ searchTerm, folders: propFolders }: FolderTreeProps) => {
+  const { folders: contextFolders, onCreate, onMove } = useFolder();
+  const folders = propFolders ?? contextFolders;
 
   const handleCreate = async ({ parentId, index, type }: { parentId: string | null, index: number, type: "internal" | "leaf" }) => {
     const result = await onCreate({
