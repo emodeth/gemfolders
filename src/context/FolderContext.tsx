@@ -234,11 +234,12 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   }
 
   const handleChangeColor = () => {
-    const { folderId, folderName, folderColor } = contextMenu
+    const { folderId, folderName, folderColor, itemCount } = contextMenu
     onOpen("colorPicker", {
       folderId,
       folderName,
       currentColor: folderColor,
+      itemCount,
       onChangeColor: async (id: string, newColor: string) => {
         try {
           const updatedFolders = await updateFolderColor(id, newColor)

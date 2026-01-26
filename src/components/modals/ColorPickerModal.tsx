@@ -7,7 +7,7 @@ import { PRESET_COLORS, isLightColor } from "../../constants/colors";
 
 const ColorPickerModal: React.FC = () => {
   const { onClose, data } = useModal();
-  const { folderId, folderName, currentColor = "#1976d2", onChangeColor } = data || {};
+  const { folderId, folderName, currentColor = "#1976d2", itemCount = 0, onChangeColor } = data || {};
 
   const [selectedColor, setSelectedColor] = useState(currentColor);
 
@@ -50,7 +50,11 @@ const ColorPickerModal: React.FC = () => {
             }}
           >
             <div className="organizer-font-medium organizer-text-sm">{folderName || "Folder Name"}</div>
-            <span className="organizer-text-xs organizer-font-semibold organizer-opacity-90">2 items</span>
+            {itemCount ? (
+              <span className="organizer-text-xs organizer-font-semibold organizer-opacity-90">
+                {itemCount} {itemCount === 1 ? "item" : "items"}
+              </span>
+            ) : null}
           </div>
         </div>
 
