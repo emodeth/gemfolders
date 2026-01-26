@@ -161,6 +161,7 @@ const FolderContextMenu: React.FC = () => {
         left: position.left,
         visibility: isPositioned ? "visible" : "hidden",
       }}
+      className={isPositioned ? "modal-animate-fade" : ""}
       onMouseDown={(e) => e.stopPropagation()}
       onContextMenu={(e) => e.preventDefault()}
     >

@@ -109,3 +109,31 @@ plasmo-csui > * {
     opacity: 0;
   }
 }
+
+@keyframes modal-scale-up {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-animate-enter {
+  animation: modal-scale-up 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modal-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.modal-animate-fade {
+  animation: modal-fade-in 0.15s ease-out forwards;
+}
