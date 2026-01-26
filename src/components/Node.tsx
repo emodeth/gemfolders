@@ -43,12 +43,12 @@ const Node = ({ node, style, dragHandle }: any) => {
       <>
         {renderIcon()}
         <div
-          className="organizer-flex-1 organizer-flex organizer-items-center organizer-justify-between organizer-h-full organizer-px-2 organizer-py-1 organizer-rounded-md"
+          className="organizer-flex-1 organizer-flex organizer-items-center organizer-justify-between organizer-h-full organizer-px-2 organizer-py-1 organizer-rounded-md organizer-overflow-hidden"
           style={{ backgroundColor: bgColor, color: textColor }}
         >
-          <span>{node.data.name}</span>
+          <span className="organizer-truncate organizer-min-w-0">{node.data.name}</span>
           {hasChildren ? (
-            <span className="organizer-text-xs">{node.data.children.length} {node.data.children.length === 1 ? "item" : "items"}</span>
+            <span className="organizer-text-xs organizer-shrink-0 organizer-ml-2">{node.data.children.length} {node.data.children.length === 1 ? "item" : "items"}</span>
           ) : null}
         </div>
       </>
