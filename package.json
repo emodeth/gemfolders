@@ -1,8 +1,8 @@
 {
   "name": "gemini-folder-organizer",
-  "displayName": "Gemini folder organizer",
+  "displayName": "Gemfolders",
   "version": "0.0.1",
-  "description": "A browser extension to boost productivity in Gemini",
+  "description": "A browser extension to manage your Gemini chats",
   "author": "Emirhan Keskin",
   "scripts": {
     "dev": "plasmo dev",
