@@ -57,7 +57,7 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
   }, [folders, searchTerm, showAll]);
 
   return (
-    <div className="organizer-flex organizer-flex-col organizer-h-auto organizer-font-sans">
+    <div className="organizer-flex organizer-flex-col organizer-h-auto organizer-font-sans organizer-scrollbar-gutter-stable">
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-2 organizer-py-2">
         <div
           className="organizer-flex organizer-items-center organizer-gap-2 organizer-cursor-pointer"

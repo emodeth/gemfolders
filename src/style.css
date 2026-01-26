@@ -137,3 +137,7 @@ plasmo-csui > * {
 .modal-animate-fade {
   animation: modal-fade-in 0.15s ease-out forwards;
 }
+
+.organizer-scrollbar-gutter-stable {
+  scrollbar-gutter: stable;
+}
