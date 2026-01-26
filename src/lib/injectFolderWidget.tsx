@@ -9,6 +9,7 @@ import { ThemeProvider } from "../context/ThemeContext";
 import { ThemeWrapper } from "../components/ThemeWrapper";
 import ToastProvider from "../components/ToastProvider";
 import cssText from "data-text:~style.css";
+import { getSettings, type Settings } from "./settings";
 
 const WIDGET_CONTAINER_ID = "gemini-organizer-folder-widget";
 const WIDGET_STYLES_ID = "gemini-organizer-folder-styles";
@@ -45,6 +46,14 @@ const injectStyles = () => {
 
     #${WIDGET_CONTAINER_ID} .react-arborist {
       width: 100% !important;
+    }
+
+    body.gemini-organizer-hide-folders-widget .gemini-folder-widget-visible-content {
+      display: none !important;
+    }
+    
+    body.gemini-organizer-hide-folders-widget #${WIDGET_CONTAINER_ID} {
+       padding: 0 !important;
     }
   `;
 
@@ -151,12 +160,22 @@ const renderWidget = (container: HTMLElement) => {
   );
 };
 
+const applySettings = (settings: Settings) => {
+  if (settings.hideFoldersFromSidebar) {
+    document.body.classList.add("gemini-organizer-hide-folders-widget");
+  } else {
+    document.body.classList.remove("gemini-organizer-hide-folders-widget");
+  }
+};
+
 export const injectFolderWidget = (): boolean => {
   if (document.getElementById(WIDGET_CONTAINER_ID)) {
     return true;
   }
 
   injectStyles();
+
+  getSettings().then(applySettings);
 
   const injectionPoint = findInjectionPoint();
 
@@ -216,6 +235,15 @@ export const setupFolderWidgetInjection = () => {
       injectFolderWidget();
     }
   }, 5000);
+
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName === "local" && changes["gemini-organizer-settings"]) {
+      const newSettings = changes["gemini-organizer-settings"].newValue;
+      if (newSettings) {
+        applySettings(newSettings);
+      }
+    }
+  });
 };
 
 

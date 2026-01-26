@@ -1,4 +1,5 @@
 import { createFolderButton } from "./injectFolderButtons"
+import { DEFAULT_SETTINGS, getSettings, type Settings } from "./settings"
 import {
   addBookmark,
   getBookmarks,
@@ -11,6 +12,29 @@ const BOOKMARK_ICON_FILLED = `<svg xmlns="http://www.w3.org/2000/svg" width="18"
 const BOOKMARK_ICON_OUTLINE = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`
 
 let bookmarksCache: BookmarkedChat[] = []
+let settingsCache: Settings = DEFAULT_SETTINGS
+
+const injectStyles = () => {
+  const styleId = "gemini-organizer-settings-styles"
+  if (document.getElementById(styleId)) return
+
+  const style = document.createElement("style")
+  style.id = styleId
+  style.textContent = `
+    body.gemini-organizer-hide-bookmarks .gemini-organizer-bookmark-btn {
+      display: none !important;
+    }
+  `
+  document.head.appendChild(style)
+}
+
+const applySettings = (settings: Settings) => {
+  if (settings.hideBookmarksFromSidebar) {
+    document.body.classList.add("gemini-organizer-hide-bookmarks")
+  } else {
+    document.body.classList.remove("gemini-organizer-hide-bookmarks")
+  }
+}
 
 const extractChatIdFromJslog = (jslog: string): string | null => {
   const regex = /\["c_([^"]+)"/
@@ -212,7 +236,10 @@ const updateAllBookmarkButtons = () => {
 }
 
 export const injectBookmarkButtons = async () => {
+  injectStyles()
   bookmarksCache = await getBookmarks()
+  settingsCache = await getSettings()
+  applySettings(settingsCache)
 
   const conversations = document.querySelectorAll(".conversation")
   conversations.forEach(injectButtonIntoConversation)
@@ -275,9 +302,16 @@ export const injectBookmarkButtons = async () => {
   }
 
   chrome.storage.onChanged.addListener((changes, areaName) => {
-    if (areaName === "local" && changes["gemini-bookmarks"]) {
-      bookmarksCache = changes["gemini-bookmarks"].newValue || []
-      updateAllBookmarkButtons()
+    if (areaName === "local") {
+      if (changes["gemini-bookmarks"]) {
+        bookmarksCache = changes["gemini-bookmarks"].newValue || []
+        updateAllBookmarkButtons()
+      }
+      if (changes["gemini-organizer-settings"]) {
+        settingsCache =
+          changes["gemini-organizer-settings"].newValue || DEFAULT_SETTINGS
+        applySettings(settingsCache)
+      }
     }
   })
 

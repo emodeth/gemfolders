@@ -7,10 +7,12 @@ import { FolderProvider } from "~context/FolderContext"
 import { ChatProvider } from "~context/ChatContext"
 import { BookmarkProvider } from "~context/BookmarkContext"
 import { ThemeProvider } from "~context/ThemeContext"
+import { SettingsProvider } from "~context/SettingsContext"
 import { ThemeWrapper } from "~components/ThemeWrapper"
 import ToastProvider from "~components/ToastProvider"
 import { injectBookmarkButtons } from "~lib/injectBookmarkButtons"
 import { setupFolderWidgetInjection } from "~lib/injectFolderWidget"
+import { getSettings } from "~lib/settings"
 
 import SidebarButton from "./components/SidebarButton"
 import Sidebar from "./components/Sidebar"
@@ -40,6 +42,14 @@ export const getStyle = (): HTMLStyleElement => {
 
 const PlasmoOverlay = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    getSettings().then((settings) => {
+      if (settings.openOnStartup) {
+        setIsSidebarOpen(true)
+      }
+    })
+  }, [])
 
   const openSidebar = () => {
     setIsSidebarOpen(true)
@@ -103,24 +113,26 @@ const PlasmoOverlay = () => {
   }, [])
 
   return (
-    <ThemeProvider>
-      <ThemeWrapper>
-        <ToastProvider />
-        <ModalProvider>
-          <FolderProvider>
-            <BookmarkProvider>
-              <ChatProvider>
-                <div className="organizer-z-50 organizer-flex organizer-fixed organizer-top-[72px] organizer-right-4">
-                  <SidebarButton onClick={toggleSidebar} />
-                </div>
-                <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-                <ModalManager />
-              </ChatProvider>
-            </BookmarkProvider>
-          </FolderProvider>
-        </ModalProvider>
-      </ThemeWrapper>
-    </ThemeProvider>
+    <SettingsProvider>
+      <ThemeProvider>
+        <ThemeWrapper>
+          <ToastProvider />
+          <ModalProvider>
+            <FolderProvider>
+              <BookmarkProvider>
+                <ChatProvider>
+                  <div className="organizer-z-50 organizer-flex organizer-fixed organizer-top-[72px] organizer-right-4">
+                    <SidebarButton onClick={toggleSidebar} />
+                  </div>
+                  <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+                  <ModalManager />
+                </ChatProvider>
+              </BookmarkProvider>
+            </FolderProvider>
+          </ModalProvider>
+        </ThemeWrapper>
+      </ThemeProvider>
+    </SettingsProvider>
   )
 }
 

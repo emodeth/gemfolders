@@ -58,54 +58,56 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
 
   return (
     <div className="organizer-flex organizer-flex-col organizer-h-auto organizer-font-sans organizer-scrollbar-gutter-stable">
-      <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-2 organizer-py-2">
-        <div
-          className="organizer-flex organizer-items-center organizer-gap-2 organizer-cursor-pointer"
-          onClick={() => setIsExpanded(!isExpanded)}
-        >
-          <span className="organizer-text-sm organizer-font-medium organizer-text-text-primary">
-            Folders
-          </span>
-
-        </div>
-        <Tooltip text="Create Folder" position="left">
-          <Button
-            variant="icon"
-            onClick={handleCreateFolder}
-            className="organizer-text-text-secondary hover:organizer-text-text-primary"
+      <div className="gemini-folder-widget-visible-content">
+        <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-2 organizer-py-2">
+          <div
+            className="organizer-flex organizer-items-center organizer-gap-2 organizer-cursor-pointer"
+            onClick={() => setIsExpanded(!isExpanded)}
           >
-            <Plus size={16} />
-          </Button>
-        </Tooltip>
+            <span className="organizer-text-sm organizer-font-medium organizer-text-text-primary">
+              Folders
+            </span>
+
+          </div>
+          <Tooltip text="Create Folder" position="left">
+            <Button
+              variant="icon"
+              onClick={handleCreateFolder}
+              className="organizer-text-text-secondary hover:organizer-text-text-primary"
+            >
+              <Plus size={16} />
+            </Button>
+          </Tooltip>
+        </div>
+
+        {isExpanded && (
+          <>
+            <div className="organizer-px-2 organizer-pb-2">
+              <Input
+                type="text"
+                placeholder="Search folders..."
+                className="organizer-rounded-lg"
+                variant="ghost"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            <div className="organizer-px-2">
+              <FolderTree searchTerm={searchTerm} folders={displayedFolders} />
+              {!searchTerm && !showAll && folders && folders.length > 3 && (
+                <button
+                  type="button"
+                  onClick={() => setShowAll(true)}
+                  className="organizer-w-full organizer-text-xs hover:organizer-text-primary/70 organizer-cursor-pointer organizer-text-center organizer-mt-2 organizer-text-text-primary organizer-transition-colors organizer-bg-transparent organizer-border-none organizer-outline-none"
+                >
+                  Show {folders.length - 3} more
+                </button>
+              )}
+            </div>
+          </>
+        )}
       </div>
-
-      {isExpanded && (
-        <>
-          <div className="organizer-px-2 organizer-pb-2">
-            <Input
-              type="text"
-              placeholder="Search folders..."
-              className="organizer-rounded-lg"
-              variant="ghost"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-
-          <div className="organizer-px-2">
-            <FolderTree searchTerm={searchTerm} folders={displayedFolders} />
-            {!searchTerm && !showAll && folders && folders.length > 3 && (
-              <button
-                type="button"
-                onClick={() => setShowAll(true)}
-                className="organizer-w-full organizer-text-xs hover:organizer-text-primary/70 organizer-cursor-pointer organizer-text-center organizer-mt-2 organizer-text-text-primary organizer-transition-colors organizer-bg-transparent organizer-border-none organizer-outline-none"
-              >
-                Show {folders.length - 3} more
-              </button>
-            )}
-          </div>
-        </>
-      )}
       {contextMenu.isOpen && <FolderContextMenu />}
       {chatContextMenu.isOpen && <ChatContextMenu />}
       <ModalManager />
