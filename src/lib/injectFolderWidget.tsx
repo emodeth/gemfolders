@@ -74,9 +74,14 @@ const findInjectionPoint = (): { element: Element; position: "before" | "after" 
     }
   }
 
-  const sideNavContent = document.querySelector('[role="navigation"]') || document.querySelector('side-navigation');
+  const sideNavContent = document.querySelector('[role="navigation"]') || document.querySelector('side-navigation') || document.querySelector('nav');
   if (sideNavContent) {
-    const chatsHeader = sideNavContent.querySelector('[data-test-id="chats-header"]');
+    const gemsListContainer = sideNavContent.querySelector('.gems-list-container');
+    if (gemsListContainer) {
+      return { element: gemsListContainer, position: "after" };
+    }
+
+    const chatsHeader = sideNavContent.querySelector('.chat-history-list');
     if (chatsHeader) {
       return { element: chatsHeader, position: "before" };
     }
