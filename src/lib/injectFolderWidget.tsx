@@ -15,6 +15,7 @@ const WIDGET_CONTAINER_ID = "gemini-organizer-folder-widget";
 const WIDGET_STYLES_ID = "gemini-organizer-folder-styles";
 
 let widgetRoot: Root | null = null;
+let containerObserver: ResizeObserver | null = null;
 
 const processStyles = (): string => {
   const baseFontSize = 16;
@@ -42,6 +43,11 @@ const injectStyles = () => {
       font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
       width: 100%;
       padding: 8px 0 16px 0;
+      overflow: hidden;
+    }
+
+    #${WIDGET_CONTAINER_ID} > div {
+      min-width: 270px;
     }
 
     #${WIDGET_CONTAINER_ID} .react-arborist {
@@ -54,6 +60,10 @@ const injectStyles = () => {
     
     body.gemini-organizer-hide-folders-widget #${WIDGET_CONTAINER_ID} {
        padding: 0 !important;
+    }
+
+    #${WIDGET_CONTAINER_ID}.collapsed {
+      display: none !important;
     }
   `;
 
@@ -162,6 +172,23 @@ export const injectFolderWidget = (): boolean => {
     injectionPoint.element.parentNode?.insertBefore(container, nextSibling);
   }
 
+  if (containerObserver) {
+    containerObserver.disconnect();
+  }
+
+  if (container.parentElement) {
+    containerObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width < 150) {
+          container.classList.add("collapsed");
+        } else {
+          container.classList.remove("collapsed");
+        }
+      }
+    });
+    containerObserver.observe(container.parentElement);
+  }
+
   renderWidget(container);
   console.log("[Gemini Organizer] Folder widget injected successfully");
   return true;
@@ -224,6 +251,11 @@ export const removeFolderWidget = () => {
       widgetRoot = null;
     }
     container.remove();
+  }
+
+  if (containerObserver) {
+    containerObserver.disconnect();
+    containerObserver = null;
   }
 
   const styles = document.getElementById(WIDGET_STYLES_ID);
