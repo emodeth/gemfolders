@@ -13,6 +13,7 @@ import ToastProvider from "~components/ToastProvider"
 import { injectBookmarkButtons } from "~lib/injectBookmarkButtons"
 import { setupFolderWidgetInjection } from "~lib/injectFolderWidget"
 import { getSettings } from "~lib/settings"
+import { setupDeleteHandler } from "~lib/deleteHandler"
 
 import SidebarButton from "./components/SidebarButton"
 import Sidebar from "./components/Sidebar"
@@ -79,6 +80,10 @@ const PlasmoOverlay = () => {
     }, 1500)
 
     return () => clearTimeout(timeoutId)
+  }, [])
+
+  useEffect(() => {
+    setupDeleteHandler()
   }, [])
 
   // Listen for open sidebar event from the folder widget
