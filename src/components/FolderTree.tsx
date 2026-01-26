@@ -13,6 +13,7 @@ interface FolderTreeProps {
 const FolderTree = ({ searchTerm, folders: propFolders }: FolderTreeProps) => {
   const { folders: contextFolders, onCreate, onMove } = useFolder();
   const folders = propFolders ?? contextFolders;
+  const [expandedIds, setExpandedIds] = React.useState<Set<string>>(new Set());
 
   const handleCreate = async ({ parentId, index, type }: { parentId: string | null, index: number, type: "internal" | "leaf" }) => {
     const result = await onCreate({
@@ -20,6 +21,14 @@ const FolderTree = ({ searchTerm, folders: propFolders }: FolderTreeProps) => {
       index,
       type: type === "internal" ? "folder" : "chat"
     });
+
+    if (parentId) {
+      setExpandedIds(prev => {
+        const next = new Set(prev);
+        next.add(parentId);
+        return next;
+      });
+    }
     return result ?? null;
   };
 
@@ -48,53 +57,48 @@ const FolderTree = ({ searchTerm, folders: propFolders }: FolderTreeProps) => {
     }
   };
 
-  const [treeHeight, setTreeHeight] = React.useState(200);
-  const wrapperRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    if (folders) {
-      setTreeHeight(Math.max(folders.length * 36, 100));
-    }
-  }, [folders?.length]);
-
-  React.useEffect(() => {
-    if (!wrapperRef.current) return;
-
-    const findAndObserveList = () => {
-      const treeContainer = wrapperRef.current?.firstElementChild;
-      if (!treeContainer) return false;
-
-
-      const scroller = treeContainer.firstElementChild;
-      const list = scroller?.firstElementChild;
-
-      if (list instanceof HTMLElement) {
-        const observer = new ResizeObserver((entries) => {
-          for (const entry of entries) {
-            const newHeight = entry.contentRect.height;
-            setTreeHeight(h => Math.abs(h - newHeight) > 2 ? newHeight : h);
+  const countVisibleNodes = (nodes: Folder[], expanded: Set<string>, term: string = "") => {
+    let count = 0;
+    const traverse = (items: Folder[]) => {
+      for (const item of items) {
+        if (term) {
+          count++;
+          if (item.children) traverse(item.children);
+        } else {
+          count++;
+          if (item.children && item.children.length > 0 && expanded.has(item.id)) {
+            traverse(item.children);
           }
-        });
-        observer.observe(list);
-        return () => observer.disconnect();
+        }
       }
-      return false;
     };
+    traverse(nodes);
+    return count;
+  };
 
-    const cleanup = findAndObserveList();
-    if (cleanup) return cleanup;
+  const treeHeight = React.useMemo(() => {
+    if (!folders) return 0;
+    if (searchTerm) return 400;
+    const visibleCount = countVisibleNodes(folders, expandedIds);
+    return Math.max(visibleCount * 36, 36);
+  }, [folders, expandedIds, searchTerm]);
 
-    const timer = setTimeout(findAndObserveList, 100);
-    return () => {
-      clearTimeout(timer);
-      if (typeof cleanup === 'function') cleanup();
-    };
-  }, [folders, searchTerm]);
+  const handleToggle = (id: string) => {
+    setExpandedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
 
   if (!folders) return null;
 
   return (
-    <div ref={wrapperRef}>
+    <div>
       <Tree
         width={"100%"}
         height={treeHeight}
@@ -110,6 +114,7 @@ const FolderTree = ({ searchTerm, folders: propFolders }: FolderTreeProps) => {
         disableDrop={({ parentNode }) =>
           parentNode?.data.type === 'chat'
         }
+        onToggle={handleToggle}
       >
         {Node}
       </Tree >
