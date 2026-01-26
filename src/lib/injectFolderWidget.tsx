@@ -61,60 +61,24 @@ const injectStyles = () => {
 };
 
 const findInjectionPoint = (): { element: Element; position: "before" | "after" } | null => {
-  const sideNavContent = document.querySelector('[role="navigation"]') || document.querySelector('side-navigation');
   const gemsChip = document.querySelector('[data-test-id="gems-chip"]');
   if (gemsChip) {
-    const gemsContainer = gemsChip.closest('.gem-manager-section') || gemsChip.parentElement?.parentElement;
+    const gemsContainer =
+      gemsChip.closest('.gem-manager-section') ||
+      gemsChip.closest('a')?.parentElement?.parentElement ||
+      gemsChip.parentElement?.parentElement?.parentElement ||
+      gemsChip.parentElement?.parentElement;
+
     if (gemsContainer) {
       return { element: gemsContainer, position: "after" };
     }
   }
 
+  const sideNavContent = document.querySelector('[role="navigation"]') || document.querySelector('side-navigation');
   if (sideNavContent) {
-    const headers = Array.from(sideNavContent.querySelectorAll('*'));
-    const conversationsHeader = headers.find(h => {
-      if (!['H2', 'H3', 'DIV', 'SPAN'].includes(h.tagName)) return false;
-
-      const text = h.textContent?.toLowerCase().trim();
-      const isHeader = h.getAttribute('role') === 'heading' ||
-        h.className.includes('header') ||
-        h.className.includes('title') ||
-        h.tagName.startsWith('H');
-
-      return isHeader && (text === 'sohbetler' || text === 'conversations' || text === 'recent');
-    });
-
-    if (conversationsHeader) {
-      const container = conversationsHeader.closest('div') || conversationsHeader;
-      return { element: container, position: "before" };
-    }
-  }
-
-  if (sideNavContent) {
-    const infiniteScroller = sideNavContent.querySelector("infinite-scroller");
-    if (infiniteScroller) {
-      return { element: infiniteScroller, position: "before" };
-    }
-
-    const conversationContainer = sideNavContent.querySelector(".conversation")?.closest('[data-test-id]');
-    if (conversationContainer) {
-      return { element: conversationContainer, position: "before" };
-    }
-  }
-
-  const sidebar = document.querySelector('side-navigation, [role="navigation"], .side-navigation');
-  if (sidebar) {
-    const children = Array.from(sidebar.children);
-    for (const child of children) {
-      const hasConversations = child.querySelector('.conversation');
-      if (hasConversations) {
-        return { element: child, position: "before" };
-      }
-    }
-
-    const mainContent = sidebar.querySelector('[class*="content"]');
-    if (mainContent && mainContent.children.length > 0) {
-      return { element: mainContent.children[0], position: "before" };
+    const chatsHeader = sideNavContent.querySelector('[data-test-id="chats-header"]');
+    if (chatsHeader) {
+      return { element: chatsHeader, position: "before" };
     }
   }
 
