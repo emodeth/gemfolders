@@ -20,7 +20,25 @@ let containerObserver: ResizeObserver | null = null;
 const processStyles = (): string => {
   const baseFontSize = 16;
 
-  let processedCss = cssText.replaceAll(":root", `#${WIDGET_CONTAINER_ID}`);
+  // detailed reset for shadow dom environment since @tailwind base won't apply to :host
+  const resetCss = `
+    :host {
+      line-height: 1.5;
+      -webkit-text-size-adjust: 100%;
+      tab-size: 4;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+      font-feature-settings: normal;
+      font-variation-settings: normal;
+    }
+    *, ::before, ::after {
+      box-sizing: border-box;
+      border-width: 0;
+      border-style: solid;
+      border-color: #e5e7eb;
+    }
+  `;
+
+  let processedCss = cssText.replaceAll(":root", ":host");
 
   const remRegex = /([\d.]+)rem/g;
   processedCss = processedCss.replaceAll(remRegex, (match, remValue) => {
@@ -28,46 +46,44 @@ const processStyles = (): string => {
     return `${pixelsValue}px`;
   });
 
-  return processedCss;
+  return resetCss + processedCss;
 };
 
-const injectStyles = () => {
-  if (document.getElementById(WIDGET_STYLES_ID)) return;
-
+const getShadowStyles = () => {
   const styleElement = document.createElement("style");
   styleElement.id = WIDGET_STYLES_ID;
   styleElement.textContent = `
     ${processStyles()}
 
-    #${WIDGET_CONTAINER_ID} {
+    :host {
       font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
       width: 100%;
       padding: 8px 0 16px 0;
       overflow: hidden;
+      display: block;
     }
 
-    #${WIDGET_CONTAINER_ID} > div {
+    :host > div {
       min-width: 270px;
     }
 
-    #${WIDGET_CONTAINER_ID} .react-arborist {
+    .react-arborist {
       width: 100% !important;
     }
 
-    body.gemini-organizer-hide-folders-widget .gemini-folder-widget-visible-content {
+    :host-context(body.gemini-organizer-hide-folders-widget) .gemini-folder-widget-visible-content {
       display: none !important;
     }
     
-    body.gemini-organizer-hide-folders-widget #${WIDGET_CONTAINER_ID} {
+    :host-context(body.gemini-organizer-hide-folders-widget) {
        padding: 0 !important;
     }
 
-    #${WIDGET_CONTAINER_ID}.collapsed {
+    :host(.collapsed) {
       display: none !important;
     }
   `;
-
-  document.head.appendChild(styleElement);
+  return styleElement;
 };
 
 const findInjectionPoint = (): { element: Element; position: "before" | "after" } | null => {
@@ -104,6 +120,14 @@ const findInjectionPoint = (): { element: Element; position: "before" | "after" 
 const createWidgetContainer = (): HTMLDivElement => {
   const container = document.createElement("div");
   container.id = WIDGET_CONTAINER_ID;
+
+  const shadow = container.attachShadow({ mode: "open" });
+  shadow.appendChild(getShadowStyles());
+
+  const mountPoint = document.createElement("div");
+  mountPoint.id = "gemini-widget-root";
+  shadow.appendChild(mountPoint);
+
   return container;
 };
 
@@ -118,7 +142,13 @@ const renderWidget = (container: HTMLElement) => {
     widgetRoot.unmount();
   }
 
-  widgetRoot = createRoot(container);
+  const shadow = container.shadowRoot;
+  if (!shadow) return;
+
+  const mountPoint = shadow.getElementById("gemini-widget-root");
+  if (!mountPoint) return;
+
+  widgetRoot = createRoot(mountPoint);
   widgetRoot.render(
     <React.StrictMode>
       <ThemeProvider>
@@ -152,7 +182,12 @@ export const injectFolderWidget = (): boolean => {
     return true;
   }
 
-  injectStyles();
+  if (document.getElementById(WIDGET_CONTAINER_ID)) {
+    return true;
+  }
+
+  // Styles are now injected into Shadow DOM in createWidgetContainer
+
 
   getSettings().then(applySettings);
 
@@ -258,8 +293,11 @@ export const removeFolderWidget = () => {
     containerObserver = null;
   }
 
-  const styles = document.getElementById(WIDGET_STYLES_ID);
-  styles?.remove();
+  // Styles are now in shadow DOM, so removing container removes styles too.
+  // Exception: if we previously injected logic differently.
+  // The old global style cleanup:
+  const globalStyles = document.getElementById(WIDGET_STYLES_ID);
+  globalStyles?.remove();
 
   const separator = document.querySelector(".gemini-folder-separator");
   separator?.remove();
