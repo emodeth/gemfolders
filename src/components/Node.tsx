@@ -2,10 +2,12 @@ import { ChevronDown, ChevronRight, Folder, GripVertical, MessageSquareText } fr
 import { isLightColor } from "../constants/colors";
 import { useFolder } from "../context/FolderContext";
 import { useChat } from "../context/ChatContext";
+import { useTreeContext } from "../context/TreeContext";
 
 const Node = ({ node, style, dragHandle }: any) => {
   const { openContextMenu } = useFolder();
   const { openChatContextMenu } = useChat();
+  const { containerWidth } = useTreeContext();
 
   const handleContextMenu = (e: React.MouseEvent) => {
     if (node.data.type === 'chat') {
@@ -76,7 +78,16 @@ const Node = ({ node, style, dragHandle }: any) => {
         }
       }}
       onContextMenu={handleContextMenu}
-      style={style}
+      style={{
+        ...style,
+        ...(node.isDragging && {
+          width: `${containerWidth}px`,
+          maxWidth: `${containerWidth}px`,
+          background: "var(--bg-background)",
+          borderRadius: "6px",
+          opacity: 0.5
+        })
+      }}
       className="organizer-text-sm organizer-font-semibold organizer-flex organizer-items-center organizer-h-8 organizer-mb-1 organizer-text-text-primary organizer-cursor-pointer hover:organizer-brightness-110 dark:hover:organizer-brightness-[85%]"
       ref={dragHandle}
     >
