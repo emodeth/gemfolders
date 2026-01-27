@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, type ReactNode } from "react"
-import { renameChat, deleteChat, moveChat, type Folder } from "../lib/storage"
+import { renameChat, deleteChat, deleteChatFromFolder, moveChat, type Folder } from "../lib/storage"
 import { useModal } from "./ModalContext"
 import { useFolder } from "./FolderContext"
 import { useBookmark } from "./BookmarkContext"
@@ -11,11 +11,12 @@ interface ChatContextMenuState {
   chatId: string
   chatName: string
   chatUrl: string
+  folderId: string | null
 }
 
 interface ChatContextType {
   chatContextMenu: ChatContextMenuState
-  openChatContextMenu: (e: React.MouseEvent, chat: { id: string; name: string; url?: string }) => void
+  openChatContextMenu: (e: React.MouseEvent, chat: { id: string; name: string; url?: string; folderId?: string | null }) => void
   closeChatContextMenu: () => void
   handleChatMoveTo: () => void
   handleChatRename: () => void
@@ -23,6 +24,7 @@ interface ChatContextType {
   handleChatBookmark: () => void
   onRenameChat: (chatId: string, newName: string) => Promise<Folder[]>
   onDeleteChat: (chatId: string) => Promise<Folder[]>
+  onDeleteChatFromFolder: (folderId: string | null, chatId: string) => Promise<Folder[]>
 }
 
 const initialChatContextMenuState: ChatContextMenuState = {
@@ -32,6 +34,7 @@ const initialChatContextMenuState: ChatContextMenuState = {
   chatId: "",
   chatName: "",
   chatUrl: "",
+  folderId: null,
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined)
@@ -44,7 +47,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const openChatContextMenu = (
     e: React.MouseEvent,
-    chat: { id: string; name: string; url?: string }
+    chat: { id: string; name: string; url?: string; folderId?: string | null }
   ) => {
     e.preventDefault()
     e.stopPropagation()
@@ -55,6 +58,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       chatId: chat.id,
       chatName: chat.name,
       chatUrl: chat.url || "",
+      folderId: chat.folderId || null,
     })
   }
 
@@ -70,6 +74,12 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const onDeleteChat = async (chatId: string): Promise<Folder[]> => {
     const updatedFolders = await deleteChat(chatId)
+    setFolders(updatedFolders)
+    return updatedFolders
+  }
+
+  const onDeleteChatFromFolder = async (folderId: string | null, chatId: string): Promise<Folder[]> => {
+    const updatedFolders = await deleteChatFromFolder(folderId, chatId)
     setFolders(updatedFolders)
     return updatedFolders
   }
@@ -126,7 +136,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       chatId,
       chatName,
       onDelete: async () => {
-        await onDeleteChat(chatId)
+        await onDeleteChatFromFolder(chatContextMenu.folderId, chatId)
       },
     })
     closeChatContextMenu()
@@ -153,6 +163,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       handleChatBookmark,
       onRenameChat,
       onDeleteChat,
+      onDeleteChatFromFolder,
     }),
     [chatContextMenu]
   )

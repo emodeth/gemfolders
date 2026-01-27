@@ -15,6 +15,7 @@ const Node = ({ node, style, dragHandle }: any) => {
         id: node.data.id,
         name: node.data.name,
         url: node.data.chatUrl,
+        folderId: node.parent?.id
       });
       return;
     }
