@@ -1,4 +1,7 @@
-import { createFolderButton } from "./injectFolderButtons"
+import {
+  createFolderButton,
+  updateAllFolderButtons
+} from "./injectFolderButtons"
 import { DEFAULT_SETTINGS, getSettings, type Settings } from "./settings"
 import {
   addBookmark,
@@ -318,6 +321,9 @@ export const injectBookmarkButtons = async () => {
       if (changes["gemini-bookmarks"]) {
         bookmarksCache = changes["gemini-bookmarks"].newValue || []
         updateAllBookmarkButtons()
+      }
+      if (changes["gemini-folders"]) {
+        updateAllFolderButtons()
       }
       if (changes["gemini-organizer-settings"]) {
         settingsCache =
