@@ -116,7 +116,8 @@ const AddChatModal: React.FC = () => {
             key={chat.id}
             chat={{
               id: chat.id,
-              title: chat.title,
+              title: chat.title.length > 120 ? chat.title.slice(0, 120) + "..." : chat.title,
+
               date: formatDate(chat.lastUpdated),
             }}
             isSelected={selectedChats.includes(chat.id)}
