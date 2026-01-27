@@ -61,7 +61,14 @@ const FolderTree = ({ searchTerm, folders: propFolders }: FolderTreeProps) => {
   };
 
   const handleMove = async ({ dragIds, parentId, index }: { dragIds: string[], parentId: string | null, index: number }) => {
+    const isReorder = dragIds.every(id => {
+      const currentParent = findNodeParent(folders, id);
+      return currentParent === parentId;
+    });
+
     await onMove({ dragIds, parentId, index });
+
+    if (isReorder) return;
 
     const targetName = findFolderName(parentId, folders);
     const itemCount = dragIds.length;
@@ -71,6 +78,17 @@ const FolderTree = ({ searchTerm, folders: propFolders }: FolderTreeProps) => {
     } else if (targetName) {
       toast.success(`Moved ${itemCount} item${itemCount > 1 ? 's' : ''} to "${targetName}"`);
     }
+  };
+
+  const findNodeParent = (nodes: Folder[], targetId: string, currentParentId: string | null = null): string | null | undefined => {
+    for (const node of nodes) {
+      if (node.id === targetId) return currentParentId;
+      if (node.children) {
+        const found = findNodeParent(node.children, targetId, node.id);
+        if (found !== undefined) return found;
+      }
+    }
+    return undefined;
   };
 
   const countVisibleNodes = (nodes: Folder[], expanded: Set<string>, term: string = "") => {
