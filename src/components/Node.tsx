@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { ChevronDown, ChevronRight, Folder, GripVertical, MessageSquareText } from "lucide-react";
 import { isLightColor } from "../constants/colors";
 import { useFolder } from "../context/FolderContext";
@@ -8,6 +9,15 @@ const Node = ({ node, style, dragHandle }: any) => {
   const { openContextMenu } = useFolder();
   const { openChatContextMenu } = useChat();
   const { containerWidth } = useTreeContext();
+
+  useEffect(() => {
+    if (node.willReceiveDrop && !node.isOpen && node.data.type !== 'chat') {
+      const timer = setTimeout(() => {
+        node.toggle();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [node.willReceiveDrop, node.isOpen, node.data.type, node]);
 
   const handleContextMenu = (e: React.MouseEvent) => {
     if (node.data.type === 'chat') {
