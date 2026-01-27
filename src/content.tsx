@@ -7,7 +7,7 @@ import { FolderProvider } from "~context/FolderContext"
 import { ChatProvider } from "~context/ChatContext"
 import { BookmarkProvider } from "~context/BookmarkContext"
 import { ThemeProvider } from "~context/ThemeContext"
-import { SettingsProvider } from "~context/SettingsContext"
+import { SettingsProvider, useSettings } from "~context/SettingsContext"
 import { ThemeWrapper } from "~components/ThemeWrapper"
 import ToastProvider from "~components/ToastProvider"
 import { injectBookmarkButtons } from "~lib/injectBookmarkButtons"
@@ -19,6 +19,24 @@ import { setupRenameHandler } from "~lib/renameHandler"
 import SidebarButton from "./components/SidebarButton"
 import Sidebar from "./components/Sidebar"
 import ModalManager from "./components/ModalManager"
+
+const SidebarButtonContainer = ({ onClick }: { onClick: () => void }) => {
+  const { settings, isLoading } = useSettings()
+
+  if (isLoading) return null
+
+  const positionClass =
+    settings.sidebarButtonPosition === "bottom"
+      ? "organizer-bottom-8"
+      : "organizer-top-[72px]"
+
+  return (
+    <div
+      className={`organizer-z-50 organizer-flex organizer-fixed ${positionClass} organizer-right-4 organizer-transition-all organizer-duration-300`}>
+      <SidebarButton onClick={onClick} />
+    </div>
+  )
+}
 
 export const config: PlasmoCSConfig = {
   matches: ["https://gemini.google.com/*"]
@@ -128,9 +146,7 @@ const PlasmoOverlay = () => {
             <FolderProvider>
               <BookmarkProvider>
                 <ChatProvider>
-                  <div className="organizer-z-50 organizer-flex organizer-fixed organizer-top-[72px] organizer-right-4">
-                    <SidebarButton onClick={toggleSidebar} />
-                  </div>
+                  <SidebarButtonContainer onClick={toggleSidebar} />
                   <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
                   <ModalManager />
                 </ChatProvider>
