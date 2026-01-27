@@ -22,12 +22,14 @@ const DeleteFolderModal: React.FC = () => {
       onClick={(e) => e.stopPropagation()}
     >
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-p-5 organizer-pb-0">
-        <div className="organizer-flex organizer-items-center organizer-gap-3">
-          <div className="organizer-text-text-primary">
+        <div className="organizer-flex organizer-items-center organizer-gap-3 organizer-flex-1 organizer-min-w-0 organizer-mr-4">
+          <div className="organizer-text-text-primary organizer-flex-shrink-0">
             <Folder size={20} />
           </div>
-          <div className="organizer-text-[16px] organizer-font-medium organizer-text-text-primary">
-            Delete {folderName} and its chats ({itemCount} items)
+          <div className="organizer-text-[16px] organizer-font-medium organizer-text-text-primary organizer-flex organizer-items-center organizer-min-w-0">
+            <span className="organizer-whitespace-nowrap">Delete&nbsp;</span>
+            <span className="organizer-truncate">{folderName}</span>
+            <span className="organizer-whitespace-nowrap">&nbsp;and its chats ({itemCount} items)</span>
           </div>
         </div>
         <button

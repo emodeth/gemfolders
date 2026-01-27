@@ -22,11 +22,11 @@ const DeleteChatModal: React.FC = () => {
       onClick={(e) => e.stopPropagation()}
     >
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-p-5 organizer-pb-0">
-        <div className="organizer-flex organizer-items-center organizer-gap-3">
-          <div className="organizer-text-text-primary">
+        <div className="organizer-flex organizer-items-center organizer-gap-3 organizer-flex-1 organizer-min-w-0 organizer-mr-4">
+          <div className="organizer-text-text-primary organizer-flex-shrink-0">
             <MessageSquareText size={20} />
           </div>
-          <div className="organizer-text-[16px] organizer-font-medium organizer-text-text-primary">
+          <div className="organizer-text-[16px] organizer-font-medium organizer-text-text-primary organizer-truncate">
             Delete {chatName}
           </div>
         </div>
