@@ -24,6 +24,9 @@ const injectStyles = () => {
     body.gemini-organizer-hide-bookmarks .gemini-organizer-bookmark-btn {
       display: none !important;
     }
+    body.gemini-organizer-hide-add-to-folder .gemini-organizer-folder-btn {
+      display: none !important;
+    }
     .pin-icon-container {
       display: none !important;
     }
@@ -36,6 +39,12 @@ const applySettings = (settings: Settings) => {
     document.body.classList.add("gemini-organizer-hide-bookmarks")
   } else {
     document.body.classList.remove("gemini-organizer-hide-bookmarks")
+  }
+
+  if (settings.hideAddToFolderFromSidebar) {
+    document.body.classList.add("gemini-organizer-hide-add-to-folder")
+  } else {
+    document.body.classList.remove("gemini-organizer-hide-add-to-folder")
   }
 }
 
