@@ -62,12 +62,10 @@ export const createFolder = async (
       return false
     }
     addToParent(folders)
+  } else if (typeof index === "number" && index >= 0) {
+    folders.splice(index, 0, newNode)
   } else {
-    if (typeof index === "number" && index >= 0) {
-      folders.splice(index, 0, newNode)
-    } else {
-      folders.push(newNode)
-    }
+    folders.push(newNode)
   }
 
   await saveFolders(folders)
@@ -218,6 +216,34 @@ export const deleteChat = async (chatId: string): Promise<Folder[]> => {
   const updatedFolders = removeChat(folders)
   await saveFolders(updatedFolders)
   return updatedFolders
+}
+
+export const deleteChatFromFolder = async (
+  folderId: string | null,
+  chatId: string
+): Promise<Folder[]> => {
+  let folders = await getFolders()
+
+  if (!folderId || folderId === "ROOT") {
+    folders = folders.filter((node) => node.id !== chatId)
+  } else {
+    const removeFromFolder = (nodes: Folder[]): boolean => {
+      for (const node of nodes) {
+        if (node.id === folderId) {
+          if (node.children) {
+            node.children = node.children.filter((child) => child.id !== chatId)
+          }
+          return true
+        }
+        if (node.children && removeFromFolder(node.children)) return true
+      }
+      return false
+    }
+    removeFromFolder(folders)
+  }
+
+  await saveFolders(folders)
+  return folders
 }
 
 export const moveChat = async (
