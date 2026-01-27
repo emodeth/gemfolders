@@ -2,6 +2,7 @@ import React from "react";
 import { Tree } from "react-arborist";
 import toast from "react-hot-toast";
 import Node from "./Node";
+import EmptyFolders from "./EmptyFolders";
 import { useFolder } from "../context/FolderContext";
 import type { Folder } from "~lib/storage";
 import { TreeContextProvider } from "../context/TreeContext";
@@ -110,6 +111,18 @@ const FolderTree = ({ searchTerm, folders: propFolders }: FolderTreeProps) => {
     return count;
   };
 
+  const hasSearchResults = React.useMemo(() => {
+    if (!folders || !searchTerm) return true;
+    const checkMatch = (nodes: Folder[]): boolean => {
+      for (const node of nodes) {
+        if (node.name.toLowerCase().includes(searchTerm.toLowerCase())) return true;
+        if (node.children && checkMatch(node.children)) return true;
+      }
+      return false;
+    };
+    return checkMatch(folders);
+  }, [folders, searchTerm]);
+
   const treeHeight = React.useMemo(() => {
     if (!folders) return 0;
     if (searchTerm) return 400;
@@ -130,6 +143,14 @@ const FolderTree = ({ searchTerm, folders: propFolders }: FolderTreeProps) => {
   };
 
   if (!folders) return null;
+
+  if (searchTerm && !hasSearchResults) {
+    return <EmptyFolders message="No results found" description="Try adjusting your search" />;
+  }
+
+  if (folders.length === 0) {
+    return <EmptyFolders />;
+  }
 
   return (
     <div style={{ position: 'relative' }} ref={containerRef}>
