@@ -30,8 +30,39 @@ const injectStyles = () => {
     body.gemini-organizer-hide-add-to-folder .gemini-organizer-folder-btn {
       display: none !important;
     }
-    .pin-icon-container {
+    body:not(.gemini-organizer-native-view) .pin-icon-container {
       display: none !important;
+    }
+    
+    .gemini-organizer-parent-modified {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    
+    .gemini-organizer-conversation-modified {
+      flex: 1;
+      overflow: hidden;
+      padding-right: 70px;
+    }
+    
+    .gemini-organizer-title-modified {
+      max-width: calc(100% - 70px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    body.gemini-organizer-native-view .gemini-organizer-actions-wrapper {
+      display: flex !important;
+    }
+    
+    body.gemini-organizer-native-view .gemini-organizer-conversation-modified {
+      padding-right: 0 !important;
+    }
+    
+    body.gemini-organizer-native-view .gemini-organizer-title-modified {
+       max-width: 100% !important;
     }
   `
   document.head.appendChild(style)
@@ -48,6 +79,15 @@ const applySettings = (settings: Settings) => {
     document.body.classList.add("gemini-organizer-hide-add-to-folder")
   } else {
     document.body.classList.remove("gemini-organizer-hide-add-to-folder")
+  }
+
+  if (
+    settings.hideBookmarksFromSidebar &&
+    settings.hideAddToFolderFromSidebar
+  ) {
+    document.body.classList.add("gemini-organizer-native-view")
+  } else {
+    document.body.classList.remove("gemini-organizer-native-view")
   }
 }
 
@@ -187,9 +227,7 @@ const injectButtonIntoConversation = (conversationElement: Element) => {
     ".conversation-actions-container"
   ) as HTMLElement
   const parentEl = parentContainer as HTMLElement
-  parentEl.style.position = "relative"
-  parentEl.style.display = "flex"
-  parentEl.style.alignItems = "center"
+  parentEl.classList.add("gemini-organizer-parent-modified")
 
   const actionsWrapper = document.createElement("div")
   actionsWrapper.className = "gemini-organizer-actions-wrapper"
@@ -222,16 +260,11 @@ const injectButtonIntoConversation = (conversationElement: Element) => {
   parentContainer.appendChild(actionsWrapper)
 
   if (titleElement) {
-    titleElement.style.maxWidth = "calc(100% - 70px)"
-    titleElement.style.overflow = "hidden"
-    titleElement.style.textOverflow = "ellipsis"
-    titleElement.style.whiteSpace = "nowrap"
+    titleElement.classList.add("gemini-organizer-title-modified")
   }
 
   const convEl = conversationElement as HTMLElement
-  convEl.style.flex = "1"
-  convEl.style.overflow = "hidden"
-  convEl.style.paddingRight = "70px"
+  convEl.classList.add("gemini-organizer-conversation-modified")
 }
 
 const updateAllBookmarkButtons = () => {
