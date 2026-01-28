@@ -5,32 +5,17 @@ import Node from "./Node";
 import EmptyFolders from "./EmptyFolders";
 import { useFolder } from "../context/FolderContext";
 import type { Folder } from "~lib/storage";
-import { TreeContextProvider } from "../context/TreeContext";
 
 interface FolderTreeProps {
   searchTerm?: string;
   folders?: Folder[];
+  dragWidth?: number;
 }
 
-const FolderTree = ({ searchTerm, folders: propFolders }: FolderTreeProps) => {
+const FolderTree = ({ searchTerm, folders: propFolders, dragWidth = 260 }: FolderTreeProps) => {
   const { folders: contextFolders, onCreate, onMove } = useFolder();
   const folders = propFolders ?? contextFolders;
   const [expandedIds, setExpandedIds] = React.useState<Set<string>>(new Set());
-  const [containerWidth, setContainerWidth] = React.useState(260);
-  const containerRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    if (!containerRef.current) return;
-
-    const observer = new ResizeObserver((entries) => {
-      if (entries[0]) {
-        setContainerWidth(entries[0].contentRect.width);
-      }
-    });
-
-    observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, []);
 
   const handleCreate = async ({ parentId, index, type }: { parentId: string | null, index: number, type: "internal" | "leaf" }) => {
     const result = await onCreate({
@@ -153,29 +138,27 @@ const FolderTree = ({ searchTerm, folders: propFolders }: FolderTreeProps) => {
   }
 
   return (
-    <div style={{ position: 'relative' }} ref={containerRef}>
-      <TreeContextProvider value={{ containerWidth }}>
-        <Tree
-          className="organizer-overflow-x-hidden"
-          width={"100%"}
-          height={treeHeight}
-          rowHeight={36}
-          data={folders}
-          onCreate={handleCreate}
-          onMove={handleMove}
-          openByDefault={false}
-          searchTerm={searchTerm}
-          searchMatch={(node, term) =>
-            node.data.name.toLowerCase().includes(term.toLowerCase())
-          }
-          disableDrop={({ parentNode }) =>
-            parentNode?.data.type === 'chat'
-          }
-          onToggle={handleToggle}
-        >
-          {Node}
-        </Tree >
-      </TreeContextProvider>
+    <div style={{ position: 'relative' }} className="organizer-h-full" id="gemini-folder-tree">
+      <Tree
+        className="organizer-overflow-x-hidden"
+        width={"100%"}
+        height={treeHeight}
+        rowHeight={36}
+        data={folders}
+        onCreate={handleCreate}
+        onMove={handleMove}
+        openByDefault={false}
+        searchTerm={searchTerm}
+        searchMatch={(node, term) =>
+          node.data.name.toLowerCase().includes(term.toLowerCase())
+        }
+        disableDrop={({ parentNode }) =>
+          parentNode?.data.type === 'chat'
+        }
+        onToggle={handleToggle}
+      >
+        {(props) => <Node {...props} dragWidth={dragWidth} />}
+      </Tree>
     </div>
   )
 }

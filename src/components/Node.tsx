@@ -3,12 +3,10 @@ import { ChevronDown, ChevronRight, Folder, GripVertical, MessageSquareText } fr
 import { isLightColor } from "../constants/colors";
 import { useFolder } from "../context/FolderContext";
 import { useChat } from "../context/ChatContext";
-import { useTreeContext } from "../context/TreeContext";
 
-const Node = ({ node, style, dragHandle }: any) => {
+const Node = ({ node, style, dragHandle, dragWidth = 260 }: any) => {
   const { openContextMenu } = useFolder();
   const { openChatContextMenu } = useChat();
-  const { containerWidth } = useTreeContext();
 
   useEffect(() => {
     if (node.willReceiveDrop && !node.isOpen && node.data.type !== 'chat') {
@@ -83,7 +81,7 @@ const Node = ({ node, style, dragHandle }: any) => {
     <div
       onClick={(e) => {
         if (node.data.type === "chat" && node.data.chatUrl) {
-          window.location.href = node.data.chatUrl;
+          globalThis.location.href = node.data.chatUrl;
         } else if (node.isInternal) {
           node.toggle();
         }
@@ -92,8 +90,8 @@ const Node = ({ node, style, dragHandle }: any) => {
       style={{
         ...style,
         ...(node.isDragging && {
-          width: `${containerWidth}px`,
-          maxWidth: `${containerWidth}px`,
+          width: `${dragWidth}px`,
+          maxWidth: `${dragWidth}px`,
           background: "var(--bg-background)",
           borderRadius: "6px",
           opacity: 0.5

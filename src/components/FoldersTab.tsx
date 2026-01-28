@@ -54,7 +54,7 @@ const FoldersTab: React.FC = () => {
         </Tooltip>
       </div>
 
-      <FolderTree searchTerm={searchTerm} />
+      <FolderTree searchTerm={searchTerm} dragWidth={335} />
     </div>
   );
 };
