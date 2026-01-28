@@ -15,9 +15,6 @@ function MagicLinkLogin() {
     try {
       const { error } = await supabase.auth.signInWithOtp({
         email,
-        options: {
-          emailRedirectTo: chrome.runtime.getURL("tabs/auth.html")
-        }
       })
       if (error) throw error
       toast.success("Magic link sent! Check your email.")
@@ -55,8 +52,7 @@ function MagicLinkLogin() {
       <button
         type="submit"
         disabled={loading}
-        className="organizer-w-full organizer-bg-surface organizer-text-text-primary organizer-font-medium organizer-py-2.5 organizer-px-4 organizer-rounded-lg organizer-flex organizer-items-center organizer-justify-center organizer-gap-2 hover:organizer-bg-surface-hover organizer-transition-colors organizer-border organizer-border-border-default disabled:organizer-opacity-50 disabled:organizer-cursor-not-allowed"
-      >
+        className="organizer-w-full organizer-bg-surface organizer-text-sm organizer-text-text-primary organizer-font-medium organizer-py-2 organizer-rounded-lg organizer-flex organizer-items-center organizer-justify-center organizer-gap-2 hover:organizer-opacity-80 organizer-transition-colors organizer-border organizer-border-border-default"      >
         <span>{loading ? "Sending..." : "Send Magic Link"}</span>
         <Send size={14} className="organizer-text-primary" />
       </button>

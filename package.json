@@ -47,7 +47,7 @@
     "web_accessible_resources": [
       {
         "resources": [
-          "auth.html"
+          "options.html"
         ],
         "matches": [
           "<all_urls>"
