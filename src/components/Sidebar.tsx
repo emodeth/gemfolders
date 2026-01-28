@@ -10,7 +10,7 @@ import {
 
 import FoldersTab from "./FoldersTab";
 import BookmarksTab from "./BookmarksTab";
-import ProfileTab from "./ProfileTab";
+import AccountTab from "./AccountTab";
 import SettingsTab from "./SettingsTab";
 import TabBar from "./TabBar";
 import FolderContextMenu from "./FolderContextMenu";
@@ -18,7 +18,7 @@ import ChatContextMenu from "./ChatContextMenu";
 import { useFolder } from "../context/FolderContext";
 import { useChat } from "../context/ChatContext";
 
-type TabType = "folders" | "bookmarks" | "profile" | "settings";
+type TabType = "folders" | "bookmarks" | "account" | "settings";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -33,7 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const tabs: { id: TabType; icon: React.ReactNode; label: string }[] = [
     { id: "folders", icon: <Folders size={18} />, label: "Folders" },
     { id: "bookmarks", icon: <Bookmark size={18} />, label: "Bookmarks" },
-    { id: "profile", icon: <User size={18} />, label: "Profile" },
+    { id: "account", icon: <User size={18} />, label: "Account" },
     { id: "settings", icon: <Settings size={18} />, label: "Settings" },
   ];
 
@@ -43,8 +43,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         return <FoldersTab />;
       case "bookmarks":
         return <BookmarksTab />;
-      case "profile":
-        return <ProfileTab />;
+      case "account":
+        return <AccountTab />;
       case "settings":
         return <SettingsTab />;
       default:
