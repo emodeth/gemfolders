@@ -78,18 +78,13 @@ const FolderTree = ({ searchTerm, folders: propFolders, dragWidth = 260 }: Folde
     return undefined;
   };
 
-  const countVisibleNodes = (nodes: Folder[], expanded: Set<string>, term: string = "") => {
+  const countVisibleNodes = (nodes: Folder[], expanded: Set<string>) => {
     let count = 0;
     const traverse = (items: Folder[]) => {
       for (const item of items) {
-        if (term) {
-          count++;
-          if (item.children) traverse(item.children);
-        } else {
-          count++;
-          if (item.children && item.children.length > 0 && expanded.has(item.id)) {
-            traverse(item.children);
-          }
+        count++;
+        if (item.children && item.children.length > 0 && expanded.has(item.id)) {
+          traverse(item.children);
         }
       }
     };
@@ -97,24 +92,36 @@ const FolderTree = ({ searchTerm, folders: propFolders, dragWidth = 260 }: Folde
     return count;
   };
 
-  const hasSearchResults = React.useMemo(() => {
-    if (!folders || !searchTerm) return true;
-    const checkMatch = (nodes: Folder[]): boolean => {
+  const filteredFolders = React.useMemo(() => {
+    if (!folders) return [];
+    if (!searchTerm) return folders;
+
+    const filterNodes = (nodes: Folder[]): Folder[] => {
+      const result: Folder[] = [];
       for (const node of nodes) {
-        if (node.name.toLowerCase().includes(searchTerm.toLowerCase())) return true;
-        if (node.children && checkMatch(node.children)) return true;
+        if (node.type === 'chat') continue;
+
+        const matches = node.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+        if (matches) {
+          result.push(node);
+        } else if (node.children) {
+          const children = filterNodes(node.children);
+          if (children.length > 0) {
+            result.push({ ...node, children });
+          }
+        }
       }
-      return false;
+      return result;
     };
-    return checkMatch(folders);
+    return filterNodes(folders);
   }, [folders, searchTerm]);
 
   const treeHeight = React.useMemo(() => {
-    if (!folders) return 0;
-    if (searchTerm) return 400;
-    const visibleCount = countVisibleNodes(folders, expandedIds);
+    if (!filteredFolders) return 0;
+    const visibleCount = countVisibleNodes(filteredFolders, expandedIds);
     return Math.max(visibleCount * 36, 36);
-  }, [folders, expandedIds, searchTerm]);
+  }, [filteredFolders, expandedIds]);
 
   const handleToggle = (id: string) => {
     setExpandedIds(prev => {
@@ -130,7 +137,7 @@ const FolderTree = ({ searchTerm, folders: propFolders, dragWidth = 260 }: Folde
 
   if (!folders) return null;
 
-  if (searchTerm && !hasSearchResults) {
+  if (searchTerm && filteredFolders.length === 0) {
     return <EmptyFolders message="No results found" description="Try adjusting your search" />;
   }
 
@@ -145,16 +152,13 @@ const FolderTree = ({ searchTerm, folders: propFolders, dragWidth = 260 }: Folde
         width={"100%"}
         height={treeHeight}
         rowHeight={36}
-        data={folders}
+        data={filteredFolders}
         onCreate={handleCreate}
         onMove={handleMove}
         openByDefault={false}
-        searchTerm={searchTerm}
-        searchMatch={(node, term) =>
-          node.data.name.toLowerCase().includes(term.toLowerCase())
-        }
+        disableDrag={!!searchTerm}
         disableDrop={({ parentNode }) =>
-          parentNode?.data.type === 'chat'
+          !!searchTerm || parentNode?.data.type === 'chat'
         }
         onToggle={handleToggle}
       >
