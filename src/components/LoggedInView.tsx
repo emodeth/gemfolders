@@ -2,12 +2,15 @@ import { Chrome, Mail } from "lucide-react"
 import React from "react"
 
 import { supabase } from "../lib/supabase"
+import { useModal } from "../context/ModalContext"
 
 interface LoggedInViewProps {
   user: any
 }
 
 const LoggedInView: React.FC<LoggedInViewProps> = ({ user }) => {
+  const { onOpen } = useModal()
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
   }
@@ -32,7 +35,9 @@ const LoggedInView: React.FC<LoggedInViewProps> = ({ user }) => {
           </button>
         </div>
 
-        <button className="organizer-w-full organizer-bg-primary organizer-text-white organizer-font-medium organizer-py-2 organizer-rounded-lg hover:organizer-opacity-90 organizer-transition-opacity">
+        <button
+          onClick={() => onOpen('paywall')}
+          className="organizer-w-full organizer-bg-primary organizer-text-white organizer-font-medium organizer-py-2 organizer-rounded-lg hover:organizer-opacity-90 organizer-transition-opacity">
           Upgrade
         </button>
       </div>

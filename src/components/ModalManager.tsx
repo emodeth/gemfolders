@@ -11,6 +11,8 @@ import DeleteChatModal from '~components/modals/DeleteChatModal';
 import MoveChatModal from '~components/modals/MoveChatModal';
 import AddToFolderModal from '~components/modals/AddToFolderModal';
 
+import PaywallModal from '~components/modals/PaywallModal';
+
 const ModalManager: React.FC = () => {
   const { type, isOpen, onClose } = useModal();
 
@@ -46,7 +48,8 @@ const ModalManager: React.FC = () => {
   return (
     <div
       data-modal-overlay="true"
-      className={`organizer-fixed organizer-inset-0 organizer-bg-transparent
+      className={`organizer-fixed organizer-inset-0
+        ${type === 'paywall' ? 'organizer-bg-black/50 organizer-backdrop-blur-sm' : 'organizer-bg-transparent'}
         ${isTransparentOverlay ? '' : 'organizer-flex organizer-justify-center'}
         ${isSmallModal ? 'organizer-items-start organizer-pt-[20vh]' : ''}
         ${!isSmallModal && !isTransparentOverlay ? 'organizer-items-center' : ''}
@@ -68,6 +71,7 @@ const ModalManager: React.FC = () => {
         {type === 'deleteChatModal' && <DeleteChatModal />}
         {type === 'moveChatModal' && <MoveChatModal />}
         {type === 'addToFolder' && <AddToFolderModal />}
+        {type === 'paywall' && <PaywallModal />}
       </div>
     </div>
   );
