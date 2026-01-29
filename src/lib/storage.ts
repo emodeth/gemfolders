@@ -8,7 +8,8 @@ export interface Folder {
   type: "folder" | "chat"
   children: Folder[]
   color?: string
-  chatUrl?: string // Original Gemini chat URL for chat items
+  chatUrl?: string
+  originalId?: string
 }
 
 const STORAGE_KEY = "gemini-folders"
@@ -152,18 +153,22 @@ export const addChatsToFolder = async (
   const addChats = (nodes: Folder[]): boolean => {
     for (const node of nodes) {
       if (node.id === folderId && node.type === "folder") {
-        const chatNodes: Folder[] = chats.map((chat) => ({
-          id: chat.id,
-          name: chat.title,
-          type: "chat" as const,
-          children: [],
-          chatUrl: chat.url
-        }))
+        const existingChatIds = new Set(
+          node.children.map((child) => child.originalId || child.id)
+        )
 
-        const existingIds = new Set(node.children.map((child) => child.id))
-        const newChats = chatNodes.filter((chat) => !existingIds.has(chat.id))
+        const chatNodes: Folder[] = chats
+          .filter((chat) => !existingChatIds.has(chat.id))
+          .map((chat) => ({
+            id: uuidv4(), // Generate unique instance ID
+            name: chat.title,
+            type: "chat" as const,
+            children: [],
+            chatUrl: chat.url,
+            originalId: chat.id // Store original ID
+          }))
 
-        node.children.push(...newChats)
+        node.children.push(...chatNodes)
         return true
       }
       if (node.children && addChats(node.children)) return true
@@ -184,13 +189,20 @@ export const renameChat = async (
 
   const updateName = (nodes: Folder[]): boolean => {
     for (const node of nodes) {
-      if (node.id === chatId && node.type === "chat") {
+      if (
+        (node.id === chatId || node.originalId === chatId) &&
+        node.type === "chat"
+      ) {
         node.name = newName
-        return true
+        // If we want to rename only this instance, we stop here.
+        // If we want to rename ALL instances, we continue.
+        // Let's assume rename impacts all instances if we matched by originalId,
+        // but if we matched by unique ID, maybe just that one?
+        // For now, let's keep searching to rename all instances if possible.
       }
-      if (node.children && updateName(node.children)) return true
+      if (node.children) updateName(node.children)
     }
-    return false
+    return true // Always return true to save changes
   }
 
   updateName(folders)
@@ -203,7 +215,10 @@ export const deleteChat = async (chatId: string): Promise<Folder[]> => {
 
   const removeChat = (nodes: Folder[]): Folder[] => {
     return nodes.filter((node) => {
-      if (node.id === chatId && node.type === "chat") {
+      if (
+        (node.id === chatId || node.originalId === chatId) &&
+        node.type === "chat"
+      ) {
         return false
       }
       if (node.children && node.children.length > 0) {
@@ -281,6 +296,16 @@ export const moveChat = async (
   const insertChat = (nodes: Folder[], chat: Folder): Folder[] => {
     return nodes.map((node) => {
       if (node.id === targetFolderId && node.type === "folder") {
+        if (chat.type === "chat") {
+          const chatRealId = chat.originalId || chat.id
+          const exists = node.children?.some(
+            (child) =>
+              child.type === "chat" &&
+              (child.originalId || child.id) === chatRealId
+          )
+          if (exists) return node
+        }
+
         return {
           ...node,
           children: [...(node.children || []), chat]
@@ -356,8 +381,19 @@ export const moveNodes = async (
 
     return nodes.map((node) => {
       if (node.id === targetParentId) {
+        // Filter out duplicates for chats
+        const distinctNodesToInsert = nodesToInsert.filter((toInsert) => {
+          if (toInsert.type !== "chat") return true
+          const insertRealId = toInsert.originalId || toInsert.id
+          return !node.children?.some(
+            (child) =>
+              child.type === "chat" &&
+              (child.originalId || child.id) === insertRealId
+          )
+        })
+
         const updatedChildren = [...(node.children || [])]
-        updatedChildren.splice(targetIndex, 0, ...nodesToInsert)
+        updatedChildren.splice(targetIndex, 0, ...distinctNodesToInsert)
         return { ...node, children: updatedChildren }
       }
       if (node.children && node.children.length > 0) {

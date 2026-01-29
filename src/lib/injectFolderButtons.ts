@@ -6,7 +6,11 @@ const FOLDER_ICON_FILLED = `<svg xmlns="http://www.w3.org/2000/svg" width="18" h
 
 const isChatInFolders = (chatId: string, folders: Folder[]): boolean => {
   for (const folder of folders) {
-    if (folder.type === "chat" && folder.id === chatId) return true
+    if (
+      folder.type === "chat" &&
+      (folder.id === chatId || folder.originalId === chatId)
+    )
+      return true
     if (folder.children && isChatInFolders(chatId, folder.children)) return true
   }
   return false

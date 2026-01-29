@@ -23,7 +23,8 @@ const Node = ({ node, style, dragHandle, dragWidth = 260 }: any) => {
         id: node.data.id,
         name: node.data.name,
         url: node.data.chatUrl,
-        folderId: node.parent?.id
+        folderId: node.parent?.id,
+        originalId: node.data.originalId
       });
       return;
     }
