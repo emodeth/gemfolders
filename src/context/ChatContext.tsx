@@ -12,11 +12,12 @@ interface ChatContextMenuState {
   chatName: string
   chatUrl: string
   folderId: string | null
+  originalId?: string
 }
 
 interface ChatContextType {
   chatContextMenu: ChatContextMenuState
-  openChatContextMenu: (e: React.MouseEvent, chat: { id: string; name: string; url?: string; folderId?: string | null }) => void
+  openChatContextMenu: (e: React.MouseEvent, chat: { id: string; name: string; url?: string; folderId?: string | null; originalId?: string }) => void
   closeChatContextMenu: () => void
   handleChatMoveTo: () => void
   handleChatRename: () => void
@@ -35,6 +36,7 @@ const initialChatContextMenuState: ChatContextMenuState = {
   chatName: "",
   chatUrl: "",
   folderId: null,
+  originalId: undefined,
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined)
@@ -47,7 +49,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const openChatContextMenu = (
     e: React.MouseEvent,
-    chat: { id: string; name: string; url?: string; folderId?: string | null }
+    chat: { id: string; name: string; url?: string; folderId?: string | null; originalId?: string }
   ) => {
     e.preventDefault()
     e.stopPropagation()
@@ -59,6 +61,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       chatName: chat.name,
       chatUrl: chat.url || "",
       folderId: chat.folderId || null,
+      originalId: chat.originalId,
     })
   }
 
@@ -121,9 +124,9 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const handleChatRename = () => {
-    const { chatId, chatName } = chatContextMenu
+    const { chatId, chatName, originalId } = chatContextMenu
     onOpen("renameChatModal", {
-      chatId,
+      chatId: originalId || chatId,
       chatName,
       onRename: onRenameChat,
     })
@@ -143,9 +146,9 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const handleChatBookmark = () => {
-    const { chatId, chatName, chatUrl } = chatContextMenu
+    const { chatId, chatName, chatUrl, originalId } = chatContextMenu
     toggleBookmark({
-      id: chatId,
+      id: originalId || chatId,
       title: chatName,
       url: chatUrl,
     })

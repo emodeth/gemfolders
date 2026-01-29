@@ -202,7 +202,7 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const folder = findFolder(folders)
     const existingChatIds = folder?.children
       .filter((child) => child.type === 'chat')
-      .map((child) => child.id) || []
+      .map((child) => child.originalId || child.id) || []
 
     const chats = await fetchGeminiChats()
 
