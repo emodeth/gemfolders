@@ -6,6 +6,7 @@ import { useFolder } from "~context/FolderContext";
 import type { Folder as FolderType } from "~lib/storage";
 import MoveChatModalItem from "./MoveChatModalItem";
 import { Input } from "../ui/Input";
+import { truncateText } from "~lib/utils";
 
 const MoveChatModal: React.FC = () => {
   const { onClose, data } = useModal();
@@ -45,7 +46,7 @@ const MoveChatModal: React.FC = () => {
 
     const targetFolder = allFlatFolders.find(f => f.id === folderId);
     await onMove(chatId, folderId);
-    toast.success(`Moved to "${targetFolder?.name || 'folder'}"`);
+    toast.success(`Moved to "${truncateText(targetFolder?.name || 'folder')}"`);
     onClose();
   };
 

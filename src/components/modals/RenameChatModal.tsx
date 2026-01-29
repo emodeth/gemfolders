@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
+import { truncateText } from "~lib/utils";
 
 const RenameChatModal: React.FC = () => {
   const { onClose, data } = useModal();
@@ -21,7 +22,7 @@ const RenameChatModal: React.FC = () => {
     if (onRename) {
       await onRename(chatId, newName.trim());
     }
-    toast.success(`Chat renamed to "${newName.trim()}"`);
+    toast.success(`Chat renamed to "${truncateText(newName.trim())}"`);
     onClose();
   };
 

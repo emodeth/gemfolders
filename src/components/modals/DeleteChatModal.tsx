@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { X, MessageSquareText } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { Button } from "../ui/Button";
+import { truncateText } from "~lib/utils";
 
 const DeleteChatModal: React.FC = () => {
   const { onClose, data } = useModal();
@@ -12,7 +13,7 @@ const DeleteChatModal: React.FC = () => {
     if (onDelete) {
       onDelete();
     }
-    toast.success(`"${chatName}" removed from folder`);
+    toast.success(`"${truncateText(chatName)}" removed from folder`);
     onClose();
   };
 

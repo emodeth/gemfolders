@@ -4,6 +4,7 @@ import { useModal } from '../../context/ModalContext';
 import { useFolder } from '../../context/FolderContext';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { truncateText } from "~lib/utils";
 
 const CreateFolderModal: React.FC = () => {
   const { onClose, data } = useModal();
@@ -33,7 +34,7 @@ const CreateFolderModal: React.FC = () => {
       parentId: data?.parentId || null,
       index: 0,
     });
-    toast.success(`Folder "${folderName}" created`);
+    toast.success(`Folder "${truncateText(folderName)}" created`);
     onClose();
   };
 

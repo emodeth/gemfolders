@@ -6,6 +6,7 @@ import { useFolder } from "~context/FolderContext";
 import type { Folder as FolderType } from "~lib/storage";
 import { Input } from "../ui/Input";
 import { isLightColor } from "~constants/colors";
+import { truncateText } from "~lib/utils";
 
 interface AddToFolderItemProps {
   folder: FolderType;
@@ -80,7 +81,7 @@ const AddToFolderModal: React.FC = () => {
         url: chatUrl || `https://gemini.google.com/app/${chatId}`
       }]);
       const targetFolder = allFlatFolders.find(f => f.id === folderId);
-      toast.success(`Added to "${targetFolder?.name || 'folder'}"`);
+      toast.success(`Added to "${truncateText(targetFolder?.name || 'folder')}"`);
       onClose();
     } catch (error) {
       console.error("Failed to add chat to folder:", error);
