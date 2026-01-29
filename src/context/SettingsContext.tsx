@@ -22,6 +22,21 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({
       setSettings(loadedSettings)
       setIsLoading(false)
     })
+
+    const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }, areaName: string) => {
+      if (areaName === "local" && changes["gemini-organizer-settings"]) {
+        const newValue = changes["gemini-organizer-settings"].newValue
+        if (newValue) {
+          setSettings(newValue)
+        }
+      }
+    }
+
+    chrome.storage.onChanged.addListener(handleStorageChange)
+
+    return () => {
+      chrome.storage.onChanged.removeListener(handleStorageChange)
+    }
   }, [])
 
   const updateSettings = async (newSettings: Partial<Settings>) => {

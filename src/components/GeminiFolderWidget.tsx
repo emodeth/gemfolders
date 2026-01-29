@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Plus } from "lucide-react";
+import toast from "react-hot-toast";
+import { Plus, EyeOff } from "lucide-react";
 import FolderTree from "./FolderTree";
 import { Input } from "./ui/Input";
 import Tooltip from "./Tooltip";
@@ -11,6 +12,7 @@ import FolderContextMenu from "./FolderContextMenu";
 import ChatContextMenu from "./ChatContextMenu";
 import ModalManager from "./ModalManager";
 import { useModal } from "../context/ModalContext";
+import { useSettings } from "../context/SettingsContext";
 
 interface GeminiFolderWidgetProps {
   onOpenExtension?: () => void;
@@ -18,11 +20,11 @@ interface GeminiFolderWidgetProps {
 
 const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [isExpanded, setIsExpanded] = useState(true);
   const [showAll, setShowAll] = useState(false);
   const { contextMenu, folders } = useFolder();
   const { chatContextMenu } = useChat();
   const { onOpen } = useModal();
+  const { updateSettings } = useSettings();
 
   useEffect(() => {
     const handleAddToFolder = (event: CustomEvent) => {
@@ -62,11 +64,25 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
         <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-2 organizer-py-2 organizer-pl-6">
           <div
             className="organizer-flex organizer-items-center organizer-gap-2 organizer-cursor-pointer"
-            onClick={() => setIsExpanded(!isExpanded)}
           >
             <span className="organizer-text-sm organizer-font-medium organizer-text-text-primary">
               Folders
             </span>
+            <Tooltip text="Hide from sidebar" position="bottom">
+              <div
+                className="organizer-flex organizer-items-center organizer-justify-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  updateSettings({ hideFoldersFromSidebar: true });
+                  toast.success("Folders hidden. You can enable them in settings.", {
+                    id: "folders-hidden-toast",
+                    duration: 4000
+                  });
+                }}
+              >
+                <EyeOff size={14} className="organizer-text-primary" />
+              </div>
+            </Tooltip>
 
           </div>
           <Tooltip text="Create Folder" position="left">
@@ -80,33 +96,32 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
           </Tooltip>
         </div>
 
-        {isExpanded && (
-          <>
-            <div className="organizer-px-2 organizer-pb-2 organizer-pl-6">
-              <Input
-                type="text"
-                placeholder="Search folders..."
-                className="organizer-rounded-lg"
-                variant="ghost"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
 
-            <div className="organizer-px-2 organizer-pl-6">
-              <FolderTree searchTerm={searchTerm} folders={displayedFolders} />
-              {!searchTerm && !showAll && folders && folders.length > 3 && (
-                <button
-                  type="button"
-                  onClick={() => setShowAll(true)}
-                  className="organizer-w-full organizer-text-xs hover:organizer-text-primary/70 organizer-cursor-pointer organizer-text-center organizer-mt-2 organizer-text-text-primary organizer-transition-colors organizer-bg-transparent organizer-border-none organizer-outline-none"
-                >
-                  Show {folders.length - 3} more
-                </button>
-              )}
-            </div>
-          </>
-        )}
+        <div className="organizer-px-2 organizer-pb-2 organizer-pl-6">
+          <Input
+            type="text"
+            placeholder="Search folders..."
+            className="organizer-rounded-lg"
+            variant="ghost"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        <div className="organizer-px-2 organizer-pl-6">
+          <FolderTree searchTerm={searchTerm} folders={displayedFolders} />
+          {!searchTerm && !showAll && folders && folders.length > 3 && (
+            <button
+              type="button"
+              onClick={() => setShowAll(true)}
+              className="organizer-w-full organizer-text-xs hover:organizer-text-primary/70 organizer-cursor-pointer organizer-text-center organizer-mt-2 organizer-text-text-primary organizer-transition-colors organizer-bg-transparent organizer-border-none organizer-outline-none"
+            >
+              Show {folders.length - 3} more
+            </button>
+          )}
+        </div>
+
+
       </div>
       {contextMenu.isOpen && <FolderContextMenu />}
       {chatContextMenu.isOpen && <ChatContextMenu />}

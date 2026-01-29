@@ -6,6 +6,7 @@ import { ChatProvider } from "../context/ChatContext";
 import { BookmarkProvider } from "../context/BookmarkContext";
 import { ModalProvider } from "../context/ModalContext";
 import { ThemeProvider } from "../context/ThemeContext";
+import { SettingsProvider } from "../context/SettingsContext";
 import { ThemeWrapper } from "../components/ThemeWrapper";
 import ToastProvider from "../components/ToastProvider";
 import cssText from "data-text:~style.css";
@@ -151,20 +152,22 @@ const renderWidget = (container: HTMLElement) => {
   widgetRoot = createRoot(mountPoint);
   widgetRoot.render(
     <React.StrictMode>
-      <ThemeProvider>
-        <ThemeWrapper>
-          <ToastProvider />
-          <ModalProvider>
-            <BookmarkProvider>
-              <FolderProvider>
-                <ChatProvider>
-                  <GeminiFolderWidget onOpenExtension={openExtensionSidebar} />
-                </ChatProvider>
-              </FolderProvider>
-            </BookmarkProvider>
-          </ModalProvider>
-        </ThemeWrapper>
-      </ThemeProvider>
+      <SettingsProvider>
+        <ThemeProvider>
+          <ThemeWrapper>
+            <ToastProvider />
+            <ModalProvider>
+              <BookmarkProvider>
+                <FolderProvider>
+                  <ChatProvider>
+                    <GeminiFolderWidget onOpenExtension={openExtensionSidebar} />
+                  </ChatProvider>
+                </FolderProvider>
+              </BookmarkProvider>
+            </ModalProvider>
+          </ThemeWrapper>
+        </ThemeProvider>
+      </SettingsProvider>
     </React.StrictMode>
   );
 };
