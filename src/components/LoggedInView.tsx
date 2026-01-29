@@ -1,7 +1,8 @@
 import { Chrome, Mail } from "lucide-react"
 import React from "react"
 
-import { supabase } from "../lib/supabase"
+import toast from "react-hot-toast"
+import { useAuth } from "../context/AuthContext"
 import { useModal } from "../context/ModalContext"
 
 interface LoggedInViewProps {
@@ -10,9 +11,11 @@ interface LoggedInViewProps {
 
 const LoggedInView: React.FC<LoggedInViewProps> = ({ user }) => {
   const { onOpen } = useModal()
+  const { logout } = useAuth()
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    await logout()
+    toast.success("Logged out successfully")
   }
 
   return (
