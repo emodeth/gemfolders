@@ -24,7 +24,7 @@ export const Switch: React.FC<SwitchProps> = ({
       onClick={() => onCheckedChange(!checked)}
       className={cn(
         "organizer-relative organizer-inline-flex organizer-h-5 organizer-w-9 organizer-items-center organizer-rounded-full organizer-transition-colors focus-visible:organizer-outline-none focus-visible:organizer-ring-2 focus-visible:organizer-ring-ring focus-visible:organizer-ring-offset-2 focus-visible:organizer-ring-offset-background disabled:organizer-cursor-not-allowed disabled:organizer-opacity-50",
-        checked ? "organizer-bg-[var(--color-primary)]" : "organizer-bg-bg-input",
+        checked ? "organizer-bg-[var(--color-primary)]" : "organizer-bg-[var(--bg-switch-off)]",
         className
       )}
     >

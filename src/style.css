@@ -21,6 +21,8 @@
 
   --tooltip-bg: #121212;
   --tooltip-text: #ffffff;
+
+  --bg-switch-off: #3a3a3a;
 }
 
 [data-theme="light"] {
@@ -40,6 +42,8 @@
 
   --tooltip-bg: #4b5563;
   --tooltip-text: #ffffff;
+
+  --bg-switch-off: #94a3b8;
 }
 
 #plasmo-shadow-container {
