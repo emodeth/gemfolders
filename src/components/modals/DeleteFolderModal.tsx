@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { X, Folder } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { Button } from "../ui/Button";
+import { truncateText } from "~lib/utils";
 
 const DeleteFolderModal: React.FC = () => {
   const { onClose, data } = useModal();
@@ -12,7 +13,7 @@ const DeleteFolderModal: React.FC = () => {
     if (onDelete) {
       onDelete();
     }
-    toast.success(`"${folderName}" deleted`);
+    toast.success(`"${truncateText(folderName)}" deleted`);
     onClose();
   };
 

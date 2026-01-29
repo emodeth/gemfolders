@@ -5,6 +5,7 @@ import Node from "./Node";
 import EmptyFolders from "./EmptyFolders";
 import { useFolder } from "../context/FolderContext";
 import type { Folder } from "~lib/storage";
+import { truncateText } from "~lib/utils";
 
 interface FolderTreeProps {
   searchTerm?: string;
@@ -62,7 +63,7 @@ const FolderTree = ({ searchTerm, folders: propFolders, dragWidth = 260 }: Folde
     if (targetName === "root") {
       toast.success(`Moved ${itemCount} item${itemCount > 1 ? 's' : ''} to root`);
     } else if (targetName) {
-      toast.success(`Moved ${itemCount} item${itemCount > 1 ? 's' : ''} to "${targetName}"`);
+      toast.success(`Moved ${itemCount} item${itemCount > 1 ? 's' : ''} to "${truncateText(targetName)}"`);
     }
   };
 

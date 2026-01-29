@@ -4,6 +4,7 @@ import { useModal } from '../../context/ModalContext';
 import { useFolder } from '../../context/FolderContext';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
+import { truncateText } from "~lib/utils";
 
 const AddSubfolderModal: React.FC = () => {
   const { onClose, data } = useModal();
@@ -51,7 +52,7 @@ const AddSubfolderModal: React.FC = () => {
       parentId: parentId || null,
       index: 0,
     });
-    toast.success(`Subfolder "${folderName}" created`);
+    toast.success(`Subfolder "${truncateText(folderName)}" created`);
     closeContextMenu();
     onClose();
   };
