@@ -12,6 +12,7 @@ import MoveChatModal from '~components/modals/MoveChatModal';
 import AddToFolderModal from '~components/modals/AddToFolderModal';
 
 import PaywallModal from '~components/modals/PaywallModal';
+import OnboardingModal from '~components/modals/OnboardingModal';
 
 const ModalManager: React.FC = () => {
   const { type, isOpen, onClose } = useModal();
@@ -34,7 +35,7 @@ const ModalManager: React.FC = () => {
 
   if (!isOpen || !type) return null;
 
-  const isSmallModal = type === 'deleteFolder' || type === 'renameFolderModal' || type === 'renameChatModal' || type === 'deleteChatModal';
+  const isTopPositioned = type === 'deleteFolder' || type === 'renameFolderModal' || type === 'renameChatModal' || type === 'deleteChatModal' || type === 'onboarding';
   const isTransparentOverlay = type === 'createFolder' || type === 'addSubfolder';
 
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -49,10 +50,10 @@ const ModalManager: React.FC = () => {
     <div
       data-modal-overlay="true"
       className={`organizer-fixed organizer-inset-0
-        ${type === 'paywall' ? 'organizer-bg-black/50 organizer-backdrop-blur-sm' : 'organizer-bg-transparent'}
+        ${type === 'paywall' || type === 'onboarding' ? 'organizer-bg-black/50 organizer-backdrop-blur-sm' : 'organizer-bg-transparent'}
         ${isTransparentOverlay ? '' : 'organizer-flex organizer-justify-center'}
-        ${isSmallModal ? 'organizer-items-start organizer-pt-[20vh]' : ''}
-        ${!isSmallModal && !isTransparentOverlay ? 'organizer-items-center' : ''}
+        ${isTopPositioned ? 'organizer-items-start organizer-pt-[20vh]' : ''}
+        ${!isTopPositioned && !isTransparentOverlay ? 'organizer-items-center' : ''}
       `}
       style={{ zIndex: 2147483600 }}
       onClick={handleOverlayClick}
@@ -72,6 +73,7 @@ const ModalManager: React.FC = () => {
         {type === 'moveChatModal' && <MoveChatModal />}
         {type === 'addToFolder' && <AddToFolderModal />}
         {type === 'paywall' && <PaywallModal />}
+        {type === 'onboarding' && <OnboardingModal />}
       </div>
     </div>
   );

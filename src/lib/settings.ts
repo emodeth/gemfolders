@@ -4,6 +4,7 @@ export interface Settings {
   hideFoldersFromSidebar: boolean
   hideAddToFolderFromSidebar: boolean
   sidebarButtonPosition: "top" | "bottom"
+  hasSeenOnboarding: boolean
 }
 
 const SETTINGS_KEY = "gemini-organizer-settings"
@@ -13,7 +14,8 @@ export const DEFAULT_SETTINGS: Settings = {
   hideBookmarksFromSidebar: false,
   hideFoldersFromSidebar: false,
   hideAddToFolderFromSidebar: false,
-  sidebarButtonPosition: "top"
+  sidebarButtonPosition: "top",
+  hasSeenOnboarding: false
 }
 
 export const getSettings = (): Promise<Settings> => {
