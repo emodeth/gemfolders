@@ -31,10 +31,10 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
   const isLoggedIn = !!session?.user;
 
   useEffect(() => {
-    if (!isLoading && !settings.hasSeenOnboarding) {
+    if (!isLoading && !isAuthLoading && isLoggedIn && !settings.hasSeenOnboarding) {
       onOpen('onboarding');
     }
-  }, [isLoading, settings.hasSeenOnboarding, onOpen]);
+  }, [isLoading, isAuthLoading, isLoggedIn, settings.hasSeenOnboarding, onOpen]);
 
   useEffect(() => {
     const handleAddToFolder = (event: CustomEvent) => {
