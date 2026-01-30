@@ -49,8 +49,6 @@ export const setupDeleteHandler = () => {
             if (cached.length !== newCached.length) {
               await saveCachedChats(newCached)
             }
-
-            console.log("[Gemini Folders] Synced deletion for chat:", chatId)
           } catch (error) {
             console.error(
               "[Gemini Folders] Error syncing chat deletion:",

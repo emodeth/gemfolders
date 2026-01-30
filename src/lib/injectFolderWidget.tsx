@@ -203,7 +203,6 @@ export const injectFolderWidget = (): boolean => {
   const injectionPoint = findInjectionPoint();
 
   if (!injectionPoint) {
-    console.log("[Gemini Organizer] Could not find injection point for folder widget. Will retry...");
     return false;
   }
 
@@ -234,7 +233,6 @@ export const injectFolderWidget = (): boolean => {
   }
 
   renderWidget(container);
-  console.log("[Gemini Organizer] Folder widget injected successfully");
   return true;
 };
 

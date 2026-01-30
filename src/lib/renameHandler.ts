@@ -20,9 +20,6 @@ const handleRename = async (chatId: string, newTitle: string) => {
   if (recentlySynced.has(chatId)) return
 
   try {
-    console.log(
-      `[Gemini Folders] Syncing rename for ${chatId} to "${newTitle}"`
-    )
     recentlySynced.add(chatId)
     setTimeout(() => recentlySynced.delete(chatId), SYNC_COOLDOWN)
 
