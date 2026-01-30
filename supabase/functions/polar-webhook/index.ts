@@ -134,7 +134,7 @@ Deno.serve(async (req) => {
         return new Response("Invalid signature", { status: 401 })
       }
     } else {
-      console.log("⚠ Skipping signature verification")
+      console.log("Skipping signature verification")
     }
 
     const payload: PolarWebhookPayload = JSON.parse(body)
@@ -246,7 +246,7 @@ Deno.serve(async (req) => {
           return new Response("Database error", { status: 500 })
         }
 
-        console.log(`✓ Subscription ${accessLevel} granted for user:`, user.id)
+        console.log(`Subscription ${accessLevel} granted for user:`, user.id)
         break
       }
 
