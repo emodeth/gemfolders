@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 
 export type ModalType = 'createFolder' | 'renameFolder' | 'deleteFolder' | 'colorPicker' | 'addChat' | 'renameFolderModal' | 'addSubfolder' | 'renameChatModal' | 'deleteChatModal' | 'moveChatModal' | 'addToFolder' | 'paywall' | 'onboarding';
 
@@ -25,17 +25,17 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     isOpen: false,
   });
 
-  const onOpen = (type: ModalType, data: any = {}) => {
+  const onOpen = useCallback((type: ModalType, data: any = {}) => {
     setStore({ type, data, isOpen: true });
-  };
+  }, []);
 
-  const onClose = () => {
+  const onClose = useCallback(() => {
     setStore({ type: null, data: {}, isOpen: false });
-  };
+  }, []);
 
   const value = React.useMemo(
     () => ({ type: store.type, isOpen: store.isOpen, data: store.data, onOpen, onClose }),
-    [store]
+    [store, onOpen, onClose]
   );
 
   return (
