@@ -1,9 +1,22 @@
 import React from 'react';
-import { X, Check, ArrowRight } from 'lucide-react';
+import { X, Check } from 'lucide-react';
 import { useModal } from '../../context/ModalContext';
+import { useAuth } from '../../context/AuthContext';
+import { POLAR_CHECKOUT_LINKS } from '../../types/subscription';
 
 const PaywallModal: React.FC = () => {
   const { onClose } = useModal();
+  const { user } = useAuth();
+
+  const openCheckout = (url: string) => {
+    const checkoutUrl = new URL(url);
+    if (user?.email) {
+      checkoutUrl.searchParams.set('email', user.email);
+      checkoutUrl.searchParams.set('metadata[user_email]', user.email);
+    }
+    window.open(checkoutUrl.toString(), '_blank');
+    onClose();
+  };
 
   return (
     <div className="organizer-w-[500px] organizer-bg-bg-background organizer-rounded-md organizer-text-text-primary organizer-relative organizer-shadow-2xl organizer-border organizer-border-border-default">
@@ -25,12 +38,18 @@ const PaywallModal: React.FC = () => {
       </div>
 
       <div className="organizer-px-6 organizer-space-y-3">
-        <div className="organizer-bg-bg-surface hover:organizer-bg-bg-surface-hover organizer-border organizer-border-border-default organizer-rounded-xl organizer-p-4 organizer-flex organizer-flex-col organizer-items-center organizer-justify-center organizer-cursor-pointer organizer-transition-colors">
+        <div
+          onClick={() => openCheckout(POLAR_CHECKOUT_LINKS.lifetime)}
+          className="organizer-bg-bg-surface hover:organizer-bg-bg-surface-hover organizer-border organizer-border-border-default organizer-rounded-xl organizer-p-4 organizer-flex organizer-flex-col organizer-items-center organizer-justify-center organizer-cursor-pointer organizer-transition-colors"
+        >
           <div className="organizer-text-xs organizer-font-bold organizer-text-text-secondary organizer-uppercase organizer-tracking-wider organizer-mb-1">Lifetime</div>
           <div className="organizer-text-2xl organizer-font-bold">$49.99</div>
         </div>
 
-        <div className="organizer-relative organizer-group organizer-cursor-pointer">
+        <div
+          onClick={() => openCheckout(POLAR_CHECKOUT_LINKS.yearly)}
+          className="organizer-relative organizer-group organizer-cursor-pointer"
+        >
           <div className="organizer-absolute -organizer-inset-0.5 organizer-bg-gradient-to-r organizer-from-[var(--color-primary)] organizer-to-cyan-500 organizer-rounded-xl organizer-opacity-75 group-hover:organizer-opacity-100 organizer-blur-[2px] organizer-transition-all"></div>
           <div className="organizer-relative organizer-bg-bg-surface group-hover:organizer-bg-bg-surface-hover organizer-rounded-xl organizer-p-4 organizer-flex organizer-flex-col organizer-items-center organizer-justify-center organizer-border organizer-border-[var(--color-primary)]/30 organizer-transition-colors">
             <div className="organizer-absolute organizer-top-0 organizer-right-0 organizer-transform organizer-translate-x-2 -organizer-translate-y-2">
@@ -46,7 +65,10 @@ const PaywallModal: React.FC = () => {
           </div>
         </div>
 
-        <div className="organizer-bg-bg-surface hover:organizer-bg-bg-surface-hover organizer-border organizer-border-border-default organizer-rounded-xl organizer-p-4 organizer-flex organizer-flex-col organizer-items-center organizer-justify-center organizer-cursor-pointer organizer-transition-colors">
+        <div
+          onClick={() => openCheckout(POLAR_CHECKOUT_LINKS.monthly)}
+          className="organizer-bg-bg-surface hover:organizer-bg-bg-surface-hover organizer-border organizer-border-border-default organizer-rounded-xl organizer-p-4 organizer-flex organizer-flex-col organizer-items-center organizer-justify-center organizer-cursor-pointer organizer-transition-colors"
+        >
           <div className="organizer-text-xs organizer-font-bold organizer-text-text-secondary organizer-uppercase organizer-tracking-wider organizer-mb-1">Monthly</div>
           <div className="organizer-flex organizer-items-baseline organizer-gap-1">
             <span className="organizer-text-2xl organizer-font-bold">$4.99</span>

@@ -9,6 +9,7 @@ import { BookmarkProvider } from "~context/BookmarkContext"
 import { ThemeProvider } from "~context/ThemeContext"
 import { SettingsProvider, useSettings } from "~context/SettingsContext"
 import { AuthProvider } from "~context/AuthContext"
+import { SubscriptionProvider } from "~context/SubscriptionContext"
 import { ThemeWrapper } from "~components/ThemeWrapper"
 import ToastProvider from "~components/ToastProvider"
 import { injectBookmarkButtons } from "~lib/injectBookmarkButtons"
@@ -141,22 +142,24 @@ const PlasmoOverlay = () => {
   return (
     <SettingsProvider>
       <AuthProvider>
-        <ThemeProvider>
-          <ThemeWrapper>
-            <ToastProvider />
-            <ModalProvider>
-              <FolderProvider>
-                <BookmarkProvider>
-                  <ChatProvider>
-                    <SidebarButtonContainer onClick={toggleSidebar} />
-                    <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-                    <ModalManager />
-                  </ChatProvider>
-                </BookmarkProvider>
-              </FolderProvider>
-            </ModalProvider>
-          </ThemeWrapper>
-        </ThemeProvider>
+        <SubscriptionProvider>
+          <ThemeProvider>
+            <ThemeWrapper>
+              <ToastProvider />
+              <ModalProvider>
+                <FolderProvider>
+                  <BookmarkProvider>
+                    <ChatProvider>
+                      <SidebarButtonContainer onClick={toggleSidebar} />
+                      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+                      <ModalManager />
+                    </ChatProvider>
+                  </BookmarkProvider>
+                </FolderProvider>
+              </ModalProvider>
+            </ThemeWrapper>
+          </ThemeProvider>
+        </SubscriptionProvider>
       </AuthProvider>
     </SettingsProvider>
   )
