@@ -160,12 +160,12 @@ export const addChatsToFolder = async (
         const chatNodes: Folder[] = chats
           .filter((chat) => !existingChatIds.has(chat.id))
           .map((chat) => ({
-            id: uuidv4(), // Generate unique instance ID
+            id: uuidv4(),
             name: chat.title,
             type: "chat" as const,
             children: [],
             chatUrl: chat.url,
-            originalId: chat.id // Store original ID
+            originalId: chat.id
           }))
 
         node.children.push(...chatNodes)
@@ -194,15 +194,10 @@ export const renameChat = async (
         node.type === "chat"
       ) {
         node.name = newName
-        // If we want to rename only this instance, we stop here.
-        // If we want to rename ALL instances, we continue.
-        // Let's assume rename impacts all instances if we matched by originalId,
-        // but if we matched by unique ID, maybe just that one?
-        // For now, let's keep searching to rename all instances if possible.
       }
       if (node.children) updateName(node.children)
     }
-    return true // Always return true to save changes
+    return true
   }
 
   updateName(folders)
@@ -267,7 +262,6 @@ export const moveChat = async (
 ): Promise<Folder[]> => {
   const folders = await getFolders()
 
-  // Helper to find and extract a chat from the tree
   let extractedChat: Folder | null = null
 
   const extractChat = (nodes: Folder[]): Folder[] => {
@@ -292,7 +286,6 @@ export const moveChat = async (
     })
   }
 
-  // Helper to insert chat into target folder
   const insertChat = (nodes: Folder[], chat: Folder): Folder[] => {
     return nodes.map((node) => {
       if (node.id === targetFolderId && node.type === "folder") {
@@ -321,10 +314,8 @@ export const moveChat = async (
     })
   }
 
-  // Step 1: Extract the chat from its current location
   let updatedFolders = extractChat(folders)
 
-  // Step 2: Insert the chat into the target folder
   if (extractedChat) {
     updatedFolders = insertChat(updatedFolders, extractedChat)
   }
@@ -340,7 +331,6 @@ export const moveNodes = async (
 ): Promise<Folder[]> => {
   const folders = await getFolders()
 
-  // Helper to find and remove nodes by IDs from the tree
   const extractNodes = (
     nodes: Folder[],
     idsToExtract: Set<string>
@@ -365,7 +355,6 @@ export const moveNodes = async (
     return { remaining, extracted }
   }
 
-  // Helper to insert nodes at a specific location
   const insertNodes = (
     nodes: Folder[],
     nodesToInsert: Folder[],
@@ -373,7 +362,6 @@ export const moveNodes = async (
     targetIndex: number
   ): Folder[] => {
     if (targetParentId === null) {
-      // Insert at root level
       const result = [...nodes]
       result.splice(targetIndex, 0, ...nodesToInsert)
       return result
@@ -381,7 +369,6 @@ export const moveNodes = async (
 
     return nodes.map((node) => {
       if (node.id === targetParentId) {
-        // Filter out duplicates for chats
         const distinctNodesToInsert = nodesToInsert.filter((toInsert) => {
           if (toInsert.type !== "chat") return true
           const insertRealId = toInsert.originalId || toInsert.id
@@ -411,11 +398,9 @@ export const moveNodes = async (
     })
   }
 
-  // Step 1: Extract the nodes being moved
   const idsToMove = new Set(dragIds)
   const { remaining, extracted } = extractNodes(folders, idsToMove)
 
-  // Step 2: Insert extracted nodes at the new location
   const updatedFolders = insertNodes(remaining, extracted, parentId, index)
 
   await saveFolders(updatedFolders)

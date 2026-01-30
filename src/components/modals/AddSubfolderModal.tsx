@@ -48,13 +48,11 @@ const AddSubfolderModal: React.FC = () => {
     e.preventDefault();
     if (!folderName.trim()) return;
 
-    // Check tier limits for total folder count first
     if (!canCreateFolder()) {
       showPaywall("folder limit");
       return;
     }
 
-    // Then check subfolder depth limit
     if (parentId && !canCreateSubfolder(parentId)) {
       showPaywall("subfolder limit");
       return;

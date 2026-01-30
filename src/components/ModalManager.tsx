@@ -33,7 +33,6 @@ const ModalManager: React.FC = () => {
     };
   }, [isOpen, onClose]);
 
-  // Listen for paywall modal events from injected buttons (outside React)
   useEffect(() => {
     const handleOpenPaywall = (event: CustomEvent) => {
       const { reason } = event.detail || {};

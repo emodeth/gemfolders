@@ -61,7 +61,6 @@ export const BookmarkProvider: React.FC<{ children: ReactNode }> = ({ children }
     chat: { id: string; title: string; url: string },
     options?: { canAdd?: () => boolean; onLimitReached?: () => void }
   ) => {
-    // Check tier limits if callback provided
     if (options?.canAdd && !options.canAdd()) {
       options.onLimitReached?.()
       return

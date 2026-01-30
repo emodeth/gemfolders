@@ -31,7 +31,6 @@ const RenameChatModal: React.FC = () => {
       className="organizer-w-[400px] organizer-bg-bg-background organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden"
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Header */}
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-4 organizer-py-3">
         <div className="organizer-text-[14px] organizer-font-medium organizer-text-text-primary">
           Rename Chat
@@ -44,7 +43,6 @@ const RenameChatModal: React.FC = () => {
         </button>
       </div>
 
-      {/* Input */}
       <form onSubmit={handleSubmit}>
         <div className="organizer-px-4 organizer-pb-3">
           <Input
@@ -57,7 +55,6 @@ const RenameChatModal: React.FC = () => {
           />
         </div>
 
-        {/* Footer with buttons */}
         <div className="organizer-px-4 organizer-pb-4 organizer-flex organizer-justify-end organizer-gap-2">
           <Button variant="cancel" type="button" onClick={onClose}>
             Cancel

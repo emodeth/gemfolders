@@ -198,9 +198,6 @@ export const injectFolderWidget = (): boolean => {
     return true;
   }
 
-  // Styles are now injected into Shadow DOM in createWidgetContainer
-
-
   getSettings().then(applySettings);
 
   const injectionPoint = findInjectionPoint();
@@ -305,9 +302,7 @@ export const removeFolderWidget = () => {
     containerObserver = null;
   }
 
-  // Styles are now in shadow DOM, so removing container removes styles too.
-  // Exception: if we previously injected logic differently.
-  // The old global style cleanup:
+
   const globalStyles = document.getElementById(WIDGET_STYLES_ID);
   globalStyles?.remove();
 

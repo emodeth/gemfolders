@@ -68,7 +68,6 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
     return folders.slice(0, 3);
   }, [folders, searchTerm, showAll]);
 
-  // Only hide if auth is finished loading AND user is not logged in
   if (!isAuthLoading && !isLoggedIn) {
     return null;
   }
