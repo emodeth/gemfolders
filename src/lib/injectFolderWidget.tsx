@@ -7,6 +7,8 @@ import { BookmarkProvider } from "../context/BookmarkContext";
 import { ModalProvider } from "../context/ModalContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import { SettingsProvider } from "../context/SettingsContext";
+import { AuthProvider } from "../context/AuthContext";
+import { SubscriptionProvider } from "../context/SubscriptionContext";
 import { ThemeWrapper } from "../components/ThemeWrapper";
 import ToastProvider from "../components/ToastProvider";
 import cssText from "data-text:~style.css";
@@ -153,20 +155,24 @@ const renderWidget = (container: HTMLElement) => {
   widgetRoot.render(
     <React.StrictMode>
       <SettingsProvider>
-        <ThemeProvider>
-          <ThemeWrapper>
-            <ToastProvider />
-            <ModalProvider>
-              <BookmarkProvider>
-                <FolderProvider>
-                  <ChatProvider>
-                    <GeminiFolderWidget onOpenExtension={openExtensionSidebar} />
-                  </ChatProvider>
-                </FolderProvider>
-              </BookmarkProvider>
-            </ModalProvider>
-          </ThemeWrapper>
-        </ThemeProvider>
+        <AuthProvider>
+          <SubscriptionProvider>
+            <ThemeProvider>
+              <ThemeWrapper>
+                <ToastProvider />
+                <ModalProvider>
+                  <BookmarkProvider>
+                    <FolderProvider>
+                      <ChatProvider>
+                        <GeminiFolderWidget onOpenExtension={openExtensionSidebar} />
+                      </ChatProvider>
+                    </FolderProvider>
+                  </BookmarkProvider>
+                </ModalProvider>
+              </ThemeWrapper>
+            </ThemeProvider>
+          </SubscriptionProvider>
+        </AuthProvider>
       </SettingsProvider>
     </React.StrictMode>
   );

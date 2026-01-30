@@ -11,9 +11,10 @@ interface TabBarProps {
   tabs: TabItem[];
   activeTab: string;
   onTabChange: (tabId: string) => void;
+  disabledTabs?: string[];
 }
 
-const TabBar: React.FC<TabBarProps> = ({ tabs, activeTab, onTabChange }) => {
+const TabBar: React.FC<TabBarProps> = ({ tabs, activeTab, onTabChange, disabledTabs = [] }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
 
@@ -42,8 +43,8 @@ const TabBar: React.FC<TabBarProps> = ({ tabs, activeTab, onTabChange }) => {
   }, [activeTab, tabs]);
 
   useEffect(() => {
-    window.addEventListener("resize", updateIndicator);
-    return () => window.removeEventListener("resize", updateIndicator);
+    globalThis.addEventListener("resize", updateIndicator);
+    return () => globalThis.removeEventListener("resize", updateIndicator);
   }, [activeTab, tabs]);
 
   return (
@@ -54,6 +55,7 @@ const TabBar: React.FC<TabBarProps> = ({ tabs, activeTab, onTabChange }) => {
           active={activeTab === tab.id}
           onClick={() => onTabChange(tab.id)}
           tab={tab}
+          disabled={disabledTabs.includes(tab.id)}
         />
       ))}
 

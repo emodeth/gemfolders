@@ -10,9 +10,10 @@ import { ThemeProvider } from "~context/ThemeContext"
 import { SettingsProvider, useSettings } from "~context/SettingsContext"
 import { AuthProvider } from "~context/AuthContext"
 import { SubscriptionProvider } from "~context/SubscriptionContext"
+import { TierLimitsProvider } from "~context/TierLimitsContext"
 import { ThemeWrapper } from "~components/ThemeWrapper"
 import ToastProvider from "~components/ToastProvider"
-import { injectBookmarkButtons } from "~lib/injectBookmarkButtons"
+import { injectBookmarkButtons, setupAuthListener } from "~lib/injectBookmarkButtons"
 import { setupFolderWidgetInjection } from "~lib/injectFolderWidget"
 import { getSettings } from "~lib/settings"
 import { setupDeleteHandler } from "~lib/deleteHandler"
@@ -89,6 +90,7 @@ const PlasmoOverlay = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       injectBookmarkButtons()
+      setupAuthListener() // Listen for auth changes to show/hide buttons
     }, 1000)
 
     return () => clearTimeout(timeoutId)
@@ -139,6 +141,29 @@ const PlasmoOverlay = () => {
     }
   }, [])
 
+  // Listen for paywall events from injected buttons (outside React)
+  useEffect(() => {
+    const handleShowPaywall = (event: CustomEvent) => {
+      const { reason } = event.detail || {}
+      // Store reason in session storage for the modal to pick up
+      if (reason) {
+        sessionStorage.setItem("gemini-paywall-reason", reason)
+      }
+      // Open sidebar and dispatch event to show paywall modal
+      openSidebar()
+      // Small delay to ensure sidebar is open before showing modal
+      setTimeout(() => {
+        globalThis.dispatchEvent(new CustomEvent("gemini-open-paywall-modal", { detail: { reason } }))
+      }, 100)
+    }
+
+    globalThis.addEventListener("gemini-show-paywall", handleShowPaywall as EventListener)
+
+    return () => {
+      globalThis.removeEventListener("gemini-show-paywall", handleShowPaywall as EventListener)
+    }
+  }, [])
+
   return (
     <SettingsProvider>
       <AuthProvider>
@@ -150,9 +175,11 @@ const PlasmoOverlay = () => {
                 <FolderProvider>
                   <BookmarkProvider>
                     <ChatProvider>
-                      <SidebarButtonContainer onClick={toggleSidebar} />
-                      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-                      <ModalManager />
+                      <TierLimitsProvider>
+                        <SidebarButtonContainer onClick={toggleSidebar} />
+                        <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+                        <ModalManager />
+                      </TierLimitsProvider>
                     </ChatProvider>
                   </BookmarkProvider>
                 </FolderProvider>

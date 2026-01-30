@@ -9,13 +9,68 @@ import {
   removeBookmark,
   type BookmarkedChat
 } from "./storage"
+import { supabase } from "./supabase"
 
 const BOOKMARK_BUTTON_CLASS = "gemini-organizer-bookmark-btn"
 const BOOKMARK_ICON_FILLED = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`
 const BOOKMARK_ICON_OUTLINE = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`
 
+const FREE_TIER_MAX_BOOKMARKS = 5
+
 let bookmarksCache: BookmarkedChat[] = []
 let settingsCache: Settings = DEFAULT_SETTINGS
+let isLoggedIn = false
+
+const checkLoginStatus = async (): Promise<boolean> => {
+  try {
+    const {
+      data: { session }
+    } = await supabase.auth.getSession()
+    return !!session?.user
+  } catch {
+    return false
+  }
+}
+
+const canAddBookmark = async (): Promise<{
+  allowed: boolean
+  reason?: string
+}> => {
+  try {
+    const {
+      data: { session }
+    } = await supabase.auth.getSession()
+
+    if (!session?.user) {
+      return { allowed: false, reason: "login" }
+    }
+
+    const { data: userAccess } = await supabase
+      .from("user_access")
+      .select("*")
+      .eq("user_id", session.user.id)
+      .single()
+
+    if (userAccess) {
+      const isPro =
+        userAccess.access_status === "lifetime" ||
+        (userAccess.current_period_end &&
+          new Date(userAccess.current_period_end) > new Date())
+
+      if (isPro) {
+        return { allowed: true }
+      }
+    }
+
+    if (bookmarksCache.length >= FREE_TIER_MAX_BOOKMARKS) {
+      return { allowed: false, reason: "bookmark limit" }
+    }
+
+    return { allowed: true }
+  } catch {
+    return { allowed: true }
+  }
+}
 
 const injectStyles = () => {
   const styleId = "gemini-organizer-settings-styles"
@@ -158,11 +213,25 @@ const createBookmarkButton = (
     const wasBookmarked = isBookmarked(chatId)
 
     if (wasBookmarked) {
+      // Always allow removing bookmarks
       bookmarksCache = await removeBookmark(chatId)
       button.innerHTML = BOOKMARK_ICON_OUTLINE
       button.title = "Add bookmark"
       button.style.color = "var(--gem-sys-color--on-surface-variant, #5f6368)"
     } else {
+      // Check tier limits before adding
+      const { allowed, reason } = await canAddBookmark()
+
+      if (!allowed) {
+        // Dispatch event to show paywall (handled by content.tsx)
+        globalThis.dispatchEvent(
+          new CustomEvent("gemini-show-paywall", {
+            detail: { reason }
+          })
+        )
+        return
+      }
+
       bookmarksCache = await addBookmark({
         id: chatId,
         title: chatTitle,
@@ -285,6 +354,12 @@ const updateAllBookmarkButtons = () => {
 
 export const injectBookmarkButtons = async () => {
   injectStyles()
+
+  isLoggedIn = await checkLoginStatus()
+  if (!isLoggedIn) {
+    return
+  }
+
   bookmarksCache = await getBookmarks()
   settingsCache = await getSettings()
   applySettings(settingsCache)
@@ -377,4 +452,52 @@ export const refreshBookmarkButtons = async () => {
   const conversations = document.querySelectorAll(".conversation")
   conversations.forEach(injectButtonIntoConversation)
   updateAllBookmarkButtons()
+}
+
+/**
+ * Remove all injected bookmark and folder buttons from Gemini's sidebar
+ */
+export const removeAllInjectedButtons = () => {
+  // Remove all bookmark buttons
+  const bookmarkButtons = document.querySelectorAll(`.${BOOKMARK_BUTTON_CLASS}`)
+  bookmarkButtons.forEach((btn) => btn.remove())
+
+  // Remove all folder buttons
+  const folderButtons = document.querySelectorAll(
+    ".gemini-organizer-folder-btn"
+  )
+  folderButtons.forEach((btn) => btn.remove())
+
+  // Remove wrapper containers if they're now empty or just have native actions
+  const wrappers = document.querySelectorAll(
+    ".gemini-organizer-actions-wrapper"
+  )
+  wrappers.forEach((wrapper) => {
+    const nativeActions = wrapper.querySelector(
+      ".conversation-actions-container"
+    )
+    if (nativeActions && wrapper.parentElement) {
+      // Move native actions back to parent
+      wrapper.parentElement.appendChild(nativeActions)
+    }
+    wrapper.remove()
+  })
+}
+
+/**
+ * Setup auth state listener to show/hide buttons based on login status
+ */
+export const setupAuthListener = () => {
+  supabase.auth.onAuthStateChange((event, session) => {
+    const wasLoggedIn = isLoggedIn
+    isLoggedIn = !!session?.user
+
+    if (wasLoggedIn && !isLoggedIn) {
+      // User logged out - remove all buttons
+      removeAllInjectedButtons()
+    } else if (!wasLoggedIn && isLoggedIn) {
+      // User logged in - inject buttons
+      injectBookmarkButtons()
+    }
+  })
 }
