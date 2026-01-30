@@ -7,13 +7,18 @@ import {
 } from "../lib/storage"
 import toast from "react-hot-toast"
 
+interface TierLimitOptions {
+  canAdd?: () => boolean
+  onLimitReached?: () => void
+}
+
 interface BookmarkContextType {
   bookmarks: BookmarkedChat[]
   isLoading: boolean
-  addBookmark: (chat: { id: string; title: string; url: string }) => Promise<void>
+  addBookmark: (chat: { id: string; title: string; url: string }, options?: TierLimitOptions) => Promise<void>
   removeBookmark: (chatId: string) => Promise<void>
   isBookmarked: (chatId: string) => boolean
-  toggleBookmark: (chat: { id: string; title: string; url: string }) => Promise<void>
+  toggleBookmark: (chat: { id: string; title: string; url: string }, options?: TierLimitOptions) => Promise<void>
 }
 
 const BookmarkContext = createContext<BookmarkContextType | undefined>(undefined)
@@ -52,7 +57,16 @@ export const BookmarkProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   }, [])
 
-  const addBookmark = async (chat: { id: string; title: string; url: string }) => {
+  const addBookmark = async (
+    chat: { id: string; title: string; url: string },
+    options?: { canAdd?: () => boolean; onLimitReached?: () => void }
+  ) => {
+    // Check tier limits if callback provided
+    if (options?.canAdd && !options.canAdd()) {
+      options.onLimitReached?.()
+      return
+    }
+
     try {
       const updatedBookmarks = await addBookmarkToStorage(chat)
       setBookmarks(updatedBookmarks)
@@ -78,11 +92,14 @@ export const BookmarkProvider: React.FC<{ children: ReactNode }> = ({ children }
     return bookmarks.some((b) => b.id === chatId)
   }
 
-  const toggleBookmark = async (chat: { id: string; title: string; url: string }) => {
+  const toggleBookmark = async (
+    chat: { id: string; title: string; url: string },
+    options?: { canAdd?: () => boolean; onLimitReached?: () => void }
+  ) => {
     if (isBookmarked(chat.id)) {
       await removeBookmark(chat.id)
     } else {
-      await addBookmark(chat)
+      await addBookmark(chat, options)
     }
   }
 

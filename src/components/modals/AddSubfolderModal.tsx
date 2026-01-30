@@ -2,6 +2,7 @@ import React, { useState, useRef, useLayoutEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useModal } from '../../context/ModalContext';
 import { useFolder } from '../../context/FolderContext';
+import { useTierLimits } from '../../context/TierLimitsContext';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { truncateText } from "~lib/utils";
@@ -9,6 +10,7 @@ import { truncateText } from "~lib/utils";
 const AddSubfolderModal: React.FC = () => {
   const { onClose, data } = useModal();
   const { onCreate, closeContextMenu } = useFolder();
+  const { canCreateFolder, canCreateSubfolder, showPaywall } = useTierLimits();
   const [folderName, setFolderName] = useState('');
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
@@ -45,6 +47,18 @@ const AddSubfolderModal: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!folderName.trim()) return;
+
+    // Check tier limits for total folder count first
+    if (!canCreateFolder()) {
+      showPaywall("folder limit");
+      return;
+    }
+
+    // Then check subfolder depth limit
+    if (parentId && !canCreateSubfolder(parentId)) {
+      showPaywall("subfolder limit");
+      return;
+    }
 
     await onCreate({
       name: folderName,

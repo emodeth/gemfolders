@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useModal } from '../../context/ModalContext';
 import { useFolder } from '../../context/FolderContext';
+import { useTierLimits } from '../../context/TierLimitsContext';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { truncateText } from "~lib/utils";
@@ -23,10 +24,17 @@ const CreateFolderModal: React.FC = () => {
   }, [onClose]);
 
   const { onCreate } = useFolder();
+  const { canCreateFolder, showPaywall } = useTierLimits();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!folderName.trim()) return;
+
+    // Check tier limits for all folder creation
+    if (!canCreateFolder()) {
+      showPaywall("folder limit");
+      return;
+    }
 
     await onCreate({
       name: folderName,

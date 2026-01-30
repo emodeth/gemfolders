@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Tooltip from "./Tooltip";
 import {
   ArrowRightFromLineIcon,
@@ -17,6 +17,7 @@ import FolderContextMenu from "./FolderContextMenu";
 import ChatContextMenu from "./ChatContextMenu";
 import { useFolder } from "../context/FolderContext";
 import { useChat } from "../context/ChatContext";
+import { useAuth } from "../context/AuthContext";
 
 type TabType = "folders" | "bookmarks" | "account" | "settings";
 
@@ -25,19 +26,47 @@ interface SidebarProps {
   onClose: () => void;
 }
 
+const ALL_TABS: { id: TabType; icon: React.ReactNode; label: string }[] = [
+  { id: "folders", icon: <Folders size={18} />, label: "Folders" },
+  { id: "bookmarks", icon: <Bookmark size={18} />, label: "Bookmarks" },
+  { id: "account", icon: <User size={18} />, label: "Account" },
+  { id: "settings", icon: <Settings size={18} />, label: "Settings" },
+];
+
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const { session, isLoading: isAuthLoading } = useAuth();
+  const isLoggedIn = !!session?.user;
+
+  // Tabs that should be disabled when not logged in
+  const disabledTabs = useMemo(() => {
+    if (!isAuthLoading && !isLoggedIn) {
+      return ["folders", "bookmarks", "settings"];
+    }
+    return [];
+  }, [isLoggedIn, isAuthLoading]);
+
   const [activeTab, setActiveTab] = useState<TabType>("folders");
   const { contextMenu } = useFolder();
   const { chatContextMenu } = useChat();
 
-  const tabs: { id: TabType; icon: React.ReactNode; label: string }[] = [
-    { id: "folders", icon: <Folders size={18} />, label: "Folders" },
-    { id: "bookmarks", icon: <Bookmark size={18} />, label: "Bookmarks" },
-    { id: "account", icon: <User size={18} />, label: "Account" },
-    { id: "settings", icon: <Settings size={18} />, label: "Settings" },
-  ];
+  // Update active tab when auth state changes
+  useEffect(() => {
+    if (!isAuthLoading) {
+      if (isLoggedIn) {
+        setActiveTab("folders");
+      } else {
+        setActiveTab("account");
+      }
+    }
+  }, [isLoggedIn, isAuthLoading]);
+
+  const currentTabLabel = ALL_TABS.find((t) => t.id === activeTab)?.label || "Account";
 
   const renderTabContent = () => {
+    if (!isLoggedIn && activeTab !== "account") {
+      return <AccountTab />;
+    }
+
     switch (activeTab) {
       case "folders":
         return <FoldersTab />;
@@ -69,16 +98,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
         <div className="organizer-flex organizer-items-center organizer-gap-2 organizer-mx-auto">
           <TabBar
-            tabs={tabs}
+            tabs={ALL_TABS}
             activeTab={activeTab}
             onTabChange={(tabId) => setActiveTab(tabId as TabType)}
+            disabledTabs={disabledTabs}
           />
         </div>
       </div>
 
       <div className="organizer-mt-4">
         <h2 className="organizer-text-text-primary organizer-font-semibold organizer-text-lg organizer-mb-2">
-          {tabs.find((t) => t.id === activeTab)?.label}
+          {currentTabLabel}
         </h2>
       </div>
 
@@ -86,10 +116,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {renderTabContent()}
       </div>
 
-      {contextMenu.isOpen && <FolderContextMenu />}
-      {chatContextMenu.isOpen && <ChatContextMenu />}
+      {isLoggedIn && contextMenu.isOpen && <FolderContextMenu />}
+      {isLoggedIn && chatContextMenu.isOpen && <ChatContextMenu />}
     </div>
   );
 };
 
 export default Sidebar;
+

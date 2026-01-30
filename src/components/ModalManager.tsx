@@ -15,7 +15,7 @@ import PaywallModal from '~components/modals/PaywallModal';
 import OnboardingModal from '~components/modals/OnboardingModal';
 
 const ModalManager: React.FC = () => {
-  const { type, isOpen, onClose } = useModal();
+  const { type, isOpen, onClose, onOpen } = useModal();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -32,6 +32,20 @@ const ModalManager: React.FC = () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose]);
+
+  // Listen for paywall modal events from injected buttons (outside React)
+  useEffect(() => {
+    const handleOpenPaywall = (event: CustomEvent) => {
+      const { reason } = event.detail || {};
+      onOpen('paywall', { reason });
+    };
+
+    globalThis.addEventListener('gemini-open-paywall-modal', handleOpenPaywall as EventListener);
+
+    return () => {
+      globalThis.removeEventListener('gemini-open-paywall-modal', handleOpenPaywall as EventListener);
+    };
+  }, [onOpen]);
 
   if (!isOpen || !type) return null;
 

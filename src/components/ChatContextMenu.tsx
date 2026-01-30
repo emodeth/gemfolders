@@ -3,6 +3,7 @@ import { Bookmark, FolderInput, Pencil, Trash2 } from "lucide-react";
 import ContextMenuItem from "./ContextMenuItem";
 import { useChat } from "../context/ChatContext";
 import { useBookmark } from "../context/BookmarkContext";
+import { useTierLimits } from "../context/TierLimitsContext";
 
 const styles = {
   menu: {
@@ -40,17 +41,32 @@ const ChatContextMenu: React.FC = () => {
     handleChatMoveTo,
     handleChatRename,
     handleChatDelete,
-    handleChatBookmark,
   } = useChat();
 
-  const { isBookmarked } = useBookmark();
+  const { isBookmarked, toggleBookmark } = useBookmark();
+  const { canBookmark, showPaywall } = useTierLimits();
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
 
-  const { x, y, chatName, chatId } = chatContextMenu;
-  const bookmarked = isBookmarked(chatId);
+  const { x, y, chatName, chatId, chatUrl, originalId } = chatContextMenu;
+  const bookmarked = isBookmarked(originalId || chatId);
+
+  const handleBookmarkClick = () => {
+    toggleBookmark(
+      {
+        id: originalId || chatId,
+        title: chatName,
+        url: chatUrl,
+      },
+      {
+        canAdd: canBookmark,
+        onLimitReached: () => showPaywall("bookmark limit"),
+      }
+    );
+    closeChatContextMenu();
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -147,7 +163,7 @@ const ChatContextMenu: React.FC = () => {
       <ContextMenuItem
         icon={<Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />}
         label={bookmarked ? "Remove Bookmark" : "Bookmark"}
-        onClick={handleChatBookmark}
+        onClick={handleBookmarkClick}
       />
 
       <ContextMenuItem

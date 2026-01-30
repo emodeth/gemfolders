@@ -11,21 +11,32 @@ interface TabButtonProps {
   active: boolean;
   tab: TabItem;
   onClick: () => void;
+  disabled?: boolean;
 }
 
 const TabButton: React.FC<TabButtonProps> = ({
   active,
   tab,
   onClick,
+  disabled = false,
 }) => {
+  const handleClick = () => {
+    if (!disabled) {
+      onClick();
+    }
+  };
+
   return (
-    <Tooltip text={tab.label} position="bottom">
+    <Tooltip text={disabled ? `${tab.label} (Login required)` : tab.label} position="bottom">
       <button
         data-tab-button
-        onClick={onClick}
-        className={`organizer-relative organizer-px-2 organizer-py-3 organizer-rounded-lg organizer-transition-all ${active
-            ? "organizer-text-text-primary"
-            : "organizer-text-text-secondary hover:organizer-text-text-primary"
+        onClick={handleClick}
+        disabled={disabled}
+        className={`organizer-relative organizer-px-2 organizer-py-3 organizer-rounded-lg organizer-transition-all ${disabled
+            ? "organizer-text-text-secondary organizer-opacity-40 organizer-cursor-not-allowed"
+            : active
+              ? "organizer-text-text-primary"
+              : "organizer-text-text-secondary hover:organizer-text-text-primary"
           }`}
       >
         {tab.icon}
@@ -35,3 +46,4 @@ const TabButton: React.FC<TabButtonProps> = ({
 };
 
 export default TabButton;
+

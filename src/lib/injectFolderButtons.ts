@@ -82,8 +82,6 @@ export const createFolderButton = (
 
   button.addEventListener("mouseleave", () => {
     button.style.backgroundColor = "transparent"
-    // Only reset color if not active/filled
-    // Only reset color if not active/filled
     if (button.dataset.inFolder === "true") {
       button.style.color = "#3b82f6"
     } else {
@@ -91,10 +89,9 @@ export const createFolderButton = (
     }
   })
 
-  // Initial state check
   updateFolderButtonState(button)
 
-  button.addEventListener("click", async (e) => {
+  button.addEventListener("click", (e) => {
     e.preventDefault()
     e.stopPropagation()
 
