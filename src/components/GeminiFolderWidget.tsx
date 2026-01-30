@@ -25,16 +25,12 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
   const { contextMenu, folders } = useFolder();
   const { chatContextMenu } = useChat();
   const { onOpen } = useModal();
-  const { updateSettings, settings, isLoading } = useSettings();
+  const { updateSettings } = useSettings();
   const { session, isLoading: isAuthLoading } = useAuth();
 
   const isLoggedIn = !!session?.user;
 
-  useEffect(() => {
-    if (!isLoading && !isAuthLoading && isLoggedIn && !settings.hasSeenOnboarding) {
-      onOpen('onboarding');
-    }
-  }, [isLoading, isAuthLoading, isLoggedIn, settings.hasSeenOnboarding, onOpen]);
+
 
   useEffect(() => {
     const handleAddToFolder = (event: CustomEvent) => {
