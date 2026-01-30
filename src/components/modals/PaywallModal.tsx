@@ -75,6 +75,10 @@ const PaywallModal: React.FC = () => {
             <span className="organizer-text-sm organizer-text-text-secondary">/month</span>
           </div>
         </div>
+
+        <p className="organizer-text-xs organizer-text-text-tertiary organizer-text-center organizer-mt-3">
+          Prices exclude taxes. Final amount may vary.
+        </p>
       </div>
 
       <div className="organizer-p-6 organizer-pb-8">

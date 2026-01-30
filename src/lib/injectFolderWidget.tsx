@@ -9,6 +9,7 @@ import { ThemeProvider } from "../context/ThemeContext";
 import { SettingsProvider } from "../context/SettingsContext";
 import { AuthProvider } from "../context/AuthContext";
 import { SubscriptionProvider } from "../context/SubscriptionContext";
+import { TierLimitsProvider } from "../context/TierLimitsContext";
 import { ThemeWrapper } from "../components/ThemeWrapper";
 import ToastProvider from "../components/ToastProvider";
 import cssText from "data-text:~style.css";
@@ -164,7 +165,9 @@ const renderWidget = (container: HTMLElement) => {
                   <BookmarkProvider>
                     <FolderProvider>
                       <ChatProvider>
-                        <GeminiFolderWidget onOpenExtension={openExtensionSidebar} />
+                        <TierLimitsProvider>
+                          <GeminiFolderWidget onOpenExtension={openExtensionSidebar} />
+                        </TierLimitsProvider>
                       </ChatProvider>
                     </FolderProvider>
                   </BookmarkProvider>
