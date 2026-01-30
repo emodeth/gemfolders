@@ -37,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { session, isLoading: isAuthLoading } = useAuth();
   const isLoggedIn = !!session?.user;
 
-  // Tabs that should be disabled when not logged in
+
   const disabledTabs = useMemo(() => {
     if (!isAuthLoading && !isLoggedIn) {
       return ["folders", "bookmarks", "settings"];
@@ -49,7 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { contextMenu } = useFolder();
   const { chatContextMenu } = useChat();
 
-  // Update active tab when auth state changes
+
   useEffect(() => {
     if (!isAuthLoading) {
       if (isLoggedIn) {

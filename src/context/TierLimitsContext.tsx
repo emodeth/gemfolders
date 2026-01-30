@@ -30,9 +30,6 @@ interface TierLimitsContextType {
 
 const TierLimitsContext = createContext<TierLimitsContextType | undefined>(undefined)
 
-/**
- * Count ALL folders recursively (including subfolders, but not chats)
- */
 const countAllFolders = (folders: Folder[]): number => {
   let count = 0
   for (const folder of folders) {
@@ -46,10 +43,7 @@ const countAllFolders = (folders: Folder[]): number => {
   return count
 }
 
-/**
- * Get the depth of a folder in the tree.
- * Root level = 0, subfolder = 1, sub-subfolder = 2, etc.
- */
+
 const calculateFolderDepth = (
   folders: Folder[],
   targetId: string,
@@ -66,7 +60,7 @@ const calculateFolderDepth = (
       }
     }
   }
-  return -1 // Not found
+  return -1
 }
 
 export const TierLimitsProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -112,8 +106,6 @@ export const TierLimitsProvider: React.FC<{ children: React.ReactNode }> = ({
       if (!isLoggedIn) return false
       if (isPro) return true
       const parentDepth = getFolderDepth(parentId)
-      // Parent at depth 0 (root level) can have subfolders (depth 1)
-      // Parent at depth 1 or more cannot have subfolders for free tier
       return parentDepth < FREE_TIER_LIMITS.maxSubfolderDepth
     },
     [isLoggedIn, isPro, getFolderDepth]

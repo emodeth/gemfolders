@@ -90,7 +90,6 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const handleChatMoveTo = () => {
     const { chatId, chatName } = chatContextMenu
 
-    // Find the current folder that contains this chat
     const findCurrentFolderId = (nodes: Folder[], targetChatId: string): string | null => {
       for (const node of nodes) {
         if (node.type === "folder" && node.children) {

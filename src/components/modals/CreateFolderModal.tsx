@@ -30,7 +30,6 @@ const CreateFolderModal: React.FC = () => {
     e.preventDefault();
     if (!folderName.trim()) return;
 
-    // Check tier limits for all folder creation
     if (!canCreateFolder()) {
       showPaywall("folder limit");
       return;

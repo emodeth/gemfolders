@@ -52,10 +52,8 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [contextMenu, setContextMenu] = useState<ContextMenuState>(initialContextMenuState)
   const { onOpen } = useModal()
 
-  // Unique instance ID to prevent self-triggered refreshes
   const instanceIdRef = useRef(`folder-provider-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`)
 
-  // Helper to dispatch sync event to other instances
   const dispatchFoldersUpdate = (updatedFolders: Folder[]) => {
     globalThis.dispatchEvent(new CustomEvent(FOLDERS_UPDATED_EVENT, {
       detail: {
@@ -65,7 +63,6 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }))
   }
 
-  // Wrapper for setFolders that also notifies other instances
   const updateFoldersAndSync = (updatedFolders: Folder[]) => {
     setFolders(updatedFolders)
     dispatchFoldersUpdate(updatedFolders)
@@ -83,11 +80,9 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   }
 
-  // Listen for updates from other instances
   useEffect(() => {
     const handleFoldersUpdate = (event: CustomEvent) => {
       const { folders: updatedFolders, sourceInstanceId } = event.detail
-      // Only update if the event came from a different instance
       if (sourceInstanceId !== instanceIdRef.current && updatedFolders) {
         setFolders(updatedFolders)
       }
@@ -172,7 +167,6 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       buttonRect,
       parentId: folderId,
     })
-    // Keep context menu open
   }
 
   const onAddChatsToFolder = async (folderId: string, chats: ChatToAdd[]) => {

@@ -213,17 +213,14 @@ const createBookmarkButton = (
     const wasBookmarked = isBookmarked(chatId)
 
     if (wasBookmarked) {
-      // Always allow removing bookmarks
       bookmarksCache = await removeBookmark(chatId)
       button.innerHTML = BOOKMARK_ICON_OUTLINE
       button.title = "Add bookmark"
       button.style.color = "var(--gem-sys-color--on-surface-variant, #5f6368)"
     } else {
-      // Check tier limits before adding
       const { allowed, reason } = await canAddBookmark()
 
       if (!allowed) {
-        // Dispatch event to show paywall (handled by content.tsx)
         globalThis.dispatchEvent(
           new CustomEvent("gemini-show-paywall", {
             detail: { reason }
@@ -454,21 +451,15 @@ export const refreshBookmarkButtons = async () => {
   updateAllBookmarkButtons()
 }
 
-/**
- * Remove all injected bookmark and folder buttons from Gemini's sidebar
- */
 export const removeAllInjectedButtons = () => {
-  // Remove all bookmark buttons
   const bookmarkButtons = document.querySelectorAll(`.${BOOKMARK_BUTTON_CLASS}`)
   bookmarkButtons.forEach((btn) => btn.remove())
 
-  // Remove all folder buttons
   const folderButtons = document.querySelectorAll(
     ".gemini-organizer-folder-btn"
   )
   folderButtons.forEach((btn) => btn.remove())
 
-  // Remove wrapper containers if they're now empty or just have native actions
   const wrappers = document.querySelectorAll(
     ".gemini-organizer-actions-wrapper"
   )
@@ -477,26 +468,20 @@ export const removeAllInjectedButtons = () => {
       ".conversation-actions-container"
     )
     if (nativeActions && wrapper.parentElement) {
-      // Move native actions back to parent
       wrapper.parentElement.appendChild(nativeActions)
     }
     wrapper.remove()
   })
 }
 
-/**
- * Setup auth state listener to show/hide buttons based on login status
- */
 export const setupAuthListener = () => {
   supabase.auth.onAuthStateChange((event, session) => {
     const wasLoggedIn = isLoggedIn
     isLoggedIn = !!session?.user
 
     if (wasLoggedIn && !isLoggedIn) {
-      // User logged out - remove all buttons
       removeAllInjectedButtons()
     } else if (!wasLoggedIn && isLoggedIn) {
-      // User logged in - inject buttons
       injectBookmarkButtons()
     }
   })
