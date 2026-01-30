@@ -22,6 +22,8 @@ import { setupRenameHandler } from "~lib/renameHandler"
 import SidebarButton from "./components/SidebarButton"
 import Sidebar from "./components/Sidebar"
 import ModalManager from "./components/ModalManager"
+import OnboardingTrigger from "./components/OnboardingTrigger"
+
 
 const SidebarButtonContainer = ({ onClick }: { onClick: () => void }) => {
   const { settings, isLoading } = useSettings()
@@ -176,6 +178,7 @@ const PlasmoOverlay = () => {
                   <BookmarkProvider>
                     <ChatProvider>
                       <TierLimitsProvider>
+                        <OnboardingTrigger />
                         <SidebarButtonContainer onClick={toggleSidebar} />
                         <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
                         <ModalManager />
