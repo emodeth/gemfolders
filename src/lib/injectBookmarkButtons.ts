@@ -20,6 +20,8 @@ const FREE_TIER_MAX_BOOKMARKS = 5
 let bookmarksCache: BookmarkedChat[] = []
 let settingsCache: Settings = DEFAULT_SETTINGS
 let isLoggedIn = false
+let userAccessCache: { isPro: boolean; checkedAt: number } | null = null
+const USER_ACCESS_CACHE_TTL = 5 * 60 * 1000
 
 const checkLoginStatus = async (): Promise<boolean> => {
   try {
@@ -32,44 +34,55 @@ const checkLoginStatus = async (): Promise<boolean> => {
   }
 }
 
-const canAddBookmark = async (): Promise<{
-  allowed: boolean
-  reason?: string
-}> => {
+const checkUserProStatus = async (): Promise<boolean> => {
+  if (
+    userAccessCache &&
+    Date.now() - userAccessCache.checkedAt < USER_ACCESS_CACHE_TTL
+  ) {
+    return userAccessCache.isPro
+  }
+
   try {
     const {
       data: { session }
     } = await supabase.auth.getSession()
 
     if (!session?.user) {
-      return { allowed: false, reason: "login" }
+      userAccessCache = { isPro: false, checkedAt: Date.now() }
+      return false
     }
 
     const { data: userAccess } = await supabase
       .from("user_access")
-      .select("*")
+      .select("access_status, current_period_end")
       .eq("user_id", session.user.id)
       .single()
 
-    if (userAccess) {
-      const isPro =
-        userAccess.access_status === "lifetime" ||
-        (userAccess.current_period_end &&
-          new Date(userAccess.current_period_end) > new Date())
+    const isPro =
+      userAccess?.access_status === "lifetime" ||
+      (userAccess?.current_period_end &&
+        new Date(userAccess.current_period_end) > new Date())
 
-      if (isPro) {
-        return { allowed: true }
-      }
-    }
-
-    if (bookmarksCache.length >= FREE_TIER_MAX_BOOKMARKS) {
-      return { allowed: false, reason: "bookmark limit" }
-    }
-
-    return { allowed: true }
+    userAccessCache = { isPro: !!isPro, checkedAt: Date.now() }
+    return !!isPro
   } catch {
+    return true
+  }
+}
+
+const canAddBookmarkSync = (): { allowed: boolean; reason?: string } => {
+  if (!isLoggedIn) {
+    return { allowed: false, reason: "login" }
+  }
+
+  if (userAccessCache?.isPro) {
     return { allowed: true }
   }
+  if (bookmarksCache.length >= FREE_TIER_MAX_BOOKMARKS) {
+    return { allowed: false, reason: "bookmark limit" }
+  }
+
+  return { allowed: true }
 }
 
 const injectStyles = () => {
@@ -205,20 +218,41 @@ const createBookmarkButton = (
     }
   })
 
-  button.addEventListener("click", async (e) => {
+  button.addEventListener("click", (e) => {
     e.preventDefault()
     e.stopPropagation()
 
     const chatUrl = `https://gemini.google.com/app/${chatId}`
     const wasBookmarked = isBookmarked(chatId)
 
-    if (wasBookmarked) {
-      bookmarksCache = await removeBookmark(chatId)
+    const revertToBookmarked = () => {
+      button.innerHTML = BOOKMARK_ICON_FILLED
+      button.title = "Remove bookmark"
+      button.style.color = "#3b82f6"
+    }
+
+    const revertToUnbookmarked = () => {
       button.innerHTML = BOOKMARK_ICON_OUTLINE
       button.title = "Add bookmark"
       button.style.color = "var(--gem-sys-color--on-surface-variant, #5f6368)"
+    }
+
+    if (wasBookmarked) {
+      revertToUnbookmarked()
+      removeBookmark(chatId)
+        .then((updatedBookmarks) => {
+          bookmarksCache = updatedBookmarks
+          globalThis.dispatchEvent(
+            new CustomEvent("gemfolders-bookmark-changed", {
+              detail: { chatId, isBookmarked: false, action: "removed" }
+            })
+          )
+        })
+        .catch(() => {
+          revertToBookmarked()
+        })
     } else {
-      const { allowed, reason } = await canAddBookmark()
+      const { allowed, reason } = canAddBookmarkSync()
 
       if (!allowed) {
         globalThis.dispatchEvent(
@@ -229,25 +263,26 @@ const createBookmarkButton = (
         return
       }
 
-      bookmarksCache = await addBookmark({
+      revertToBookmarked()
+
+      addBookmark({
         id: chatId,
         title: chatTitle,
         url: chatUrl
       })
-      button.innerHTML = BOOKMARK_ICON_FILLED
-      button.title = "Remove bookmark"
-      button.style.color = "#3b82f6"
+        .then((updatedBookmarks) => {
+          bookmarksCache = updatedBookmarks
+          globalThis.dispatchEvent(
+            new CustomEvent("gemfolders-bookmark-changed", {
+              detail: { chatId, isBookmarked: true, action: "added" }
+            })
+          )
+          checkUserProStatus()
+        })
+        .catch(() => {
+          revertToUnbookmarked()
+        })
     }
-
-    globalThis.dispatchEvent(
-      new CustomEvent("gemfolders-bookmark-changed", {
-        detail: {
-          chatId,
-          isBookmarked: !wasBookmarked,
-          action: wasBookmarked ? "removed" : "added"
-        }
-      })
-    )
   })
 
   return button
@@ -357,8 +392,15 @@ export const injectBookmarkButtons = async () => {
     return
   }
 
-  bookmarksCache = await getBookmarks()
-  settingsCache = await getSettings()
+  // Fetch bookmarks and settings in parallel, and pre-warm the user access cache
+  const [bookmarks, settings] = await Promise.all([
+    getBookmarks(),
+    getSettings(),
+    checkUserProStatus() // Pre-cache user pro status
+  ])
+
+  bookmarksCache = bookmarks
+  settingsCache = settings
   applySettings(settingsCache)
 
   const conversations = document.querySelectorAll(".conversation")
@@ -478,6 +520,9 @@ export const setupAuthListener = () => {
   supabase.auth.onAuthStateChange((event, session) => {
     const wasLoggedIn = isLoggedIn
     isLoggedIn = !!session?.user
+
+    // Invalidate pro status cache on any auth change
+    userAccessCache = null
 
     if (wasLoggedIn && !isLoggedIn) {
       removeAllInjectedButtons()
