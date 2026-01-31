@@ -521,12 +521,11 @@ export const setupAuthListener = () => {
     const wasLoggedIn = isLoggedIn
     isLoggedIn = !!session?.user
 
-    // Invalidate pro status cache on any auth change
     userAccessCache = null
 
-    if (wasLoggedIn && !isLoggedIn) {
+    if (event === "SIGNED_OUT" || (wasLoggedIn && !isLoggedIn)) {
       removeAllInjectedButtons()
-    } else if (!wasLoggedIn && isLoggedIn) {
+    } else if (event === "SIGNED_IN" || (!wasLoggedIn && isLoggedIn)) {
       injectBookmarkButtons()
     }
   })
