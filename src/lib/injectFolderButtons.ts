@@ -1,6 +1,6 @@
 import { getFolders, type Folder } from "./storage"
 
-const FOLDER_BUTTON_CLASS = "gemini-organizer-folder-btn"
+const FOLDER_BUTTON_CLASS = "gemfolders-organizer-folder-btn"
 const FOLDER_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-plus"><path d="M12 10v6"/><path d="M9 13h6"/><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>`
 const FOLDER_ICON_FILLED = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-icon lucide-folder"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>`
 
@@ -98,7 +98,7 @@ export const createFolderButton = (
     const chatUrl = `https://gemini.google.com/app/${chatId}`
 
     globalThis.dispatchEvent(
-      new CustomEvent("gemini-add-to-folder", {
+      new CustomEvent("gemfolders-add-to-folder", {
         detail: {
           chatId,
           chatTitle,

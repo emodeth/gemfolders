@@ -3,7 +3,7 @@ import { createFolder, deleteFolder, getFolders, renameFolder, updateFolderColor
 import { fetchGeminiChats } from "../lib/geminiChats"
 import { useModal } from "./ModalContext"
 
-const FOLDERS_UPDATED_EVENT = "gemini-folders-updated"
+const FOLDERS_UPDATED_EVENT = "gemfolders-folders-updated"
 
 interface ContextMenuState {
   isOpen: boolean

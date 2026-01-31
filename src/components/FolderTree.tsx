@@ -146,7 +146,7 @@ const FolderTree = ({ searchTerm, folders: propFolders, dragWidth = 260 }: Folde
   }
 
   return (
-    <div style={{ position: 'relative' }} className="organizer-h-full" id="gemini-folder-tree">
+    <div style={{ position: 'relative' }} className="organizer-h-full" id="gemfolders-folder-tree">
       <Tree
         className="organizer-overflow-x-hidden"
         width={"100%"}

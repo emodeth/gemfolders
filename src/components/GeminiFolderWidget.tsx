@@ -42,10 +42,10 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
       });
     };
 
-    globalThis.addEventListener('gemini-add-to-folder', handleAddToFolder as EventListener);
+    globalThis.addEventListener('gemfolders-add-to-folder', handleAddToFolder as EventListener);
 
     return () => {
-      globalThis.removeEventListener('gemini-add-to-folder', handleAddToFolder as EventListener);
+      globalThis.removeEventListener('gemfolders-add-to-folder', handleAddToFolder as EventListener);
     };
   }, [onOpen]);
 
@@ -70,7 +70,7 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
 
   return (
     <div className="organizer-flex organizer-flex-col organizer-h-auto organizer-font-sans organizer-scrollbar-gutter-stable">
-      <div className="gemini-folder-widget-visible-content">
+      <div className="gemfolders-folder-widget-visible-content">
         <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-2 organizer-py-2 organizer-pl-6">
           <div
             className="organizer-flex organizer-items-center organizer-gap-2 organizer-cursor-pointer"

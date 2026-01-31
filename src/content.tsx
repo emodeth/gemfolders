@@ -99,10 +99,10 @@ const PlasmoOverlay = () => {
       openSidebar()
     }
 
-    globalThis.addEventListener("gemini-organizer-open-sidebar", handleOpenSidebar)
+    globalThis.addEventListener("gemfolders-organizer-open-sidebar", handleOpenSidebar)
 
     return () => {
-      globalThis.removeEventListener("gemini-organizer-open-sidebar", handleOpenSidebar)
+      globalThis.removeEventListener("gemfolders-organizer-open-sidebar", handleOpenSidebar)
     }
   }, [])
 
@@ -116,10 +116,10 @@ const PlasmoOverlay = () => {
       }
     }
 
-    globalThis.addEventListener("gemini-bookmark-changed", handleBookmarkChange as EventListener)
+    globalThis.addEventListener("gemfolders-bookmark-changed", handleBookmarkChange as EventListener)
 
     return () => {
-      globalThis.removeEventListener("gemini-bookmark-changed", handleBookmarkChange as EventListener)
+      globalThis.removeEventListener("gemfolders-bookmark-changed", handleBookmarkChange as EventListener)
     }
   }, [])
 
@@ -127,18 +127,18 @@ const PlasmoOverlay = () => {
     const handleShowPaywall = (event: CustomEvent) => {
       const { reason } = event.detail || {}
       if (reason) {
-        sessionStorage.setItem("gemini-paywall-reason", reason)
+        sessionStorage.setItem("gemfolders-paywall-reason", reason)
       }
       openSidebar()
       setTimeout(() => {
-        globalThis.dispatchEvent(new CustomEvent("gemini-open-paywall-modal", { detail: { reason } }))
+        globalThis.dispatchEvent(new CustomEvent("gemfolders-open-paywall-modal", { detail: { reason } }))
       }, 100)
     }
 
-    globalThis.addEventListener("gemini-show-paywall", handleShowPaywall as EventListener)
+    globalThis.addEventListener("gemfolders-show-paywall", handleShowPaywall as EventListener)
 
     return () => {
-      globalThis.removeEventListener("gemini-show-paywall", handleShowPaywall as EventListener)
+      globalThis.removeEventListener("gemfolders-show-paywall", handleShowPaywall as EventListener)
     }
   }, [])
 

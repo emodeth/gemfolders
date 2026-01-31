@@ -26,7 +26,7 @@ export const setupDeleteHandler = () => {
             await removeBookmark(chatId)
 
             globalThis.dispatchEvent(
-              new CustomEvent("gemini-folders-updated", {
+              new CustomEvent("gemfolders-folders-updated", {
                 detail: {
                   folders: updatedFolders,
                   sourceInstanceId: "delete-handler"
@@ -35,7 +35,7 @@ export const setupDeleteHandler = () => {
             )
 
             globalThis.dispatchEvent(
-              new CustomEvent("gemini-bookmark-changed", {
+              new CustomEvent("gemfolders-bookmark-changed", {
                 detail: {
                   action: "deleted",
                   chatId

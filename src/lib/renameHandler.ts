@@ -34,7 +34,7 @@ const handleRename = async (chatId: string, newTitle: string) => {
     await saveCachedChats(updatedCache)
 
     globalThis.dispatchEvent(
-      new CustomEvent("gemini-folders-updated", {
+      new CustomEvent("gemfolders-folders-updated", {
         detail: {
           folders: updatedFolders,
           sourceInstanceId: "rename-handler"
@@ -43,7 +43,7 @@ const handleRename = async (chatId: string, newTitle: string) => {
     )
 
     globalThis.dispatchEvent(
-      new CustomEvent("gemini-bookmark-changed", {
+      new CustomEvent("gemfolders-bookmark-changed", {
         detail: {
           action: "renamed",
           chatId,
