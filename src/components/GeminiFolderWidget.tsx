@@ -110,7 +110,7 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
         <div className="organizer-px-2 organizer-pb-2 organizer-pl-6">
           <Input
             type="text"
-            placeholder="Search folders..."
+            placeholder="Search..."
             className="organizer-rounded-lg"
             variant="ghost"
             value={searchTerm}

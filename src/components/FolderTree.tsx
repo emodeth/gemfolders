@@ -96,14 +96,18 @@ const FolderTree = ({ searchTerm, folders: propFolders, dragWidth = 260 }: Folde
     if (!folders) return [];
     if (!searchTerm) return folders;
 
+    const searchLower = searchTerm.toLowerCase();
+
     const filterNodes = (nodes: Folder[]): Folder[] => {
       const result: Folder[] = [];
       for (const node of nodes) {
-        if (node.type === 'chat') continue;
+        const matches = node.name.toLowerCase().includes(searchLower);
 
-        const matches = node.name.toLowerCase().includes(searchTerm.toLowerCase());
-
-        if (matches) {
+        if (node.type === 'chat') {
+          if (matches) {
+            result.push(node);
+          }
+        } else if (matches) {
           result.push(node);
         } else if (node.children) {
           const children = filterNodes(node.children);
@@ -117,11 +121,29 @@ const FolderTree = ({ searchTerm, folders: propFolders, dragWidth = 260 }: Folde
     return filterNodes(folders);
   }, [folders, searchTerm]);
 
+  const searchExpandedIds = React.useMemo(() => {
+    if (!searchTerm || !filteredFolders) return new Set<string>();
+
+    const ids = new Set<string>();
+    const collectFolderIds = (nodes: Folder[]) => {
+      for (const node of nodes) {
+        if (node.type === 'folder' && node.children && node.children.length > 0) {
+          ids.add(node.id);
+          collectFolderIds(node.children);
+        }
+      }
+    };
+    collectFolderIds(filteredFolders);
+    return ids;
+  }, [searchTerm, filteredFolders]);
+
+  const effectiveExpandedIds = searchTerm ? searchExpandedIds : expandedIds;
+
   const treeHeight = React.useMemo(() => {
     if (!filteredFolders) return 0;
-    const visibleCount = countVisibleNodes(filteredFolders, expandedIds);
+    const visibleCount = countVisibleNodes(filteredFolders, effectiveExpandedIds);
     return Math.max(visibleCount * 36, 36);
-  }, [filteredFolders, expandedIds]);
+  }, [filteredFolders, effectiveExpandedIds]);
 
   const handleToggle = (id: string) => {
     setExpandedIds(prev => {
@@ -155,7 +177,7 @@ const FolderTree = ({ searchTerm, folders: propFolders, dragWidth = 260 }: Folde
         data={filteredFolders}
         onCreate={handleCreate}
         onMove={handleMove}
-        openByDefault={false}
+        openByDefault={!!searchTerm}
         disableDrag={!!searchTerm}
         disableDrop={({ parentNode }) =>
           !!searchTerm || parentNode?.data.type === 'chat'

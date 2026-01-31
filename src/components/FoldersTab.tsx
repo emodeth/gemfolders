@@ -34,7 +34,7 @@ const FoldersTab: React.FC = () => {
       <div className="organizer-relative organizer-mb-2">
         <Input
           type="text"
-          placeholder="Search folders..."
+          placeholder="Search..."
           className="organizer-rounded-lg"
           variant="ghost"
           value={searchTerm}
