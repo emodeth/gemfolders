@@ -11,7 +11,7 @@ import {
 } from "./storage"
 import { supabase } from "./supabase"
 
-const BOOKMARK_BUTTON_CLASS = "gemini-organizer-bookmark-btn"
+const BOOKMARK_BUTTON_CLASS = "gemfolders-organizer-bookmark-btn"
 const BOOKMARK_ICON_FILLED = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`
 const BOOKMARK_ICON_OUTLINE = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`
 
@@ -73,50 +73,50 @@ const canAddBookmark = async (): Promise<{
 }
 
 const injectStyles = () => {
-  const styleId = "gemini-organizer-settings-styles"
+  const styleId = "gemfolders-organizer-settings-styles"
   if (document.getElementById(styleId)) return
 
   const style = document.createElement("style")
   style.id = styleId
   style.textContent = `
-    body.gemini-organizer-hide-bookmarks .gemini-organizer-bookmark-btn {
+    body.gemfolders-organizer-hide-bookmarks .gemfolders-organizer-bookmark-btn {
       display: none !important;
     }
-    body.gemini-organizer-hide-add-to-folder .gemini-organizer-folder-btn {
+    body.gemfolders-organizer-hide-add-to-folder .gemfolders-organizer-folder-btn {
       display: none !important;
     }
-    body:not(.gemini-organizer-native-view) .pin-icon-container {
+    body:not(.gemfolders-organizer-native-view) .pin-icon-container {
       display: none !important;
     }
     
-    .gemini-organizer-parent-modified {
+    .gemfolders-organizer-parent-modified {
       position: relative;
       display: flex;
       align-items: center;
     }
     
-    .gemini-organizer-conversation-modified {
+    .gemfolders-organizer-conversation-modified {
       flex: 1;
       overflow: hidden;
       padding-right: 70px;
     }
     
-    .gemini-organizer-title-modified {
+    .gemfolders-organizer-title-modified {
       max-width: calc(100% - 70px);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    body.gemini-organizer-native-view .gemini-organizer-actions-wrapper {
+    body.gemfolders-organizer-native-view .gemfolders-organizer-actions-wrapper {
       display: flex !important;
     }
     
-    body.gemini-organizer-native-view .gemini-organizer-conversation-modified {
+    body.gemfolders-organizer-native-view .gemfolders-organizer-conversation-modified {
       padding-right: 0 !important;
     }
     
-    body.gemini-organizer-native-view .gemini-organizer-title-modified {
+    body.gemfolders-organizer-native-view .gemfolders-organizer-title-modified {
        max-width: 100% !important;
     }
   `
@@ -125,24 +125,24 @@ const injectStyles = () => {
 
 const applySettings = (settings: Settings) => {
   if (settings.hideBookmarksFromSidebar) {
-    document.body.classList.add("gemini-organizer-hide-bookmarks")
+    document.body.classList.add("gemfolders-organizer-hide-bookmarks")
   } else {
-    document.body.classList.remove("gemini-organizer-hide-bookmarks")
+    document.body.classList.remove("gemfolders-organizer-hide-bookmarks")
   }
 
   if (settings.hideAddToFolderFromSidebar) {
-    document.body.classList.add("gemini-organizer-hide-add-to-folder")
+    document.body.classList.add("gemfolders-organizer-hide-add-to-folder")
   } else {
-    document.body.classList.remove("gemini-organizer-hide-add-to-folder")
+    document.body.classList.remove("gemfolders-organizer-hide-add-to-folder")
   }
 
   if (
     settings.hideBookmarksFromSidebar &&
     settings.hideAddToFolderFromSidebar
   ) {
-    document.body.classList.add("gemini-organizer-native-view")
+    document.body.classList.add("gemfolders-organizer-native-view")
   } else {
-    document.body.classList.remove("gemini-organizer-native-view")
+    document.body.classList.remove("gemfolders-organizer-native-view")
   }
 }
 
@@ -222,7 +222,7 @@ const createBookmarkButton = (
 
       if (!allowed) {
         globalThis.dispatchEvent(
-          new CustomEvent("gemini-show-paywall", {
+          new CustomEvent("gemfolders-show-paywall", {
             detail: { reason }
           })
         )
@@ -240,7 +240,7 @@ const createBookmarkButton = (
     }
 
     globalThis.dispatchEvent(
-      new CustomEvent("gemini-bookmark-changed", {
+      new CustomEvent("gemfolders-bookmark-changed", {
         detail: {
           chatId,
           isBookmarked: !wasBookmarked,
@@ -293,10 +293,10 @@ const injectButtonIntoConversation = (conversationElement: Element) => {
     ".conversation-actions-container"
   ) as HTMLElement
   const parentEl = parentContainer as HTMLElement
-  parentEl.classList.add("gemini-organizer-parent-modified")
+  parentEl.classList.add("gemfolders-organizer-parent-modified")
 
   const actionsWrapper = document.createElement("div")
-  actionsWrapper.className = "gemini-organizer-actions-wrapper"
+  actionsWrapper.className = "gemfolders-organizer-actions-wrapper"
   actionsWrapper.style.cssText = `
     display: flex;
     align-items: center;
@@ -326,11 +326,11 @@ const injectButtonIntoConversation = (conversationElement: Element) => {
   parentContainer.appendChild(actionsWrapper)
 
   if (titleElement) {
-    titleElement.classList.add("gemini-organizer-title-modified")
+    titleElement.classList.add("gemfolders-organizer-title-modified")
   }
 
   const convEl = conversationElement as HTMLElement
-  convEl.classList.add("gemini-organizer-conversation-modified")
+  convEl.classList.add("gemfolders-organizer-conversation-modified")
 }
 
 const updateAllBookmarkButtons = () => {
@@ -369,11 +369,11 @@ export const injectBookmarkButtons = async () => {
     if (!parentContainer) return
 
     const existingWrapper = parentContainer.querySelector(
-      ".gemini-organizer-actions-wrapper"
+      ".gemfolders-organizer-actions-wrapper"
     )
     if (!existingWrapper) return
 
-    if (!actionsContainer.closest(".gemini-organizer-actions-wrapper")) {
+    if (!actionsContainer.closest(".gemfolders-organizer-actions-wrapper")) {
       const actionEl = actionsContainer as HTMLElement
       styleActionsContainer(actionEl)
       existingWrapper.insertBefore(actionsContainer, existingWrapper.firstChild)
@@ -423,22 +423,22 @@ export const injectBookmarkButtons = async () => {
 
   chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === "local") {
-      if (changes["gemini-bookmarks"]) {
-        bookmarksCache = changes["gemini-bookmarks"].newValue || []
+      if (changes["gemfolders-bookmarks"]) {
+        bookmarksCache = changes["gemfolders-bookmarks"].newValue || []
         updateAllBookmarkButtons()
       }
-      if (changes["gemini-folders"]) {
+      if (changes["gemfolders-folders"]) {
         updateAllFolderButtons()
       }
-      if (changes["gemini-organizer-settings"]) {
+      if (changes["gemfolders-organizer-settings"]) {
         settingsCache =
-          changes["gemini-organizer-settings"].newValue || DEFAULT_SETTINGS
+          changes["gemfolders-organizer-settings"].newValue || DEFAULT_SETTINGS
         applySettings(settingsCache)
       }
     }
   })
 
-  globalThis.addEventListener("gemini-bookmark-sync", async () => {
+  globalThis.addEventListener("gemfolders-bookmark-sync", async () => {
     bookmarksCache = await getBookmarks()
     updateAllBookmarkButtons()
   })
@@ -456,12 +456,12 @@ export const removeAllInjectedButtons = () => {
   bookmarkButtons.forEach((btn) => btn.remove())
 
   const folderButtons = document.querySelectorAll(
-    ".gemini-organizer-folder-btn"
+    ".gemfolders-organizer-folder-btn"
   )
   folderButtons.forEach((btn) => btn.remove())
 
   const wrappers = document.querySelectorAll(
-    ".gemini-organizer-actions-wrapper"
+    ".gemfolders-organizer-actions-wrapper"
   )
   wrappers.forEach((wrapper) => {
     const nativeActions = wrapper.querySelector(

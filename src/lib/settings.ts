@@ -7,7 +7,7 @@ export interface Settings {
   hasSeenOnboarding: boolean
 }
 
-const SETTINGS_KEY = "gemini-organizer-settings"
+const SETTINGS_KEY = "gemfolders-organizer-settings"
 
 export const DEFAULT_SETTINGS: Settings = {
   openOnStartup: false,

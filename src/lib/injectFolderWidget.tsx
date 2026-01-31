@@ -15,8 +15,8 @@ import ToastProvider from "../components/ToastProvider";
 import cssText from "data-text:~style.css";
 import { getSettings, type Settings } from "./settings";
 
-const WIDGET_CONTAINER_ID = "gemini-organizer-folder-widget";
-const WIDGET_STYLES_ID = "gemini-organizer-folder-styles";
+const WIDGET_CONTAINER_ID = "gemfolders-organizer-folder-widget";
+const WIDGET_STYLES_ID = "gemfolders-organizer-folder-styles";
 
 let widgetRoot: Root | null = null;
 let containerObserver: ResizeObserver | null = null;
@@ -75,11 +75,11 @@ const getShadowStyles = () => {
       width: 100% !important;
     }
 
-    :host-context(body.gemini-organizer-hide-folders-widget) .gemini-folder-widget-visible-content {
+    :host-context(body.gemfolders-organizer-hide-folders-widget) .gemfolders-folder-widget-visible-content {
       display: none !important;
     }
     
-    :host-context(body.gemini-organizer-hide-folders-widget) {
+    :host-context(body.gemfolders-organizer-hide-folders-widget) {
        padding: 0 !important;
     }
 
@@ -129,7 +129,7 @@ const createWidgetContainer = (): HTMLDivElement => {
   shadow.appendChild(getShadowStyles());
 
   const mountPoint = document.createElement("div");
-  mountPoint.id = "gemini-widget-root";
+  mountPoint.id = "gemfolders-widget-root";
   shadow.appendChild(mountPoint);
 
   return container;
@@ -137,7 +137,7 @@ const createWidgetContainer = (): HTMLDivElement => {
 
 
 const openExtensionSidebar = () => {
-  globalThis.dispatchEvent(new CustomEvent("gemini-organizer-open-sidebar"));
+  globalThis.dispatchEvent(new CustomEvent("gemfolders-organizer-open-sidebar"));
 };
 
 
@@ -149,7 +149,7 @@ const renderWidget = (container: HTMLElement) => {
   const shadow = container.shadowRoot;
   if (!shadow) return;
 
-  const mountPoint = shadow.getElementById("gemini-widget-root");
+  const mountPoint = shadow.getElementById("gemfolders-widget-root");
   if (!mountPoint) return;
 
   widgetRoot = createRoot(mountPoint);
@@ -183,9 +183,9 @@ const renderWidget = (container: HTMLElement) => {
 
 const applySettings = (settings: Settings) => {
   if (settings.hideFoldersFromSidebar) {
-    document.body.classList.add("gemini-organizer-hide-folders-widget");
+    document.body.classList.add("gemfolders-organizer-hide-folders-widget");
   } else {
-    document.body.classList.remove("gemini-organizer-hide-folders-widget");
+    document.body.classList.remove("gemfolders-organizer-hide-folders-widget");
   }
 };
 
@@ -275,8 +275,8 @@ export const setupFolderWidgetInjection = () => {
   }, 5000);
 
   chrome.storage.onChanged.addListener((changes, areaName) => {
-    if (areaName === "local" && changes["gemini-organizer-settings"]) {
-      const newSettings = changes["gemini-organizer-settings"].newValue;
+    if (areaName === "local" && changes["gemfolders-organizer-settings"]) {
+      const newSettings = changes["gemfolders-organizer-settings"].newValue;
       if (newSettings) {
         applySettings(newSettings);
       }
@@ -304,6 +304,6 @@ export const removeFolderWidget = () => {
   const globalStyles = document.getElementById(WIDGET_STYLES_ID);
   globalStyles?.remove();
 
-  const separator = document.querySelector(".gemini-folder-separator");
+  const separator = document.querySelector(".gemfolders-folder-separator");
   separator?.remove();
 };

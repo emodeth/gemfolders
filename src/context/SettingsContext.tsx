@@ -24,8 +24,8 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({
     })
 
     const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }, areaName: string) => {
-      if (areaName === "local" && changes["gemini-organizer-settings"]) {
-        const newValue = changes["gemini-organizer-settings"].newValue
+      if (areaName === "local" && changes["gemfolders-organizer-settings"]) {
+        const newValue = changes["gemfolders-organizer-settings"].newValue
         if (newValue) {
           setSettings(newValue)
         }

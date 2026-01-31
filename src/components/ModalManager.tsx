@@ -39,10 +39,10 @@ const ModalManager: React.FC = () => {
       onOpen('paywall', { reason });
     };
 
-    globalThis.addEventListener('gemini-open-paywall-modal', handleOpenPaywall as EventListener);
+    globalThis.addEventListener('gemfolders-open-paywall-modal', handleOpenPaywall as EventListener);
 
     return () => {
-      globalThis.removeEventListener('gemini-open-paywall-modal', handleOpenPaywall as EventListener);
+      globalThis.removeEventListener('gemfolders-open-paywall-modal', handleOpenPaywall as EventListener);
     };
   }, [onOpen]);
 

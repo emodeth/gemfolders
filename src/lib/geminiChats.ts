@@ -6,7 +6,7 @@ export interface GeminiChat {
   sortIndex?: number
 }
 
-const CHATS_STORAGE_KEY = "gemini-chats"
+const CHATS_STORAGE_KEY = "gemfolders-chats"
 
 const extractChatIdFromJslog = (jslog: string): string | null => {
   const regex = /\["c_([^"]+)"/

@@ -12,7 +12,7 @@ export interface Folder {
   originalId?: string
 }
 
-const STORAGE_KEY = "gemini-folders"
+const STORAGE_KEY = "gemfolders-folders"
 
 export const getFolders = async (): Promise<Folder[]> => {
   return new Promise((resolve) => {
@@ -414,7 +414,7 @@ export interface BookmarkedChat {
   bookmarkedAt: number
 }
 
-const BOOKMARKS_STORAGE_KEY = "gemini-bookmarks"
+const BOOKMARKS_STORAGE_KEY = "gemfolders-bookmarks"
 
 export const getBookmarks = async (): Promise<BookmarkedChat[]> => {
   return new Promise((resolve) => {

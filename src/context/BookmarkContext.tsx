@@ -50,10 +50,10 @@ export const BookmarkProvider: React.FC<{ children: ReactNode }> = ({ children }
       }
     }
 
-    globalThis.addEventListener("gemini-bookmark-changed", handleExternalBookmarkChange)
+    globalThis.addEventListener("gemfolders-bookmark-changed", handleExternalBookmarkChange)
 
     return () => {
-      globalThis.removeEventListener("gemini-bookmark-changed", handleExternalBookmarkChange)
+      globalThis.removeEventListener("gemfolders-bookmark-changed", handleExternalBookmarkChange)
     }
   }, [])
 
