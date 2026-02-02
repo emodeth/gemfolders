@@ -49,7 +49,6 @@
         "https://www.googleapis.com/auth/userinfo.profile"
       ]
     },
-    "key": "$CRX_KEY",
     "permissions": [
       "storage",
       "identity"
