@@ -41,9 +41,17 @@
     "host_permissions": [
       "https://*/*"
     ],
+    "oauth2": {
+      "client_id": "408933441627-l33jd7askcnii7jtv2gn2eifc9pocdm2.apps.googleusercontent.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile"
+      ]
+    },
     "key": "$CRX_KEY",
     "permissions": [
-      "storage"
+      "storage",
+      "identity"
     ],
     "web_accessible_resources": [
       {

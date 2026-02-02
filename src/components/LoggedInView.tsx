@@ -1,4 +1,6 @@
-import { Chrome, Mail } from "lucide-react"
+import { Mail } from "lucide-react"
+
+import GoogleIcon from "./ui/GoogleIcon"
 import React from "react"
 
 import toast from "react-hot-toast"
@@ -68,12 +70,14 @@ const LoggedInView: React.FC<LoggedInViewProps> = ({ user }) => {
           </button>
         </div>
 
-        <button
-          onClick={handleManageAccount}
-          className="organizer-w-full organizer-bg-bg-surface-hover organizer-text-text-primary organizer-text-sm organizer-p-4  organizer-py-3 organizer-font-semibold organizer-rounded-lg hover:organizer-opacity-80 organizer-transition-opacity">
-          Manage account
-        </button>
+        {isPro && (
+          <button
+            onClick={handleManageAccount}
+            className="organizer-w-full organizer-bg-bg-surface-hover organizer-text-text-primary organizer-text-sm organizer-p-4  organizer-py-3 organizer-font-semibold organizer-rounded-lg hover:organizer-opacity-80 organizer-transition-opacity">
+            Manage account
+          </button>
 
+        )}
         {!isPro && (
           <button
             onClick={() => onOpen('paywall')}
@@ -93,7 +97,7 @@ const LoggedInView: React.FC<LoggedInViewProps> = ({ user }) => {
               key={identity.id}
               className="organizer-flex organizer-items-center organizer-gap-3 organizer-text-text-secondary organizer-text-sm">
               {identity.provider === "google" ? (
-                <Chrome size={16} />
+                <GoogleIcon size={16} />
               ) : (
                 <Mail size={16} />
               )}
