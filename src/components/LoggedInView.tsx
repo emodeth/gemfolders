@@ -70,12 +70,14 @@ const LoggedInView: React.FC<LoggedInViewProps> = ({ user }) => {
           </button>
         </div>
 
-        <button
-          onClick={handleManageAccount}
-          className="organizer-w-full organizer-bg-bg-surface-hover organizer-text-text-primary organizer-text-sm organizer-p-4  organizer-py-3 organizer-font-semibold organizer-rounded-lg hover:organizer-opacity-80 organizer-transition-opacity">
-          Manage account
-        </button>
+        {isPro && (
+          <button
+            onClick={handleManageAccount}
+            className="organizer-w-full organizer-bg-bg-surface-hover organizer-text-text-primary organizer-text-sm organizer-p-4  organizer-py-3 organizer-font-semibold organizer-rounded-lg hover:organizer-opacity-80 organizer-transition-opacity">
+            Manage account
+          </button>
 
+        )}
         {!isPro && (
           <button
             onClick={() => onOpen('paywall')}

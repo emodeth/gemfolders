@@ -1,5 +1,5 @@
 import type { Session, User } from "@supabase/supabase-js"
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react"
+import React, { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react"
 
 import { signOutFromGoogle } from "~lib/googleAuth"
 import { supabase } from "~lib/supabase"
@@ -9,6 +9,7 @@ interface AuthContextType {
   session: Session | null
   isLoading: boolean
   logout: () => Promise<void>
+  refreshSession: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -19,6 +20,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+
+  const refreshSession = useCallback(async () => {
+    setIsLoading(true)
+    const { data: { session } } = await supabase.auth.getSession()
+    setSession(session)
+    setUser(session?.user ?? null)
+    setIsLoading(false)
+  }, [])
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -46,8 +55,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   const value = useMemo(
-    () => ({ user, session, isLoading, logout }),
-    [user, session, isLoading]
+    () => ({ user, session, isLoading, logout, refreshSession }),
+    [user, session, isLoading, refreshSession]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

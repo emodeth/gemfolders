@@ -1,6 +1,5 @@
 import { supabase } from "~lib/supabase"
 
-// Message types for communication between content/popup and background
 export type GoogleAuthMessage = {
   type: "GOOGLE_SIGN_IN"
 }
@@ -9,10 +8,11 @@ export type GoogleAuthResponse = {
   success: boolean
   error?: string
   email?: string
-  requiresMagicLink?: boolean
 }
 
-// Listen for messages from content script or popup
+const SUPABASE_URL = process.env.PLASMO_PUBLIC_SUPABASE_URL
+const GOOGLE_AUTH_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/google-auth`
+
 chrome.runtime.onMessage.addListener(
   (message: GoogleAuthMessage, _sender, sendResponse) => {
     if (message.type === "GOOGLE_SIGN_IN") {
@@ -23,59 +23,63 @@ chrome.runtime.onMessage.addListener(
         .catch((error) => {
           sendResponse({ success: false, error: error.message })
         })
-
-      // Return true to indicate we will send response asynchronously
       return true
     }
   }
 )
 
-/**
- * Handles the Google Sign-In flow using getAuthToken
- * This gets an access token which we use to fetch the user's Google profile
- */
 async function handleGoogleSignIn(): Promise<GoogleAuthResponse> {
   try {
-    // Get access token from Chrome's identity API
-    const token = await getAuthToken()
+    const accessToken = await getAuthToken()
 
-    if (!token) {
+    if (!accessToken) {
       return {
         success: false,
         error: "Failed to get Google authentication token"
       }
     }
 
-    // Fetch user info from Google using the access token
-    const userInfo = await fetchGoogleUserInfo(token)
+    const response = await fetch(GOOGLE_AUTH_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ access_token: accessToken })
+    })
 
-    if (!userInfo?.email) {
-      // If token is invalid, clear it and return error
-      await clearAuthToken(token)
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
       return {
         success: false,
-        error: "Failed to get user information from Google"
+        error: errorData.error || "Failed to authenticate with Google"
       }
     }
 
-    // Check if user exists in Supabase with this email
-    // Since we have an access token (not ID token), we need to use magic link
-    // to properly authenticate with Supabase
-    const { error } = await supabase.auth.signInWithOtp({
-      email: userInfo.email,
-      options: {
-        shouldCreateUser: true
+    const { token_hash, type, email } = await response.json()
+
+    if (!token_hash) {
+      return {
+        success: false,
+        error: "Failed to get authentication token"
       }
+    }
+
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      token_hash,
+      type: type || "magiclink"
     })
 
-    if (error) {
-      return { success: false, error: error.message }
+    if (verifyError) {
+      console.error("Verify OTP error:", verifyError)
+      return {
+        success: false,
+        error: verifyError.message
+      }
     }
 
     return {
       success: true,
-      email: userInfo.email,
-      requiresMagicLink: true
+      email
     }
   } catch (error) {
     console.error("Google sign-in error:", error)
@@ -89,9 +93,6 @@ async function handleGoogleSignIn(): Promise<GoogleAuthResponse> {
   }
 }
 
-/**
- * Gets the Google auth token using Chrome's identity API
- */
 function getAuthToken(): Promise<string | null> {
   return new Promise((resolve) => {
     chrome.identity.getAuthToken({ interactive: true }, (token) => {
@@ -104,49 +105,3 @@ function getAuthToken(): Promise<string | null> {
     })
   })
 }
-
-/**
- * Clears a cached auth token
- */
-function clearAuthToken(token: string): Promise<void> {
-  return new Promise((resolve) => {
-    chrome.identity.removeCachedAuthToken({ token }, () => {
-      resolve()
-    })
-  })
-}
-
-/**
- * Fetches user info from Google's userinfo API
- */
-async function fetchGoogleUserInfo(
-  accessToken: string
-): Promise<{ email: string; name: string; picture: string } | null> {
-  try {
-    const response = await fetch(
-      "https://www.googleapis.com/oauth2/v2/userinfo",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      }
-    )
-
-    if (!response.ok) {
-      console.error("Failed to fetch user info:", response.status)
-      return null
-    }
-
-    const data = await response.json()
-    return {
-      email: data.email,
-      name: data.name || "",
-      picture: data.picture || ""
-    }
-  } catch (error) {
-    console.error("Error fetching Google user info:", error)
-    return null
-  }
-}
-
-export {}

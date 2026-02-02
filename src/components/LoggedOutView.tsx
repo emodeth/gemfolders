@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import toast from "react-hot-toast"
 
+import { useAuth } from "~context/AuthContext"
 import { signInWithGoogle } from "~lib/googleAuth"
 
 import MagicLinkLogin from "./MagicLinkLogin"
@@ -8,17 +9,17 @@ import GoogleIcon from "./ui/GoogleIcon"
 
 const LoggedOutView: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false)
+  const { refreshSession } = useAuth()
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
     try {
-      const { error, email, requiresMagicLink } = await signInWithGoogle()
+      const { error } = await signInWithGoogle()
       if (error) {
         toast.error(error.message || "Failed to sign in with Google")
-      } else if (requiresMagicLink && email) {
-        toast.success(`Magic link sent to ${email}! Check your inbox.`, {
-          duration: 5000
-        })
+      } else {
+        toast.success("Signed in successfully!", { duration: 1000 })
+        await refreshSession()
       }
     } catch (error) {
       toast.error("An unexpected error occurred")
