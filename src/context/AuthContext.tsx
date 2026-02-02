@@ -1,6 +1,7 @@
 import type { Session, User } from "@supabase/supabase-js"
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react"
 
+import { signOutFromGoogle } from "~lib/googleAuth"
 import { supabase } from "~lib/supabase"
 
 interface AuthContextType {
@@ -38,6 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [])
 
   const logout = async () => {
+    await signOutFromGoogle()
     await supabase.auth.signOut()
     setSession(null)
     setUser(null)

@@ -1,4 +1,6 @@
-import { Chrome, Mail } from "lucide-react"
+import { Mail } from "lucide-react"
+
+import GoogleIcon from "./ui/GoogleIcon"
 import React from "react"
 
 import toast from "react-hot-toast"
@@ -93,7 +95,7 @@ const LoggedInView: React.FC<LoggedInViewProps> = ({ user }) => {
               key={identity.id}
               className="organizer-flex organizer-items-center organizer-gap-3 organizer-text-text-secondary organizer-text-sm">
               {identity.provider === "google" ? (
-                <Chrome size={16} />
+                <GoogleIcon size={16} />
               ) : (
                 <Mail size={16} />
               )}
