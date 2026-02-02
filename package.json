@@ -1,8 +1,8 @@
 {
   "name": "gemfolders",
-  "displayName": "Gemfolders",
-  "version": "0.0.1",
-  "description": "A browser extension to manage your Gemini chats",
+  "displayName": "Gemfolders - Gemini Folder Organizer",
+  "version": "1.0.0",
+  "description": "A browser extension to organize your Gemini chats",
   "author": "Emirhan Keskin",
   "scripts": {
     "dev": "plasmo dev",
@@ -39,7 +39,8 @@
   },
   "manifest": {
     "host_permissions": [
-      "https://*/*"
+      "https://gemini.google.com/*",
+      "https://jqiqlsdtubcacdfyxbqz.supabase.co/*"
     ],
     "oauth2": {
       "client_id": "408933441627-l33jd7askcnii7jtv2gn2eifc9pocdm2.apps.googleusercontent.com",
