@@ -65,6 +65,11 @@
           "$CRX_ID"
         ]
       }
-    ]
+    ],
+    "externally_connectable": {
+      "matches": [
+        "https://gemfolders.com/*"
+      ]
+    }
   }
 }
