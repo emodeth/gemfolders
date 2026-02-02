@@ -1,10 +1,151 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-background: #1e1e1e;
+  --bg-surface: #2a2a2a;
+  --bg-surface-hover: #333333;
+  --bg-input: #2b2b2b;
+  --font-sans: "apple-system", BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-placeholder: #3d3d3d;
+
+  --border-default: #3a3a3a;
+
+  --color-primary: #3b82f6;
+
+  --tooltip-bg: #121212;
+  --tooltip-text: #ffffff;
+
+  --bg-switch-off: #3a3a3a;
+}
+
+[data-theme="light"] {
+  --bg-background: #f0f4f9;
+  --bg-surface: #ffffff;
+  --bg-surface-hover: #e5e7eb;
+  --bg-input: #fcfeff;
+
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --text-placeholder: #fffc;
+
+  --border-default: #e5e7eb;
+
+  --color-primary: #2563eb;
+
+  --tooltip-bg: #4b5563;
+  --tooltip-text: #ffffff;
+
+  --bg-switch-off: #d1d5db;
+}
+
 #plasmo-shadow-container {
   all: initial;
   box-sizing: border-box;
+  font-family: "apple-system", BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+}
+
+plasmo-csui {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 2147483647;
+}
+
+plasmo-csui > * {
+  pointer-events: auto;
+}
+
+.organizer-font-sans {
+  font-family: "apple-system", BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Toast Animations */
+@keyframes toast-enter {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-exit {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes modal-scale-up {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-animate-enter {
+  animation: modal-scale-up 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modal-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.modal-animate-fade {
+  animation: modal-fade-in 0.15s ease-out forwards;
+}
+
+.organizer-scrollbar-gutter-stable {
+  scrollbar-gutter: stable;
+}
+
+.organizer-overflow-x-hidden > div {
+  overflow-x: hidden !important;
 }
