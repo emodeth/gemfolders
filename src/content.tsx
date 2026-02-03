@@ -157,7 +157,7 @@ const PlasmoOverlay = () => {
                         <OnboardingTrigger />
                         <SidebarButtonContainer onClick={toggleSidebar} />
                         <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-                        <ModalManager />
+                        <ModalManager enablePaywallListener={true} />
                       </TierLimitsProvider>
                     </ChatProvider>
                   </BookmarkProvider>
