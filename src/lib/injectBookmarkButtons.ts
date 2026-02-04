@@ -392,11 +392,10 @@ export const injectBookmarkButtons = async () => {
     return
   }
 
-  // Fetch bookmarks and settings in parallel, and pre-warm the user access cache
   const [bookmarks, settings] = await Promise.all([
     getBookmarks(),
     getSettings(),
-    checkUserProStatus() // Pre-cache user pro status
+    checkUserProStatus()
   ])
 
   bookmarksCache = bookmarks
@@ -510,10 +509,38 @@ export const removeAllInjectedButtons = () => {
       ".conversation-actions-container"
     )
     if (nativeActions && wrapper.parentElement) {
+      // Reset styles applied to the native container
+      const nativeParams = nativeActions as HTMLElement
+      nativeParams.style.cssText = ""
       wrapper.parentElement.appendChild(nativeActions)
     }
     wrapper.remove()
   })
+
+  document
+    .querySelectorAll(".gemfolders-organizer-parent-modified")
+    .forEach((el) => {
+      el.classList.remove("gemfolders-organizer-parent-modified")
+    })
+
+  document
+    .querySelectorAll(".gemfolders-organizer-title-modified")
+    .forEach((el) => {
+      el.classList.remove("gemfolders-organizer-title-modified")
+    })
+
+  document
+    .querySelectorAll(".gemfolders-organizer-conversation-modified")
+    .forEach((el) => {
+      el.classList.remove("gemfolders-organizer-conversation-modified")
+    })
+
+  const styleTag = document.getElementById(
+    "gemfolders-organizer-settings-styles"
+  )
+  if (styleTag) {
+    styleTag.remove()
+  }
 }
 
 export const setupAuthListener = () => {
