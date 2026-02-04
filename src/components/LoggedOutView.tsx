@@ -18,8 +18,9 @@ const LoggedOutView: React.FC = () => {
       if (error) {
         toast.error(error.message || "Failed to sign in with Google")
       } else {
-        toast.success("Signed in successfully!", { duration: 1000 })
         await refreshSession()
+        globalThis.location.reload()
+        toast.success("Signed in successfully!", { duration: 1000 })
       }
     } catch (error) {
       toast.error("An unexpected error occurred")

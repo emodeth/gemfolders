@@ -1,6 +1,6 @@
 {
   "name": "gemfolders",
-  "displayName": "Gemfolders - Gemini Folder Organizer",
+  "displayName": "Gemini Folders, Bookmarks & Search - Gemfolders: Chat Organizer",
   "version": "1.0.0",
   "description": "A browser extension to organize your Gemini chats",
   "author": "Emirhan Keskin",
@@ -58,7 +58,6 @@
         "https://www.googleapis.com/auth/userinfo.profile"
       ]
     },
-    "key": "$CRX_KEY",
     "permissions": [
       "storage",
       "identity"
