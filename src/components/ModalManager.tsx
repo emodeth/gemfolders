@@ -14,7 +14,11 @@ import AddToFolderModal from '~components/modals/AddToFolderModal';
 import PaywallModal from '~components/modals/PaywallModal';
 import OnboardingModal from '~components/modals/OnboardingModal';
 
-const ModalManager: React.FC = () => {
+interface ModalManagerProps {
+  enablePaywallListener?: boolean;
+}
+
+const ModalManager: React.FC<ModalManagerProps> = ({ enablePaywallListener = false }) => {
   const { type, isOpen, onClose, onOpen } = useModal();
 
   useEffect(() => {
@@ -34,6 +38,8 @@ const ModalManager: React.FC = () => {
   }, [isOpen, onClose]);
 
   useEffect(() => {
+    if (!enablePaywallListener) return;
+
     const handleOpenPaywall = (event: CustomEvent) => {
       const { reason } = event.detail || {};
       onOpen('paywall', { reason });
@@ -44,7 +50,7 @@ const ModalManager: React.FC = () => {
     return () => {
       globalThis.removeEventListener('gemfolders-open-paywall-modal', handleOpenPaywall as EventListener);
     };
-  }, [onOpen]);
+  }, [onOpen, enablePaywallListener]);
 
   if (!isOpen || !type) return null;
 

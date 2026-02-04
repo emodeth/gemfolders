@@ -69,6 +69,11 @@ export const BookmarkProvider: React.FC<{ children: ReactNode }> = ({ children }
     try {
       const updatedBookmarks = await addBookmarkToStorage(chat)
       setBookmarks(updatedBookmarks)
+      globalThis.dispatchEvent(
+        new CustomEvent("gemfolders-bookmark-changed", {
+          detail: { bookmarks: updatedBookmarks },
+        })
+      )
       toast.success("Chat bookmarked")
     } catch (error) {
       console.error("Failed to add bookmark:", error)
@@ -80,6 +85,11 @@ export const BookmarkProvider: React.FC<{ children: ReactNode }> = ({ children }
     try {
       const updatedBookmarks = await removeBookmarkFromStorage(chatId)
       setBookmarks(updatedBookmarks)
+      globalThis.dispatchEvent(
+        new CustomEvent("gemfolders-bookmark-changed", {
+          detail: { bookmarks: updatedBookmarks },
+        })
+      )
       toast.success("Bookmark removed")
     } catch (error) {
       console.error("Failed to remove bookmark:", error)
