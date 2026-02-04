@@ -15,17 +15,19 @@ import ToastProvider from "../components/ToastProvider";
 import cssText from "data-text:~style.css";
 import { getSettings, type Settings } from "./settings";
 
+let cachedSettings: Settings | null = null;
 const WIDGET_CONTAINER_ID = "gemfolders-organizer-folder-widget";
 const WIDGET_STYLES_ID = "gemfolders-organizer-folder-styles";
 
 let widgetRoot: Root | null = null;
 let containerObserver: ResizeObserver | null = null;
 
-const processStyles = (): string => {
-  const baseFontSize = 16;
-
-  // detailed reset for shadow dom environment since @tailwind base won't apply to :host
-  const resetCss = `
+const getProcessedStyles = (() => {
+  let processed: string | null = null;
+  return () => {
+    if (processed) return processed;
+    const baseFontSize = 16;
+    const resetCss = `
     :host {
       line-height: 1.5;
       -webkit-text-size-adjust: 100%;
@@ -41,23 +43,22 @@ const processStyles = (): string => {
       border-color: #e5e7eb;
     }
   `;
-
-  let processedCss = cssText.replaceAll(":root", ":host");
-
-  const remRegex = /([\d.]+)rem/g;
-  processedCss = processedCss.replaceAll(remRegex, (match, remValue) => {
-    const pixelsValue = Number.parseFloat(remValue) * baseFontSize;
-    return `${pixelsValue}px`;
-  });
-
-  return resetCss + processedCss;
-};
+    let css = cssText.replaceAll(":root", ":host");
+    const remRegex = /([\d.]+)rem/g;
+    css = css.replaceAll(remRegex, (match, remValue) => {
+      const pixelsValue = Number.parseFloat(remValue) * baseFontSize;
+      return `${pixelsValue}px`;
+    });
+    processed = resetCss + css;
+    return processed;
+  };
+})();
 
 const getShadowStyles = () => {
   const styleElement = document.createElement("style");
   styleElement.id = WIDGET_STYLES_ID;
   styleElement.textContent = `
-    ${processStyles()}
+    ${getProcessedStyles()}
 
     :host {
       font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -130,6 +131,21 @@ const createWidgetContainer = (): HTMLDivElement => {
 
   const mountPoint = document.createElement("div");
   mountPoint.id = "gemfolders-widget-root";
+  // Skeleton Loader
+  mountPoint.innerHTML = `
+    <div style="padding: 16px; opacity: 0.6; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">
+      <div style="height: 20px; background: #e5e7eb; border-radius: 4px; margin-bottom: 12px; width: 70%;"></div>
+      <div style="height: 16px; background: #e5e7eb; border-radius: 4px; margin-bottom: 8px;"></div>
+      <div style="height: 16px; background: #e5e7eb; border-radius: 4px; margin-bottom: 8px;"></div>
+      <div style="height: 16px; background: #e5e7eb; border-radius: 4px; width: 80%;"></div>
+    </div>
+    <style>
+      @keyframes pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 0.3; }
+      }
+    </style>
+  `;
   shadow.appendChild(mountPoint);
 
   return container;
@@ -153,32 +169,36 @@ const renderWidget = (container: HTMLElement) => {
   if (!mountPoint) return;
 
   widgetRoot = createRoot(mountPoint);
-  widgetRoot.render(
-    <React.StrictMode>
-      <SettingsProvider>
-        <AuthProvider>
-          <SubscriptionProvider>
-            <ThemeProvider>
-              <ThemeWrapper>
-                <ToastProvider />
-                <ModalProvider>
-                  <BookmarkProvider>
-                    <FolderProvider>
-                      <ChatProvider>
-                        <TierLimitsProvider>
-                          <GeminiFolderWidget onOpenExtension={openExtensionSidebar} />
-                        </TierLimitsProvider>
-                      </ChatProvider>
-                    </FolderProvider>
-                  </BookmarkProvider>
-                </ModalProvider>
-              </ThemeWrapper>
-            </ThemeProvider>
-          </SubscriptionProvider>
-        </AuthProvider>
-      </SettingsProvider>
-    </React.StrictMode>
-  );
+
+  // Use requestAnimationFrame for smoother injection
+  requestAnimationFrame(() => {
+    widgetRoot?.render(
+      <React.StrictMode>
+        <SettingsProvider initialSettings={cachedSettings || undefined}>
+          <AuthProvider>
+            <SubscriptionProvider>
+              <ThemeProvider>
+                <ThemeWrapper>
+                  <ToastProvider />
+                  <ModalProvider>
+                    <BookmarkProvider>
+                      <FolderProvider>
+                        <ChatProvider>
+                          <TierLimitsProvider>
+                            <GeminiFolderWidget onOpenExtension={openExtensionSidebar} />
+                          </TierLimitsProvider>
+                        </ChatProvider>
+                      </FolderProvider>
+                    </BookmarkProvider>
+                  </ModalProvider>
+                </ThemeWrapper>
+              </ThemeProvider>
+            </SubscriptionProvider>
+          </AuthProvider>
+        </SettingsProvider>
+      </React.StrictMode>
+    );
+  });
 };
 
 const applySettings = (settings: Settings) => {
@@ -237,42 +257,38 @@ export const injectFolderWidget = (): boolean => {
 };
 
 export const setupFolderWidgetInjection = () => {
+  // Pre-fetch settings immediately
+  getSettings().then((s) => {
+    cachedSettings = s;
+    // apply settings if cached
+    applySettings(s);
+  });
+
+  // 1. Try immediate injection
   injectFolderWidget();
 
   const observer = new MutationObserver((mutations) => {
-    if (document.getElementById(WIDGET_CONTAINER_ID)) {
-      return;
-    }
-    const hasRelevantChanges = mutations.some((mutation) => {
-      return mutation.addedNodes.length > 0 ||
-        (mutation.type === "attributes" &&
-          mutation.target instanceof Element &&
-          mutation.target.matches('[role="navigation"], side-navigation'));
-    });
+    // Check if our widget is already there to avoid redundant checks
+    if (document.getElementById(WIDGET_CONTAINER_ID)) return;
 
-    if (hasRelevantChanges) {
-      injectFolderWidget();
+    // Fast-path: Look for the sidebar container specifically
+    for (const mutation of mutations) {
+      if (mutation.addedNodes.length) {
+        const injectionPoint = findInjectionPoint();
+        if (injectionPoint) {
+          injectFolderWidget();
+          break;
+        }
+      }
     }
   });
 
   observer.observe(document.body, {
     childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ["role", "class"],
+    subtree: true // Necessary because Gemini's nesting is deep
   });
 
-  setTimeout(() => {
-    if (!document.getElementById(WIDGET_CONTAINER_ID)) {
-      injectFolderWidget();
-    }
-  }, 2000);
 
-  setTimeout(() => {
-    if (!document.getElementById(WIDGET_CONTAINER_ID)) {
-      injectFolderWidget();
-    }
-  }, 5000);
 
   chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === "local" && changes["gemfolders-organizer-settings"]) {
