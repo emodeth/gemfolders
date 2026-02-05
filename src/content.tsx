@@ -82,11 +82,10 @@ const PlasmoOverlay = () => {
   }, [])
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
+    // Immediate injection attempt
+    requestAnimationFrame(() => {
       setupFolderWidgetInjection()
-    }, 1500)
-
-    return () => clearTimeout(timeoutId)
+    })
   }, [])
 
   useEffect(() => {

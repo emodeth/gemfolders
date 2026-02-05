@@ -23,6 +23,11 @@ let isLoggedIn = false
 let userAccessCache: { isPro: boolean; checkedAt: number } | null = null
 const USER_ACCESS_CACHE_TTL = 5 * 60 * 1000
 
+let injectionAttempts = 0
+const MAX_INJECTION_ATTEMPTS = 50
+const INJECTION_RETRY_DELAY = 100 // ms
+let observer: MutationObserver | null = null
+
 const checkLoginStatus = async (): Promise<boolean> => {
   try {
     const {
@@ -384,6 +389,43 @@ const updateAllBookmarkButtons = () => {
   })
 }
 
+const handleOrphanActionsContainer = (actionsContainer: Element) => {
+  const parentContainer = actionsContainer.parentElement
+  if (!parentContainer) return
+
+  const existingWrapper = parentContainer.querySelector(
+    ".gemfolders-organizer-actions-wrapper"
+  )
+  if (!existingWrapper) return
+
+  if (!actionsContainer.closest(".gemfolders-organizer-actions-wrapper")) {
+    const actionEl = actionsContainer as HTMLElement
+    styleActionsContainer(actionEl)
+    existingWrapper.insertBefore(actionsContainer, existingWrapper.firstChild)
+
+    parentContainer.addEventListener("mouseenter", () => {
+      actionEl.style.opacity = "1"
+    })
+    parentContainer.addEventListener("mouseleave", () => {
+      actionEl.style.opacity = "0"
+    })
+  }
+}
+
+const injectButtonsIntoVisibleConversations = () => {
+  const conversations = document.querySelectorAll(".conversation")
+  conversations.forEach(injectButtonIntoConversation)
+}
+
+const attemptInjection = () => {
+  injectButtonsIntoVisibleConversations()
+
+  if (injectionAttempts < MAX_INJECTION_ATTEMPTS) {
+    injectionAttempts++
+    setTimeout(attemptInjection, INJECTION_RETRY_DELAY)
+  }
+}
+
 export const injectBookmarkButtons = async () => {
   injectStyles()
 
@@ -402,65 +444,61 @@ export const injectBookmarkButtons = async () => {
   settingsCache = settings
   applySettings(settingsCache)
 
-  const conversations = document.querySelectorAll(".conversation")
-  conversations.forEach(injectButtonIntoConversation)
+  attemptInjection()
 
-  const handleOrphanActionsContainer = (actionsContainer: Element) => {
-    const parentContainer = actionsContainer.parentElement
-    if (!parentContainer) return
-
-    const existingWrapper = parentContainer.querySelector(
-      ".gemfolders-organizer-actions-wrapper"
-    )
-    if (!existingWrapper) return
-
-    if (!actionsContainer.closest(".gemfolders-organizer-actions-wrapper")) {
-      const actionEl = actionsContainer as HTMLElement
-      styleActionsContainer(actionEl)
-      existingWrapper.insertBefore(actionsContainer, existingWrapper.firstChild)
-
-      parentContainer.addEventListener("mouseenter", () => {
-        actionEl.style.opacity = "1"
-      })
-      parentContainer.addEventListener("mouseleave", () => {
-        actionEl.style.opacity = "0"
-      })
-    }
+  if (observer) {
+    observer.disconnect()
   }
 
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      mutation.addedNodes.forEach((node) => {
-        if (node instanceof Element) {
-          if (node.classList?.contains("conversation")) {
-            injectButtonIntoConversation(node)
-          }
-          const nestedConversations = node.querySelectorAll?.(".conversation")
-          nestedConversations?.forEach(injectButtonIntoConversation)
+  observer = new MutationObserver((mutations) => {
+    let shouldInject = false
 
-          if (node.classList?.contains("conversation-actions-container")) {
-            handleOrphanActionsContainer(node)
+    for (const mutation of mutations) {
+      if (mutation.type === "childList") {
+        for (const node of mutation.addedNodes) {
+          if (node instanceof Element) {
+            if (
+              node.classList?.contains("conversation") ||
+              node.querySelector(".conversation")
+            ) {
+              shouldInject = true
+
+              if (node.classList?.contains("conversation")) {
+                injectButtonIntoConversation(node)
+              }
+              const nestedConversations =
+                node.querySelectorAll?.(".conversation")
+              nestedConversations?.forEach(injectButtonIntoConversation)
+            }
+
+            if (
+              node.classList?.contains("conversation-actions-container") ||
+              node.querySelector(".conversation-actions-container")
+            ) {
+              if (node.classList?.contains("conversation-actions-container")) {
+                handleOrphanActionsContainer(node)
+              }
+              const nestedActions = node.querySelectorAll?.(
+                ".conversation-actions-container"
+              )
+              nestedActions?.forEach(handleOrphanActionsContainer)
+            }
           }
-          const nestedActions = node.querySelectorAll?.(
-            ".conversation-actions-container"
-          )
-          nestedActions?.forEach(handleOrphanActionsContainer)
         }
-      })
-    })
+      }
+    }
+
+    // Also re-run generic injection if we detected relevant mutations, just to be safe
+    if (shouldInject) {
+      injectButtonsIntoVisibleConversations()
+    }
   })
 
-  const sidebarContainer =
-    document.querySelector("infinite-scroller") ||
-    document.querySelector('[role="navigation"]') ||
-    document.body
-
-  if (sidebarContainer) {
-    observer.observe(sidebarContainer, {
-      childList: true,
-      subtree: true
-    })
-  }
+  // Observe body to catch navigation loading
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  })
 
   chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === "local") {
@@ -483,12 +521,30 @@ export const injectBookmarkButtons = async () => {
     bookmarksCache = await getBookmarks()
     updateAllBookmarkButtons()
   })
+
+  // Visibility change handling
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      injectButtonsIntoVisibleConversations()
+    }
+  })
+
+  // URL change handling
+  let lastUrl = location.href
+  new MutationObserver(() => {
+    const url = location.href
+    if (url !== lastUrl) {
+      lastUrl = url
+      // Re-trigger aggressive injection on URL change (navigation)
+      injectionAttempts = 0
+      attemptInjection()
+    }
+  }).observe(document.body, { subtree: true, childList: true })
 }
 
 export const refreshBookmarkButtons = async () => {
   bookmarksCache = await getBookmarks()
-  const conversations = document.querySelectorAll(".conversation")
-  conversations.forEach(injectButtonIntoConversation)
+  injectButtonsIntoVisibleConversations()
   updateAllBookmarkButtons()
 }
 
@@ -541,6 +597,13 @@ export const removeAllInjectedButtons = () => {
   if (styleTag) {
     styleTag.remove()
   }
+
+  if (observer) {
+    observer.disconnect()
+    observer = null
+  }
+
+  injectionAttempts = 0
 }
 
 export const setupAuthListener = () => {

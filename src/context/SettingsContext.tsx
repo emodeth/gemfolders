@@ -11,17 +11,20 @@ interface SettingsContextType {
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined)
 
-export const SettingsProvider: React.FC<{ children: ReactNode }> = ({
-  children
+export const SettingsProvider: React.FC<{ children: ReactNode; initialSettings?: Settings }> = ({
+  children,
+  initialSettings
 }) => {
-  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS)
-  const [isLoading, setIsLoading] = useState(true)
+  const [settings, setSettings] = useState<Settings>(initialSettings || DEFAULT_SETTINGS)
+  const [isLoading, setIsLoading] = useState(!initialSettings)
 
   useEffect(() => {
-    getSettings().then((loadedSettings) => {
-      setSettings(loadedSettings)
-      setIsLoading(false)
-    })
+    if (!initialSettings) {
+      getSettings().then((loadedSettings) => {
+        setSettings(loadedSettings)
+        setIsLoading(false)
+      })
+    }
 
     const handleStorageChange = (changes: { [key: string]: chrome.storage.StorageChange }, areaName: string) => {
       if (areaName === "local" && changes["gemfolders-organizer-settings"]) {
