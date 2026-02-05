@@ -170,7 +170,6 @@ const renderWidget = (container: HTMLElement) => {
 
   widgetRoot = createRoot(mountPoint);
 
-  // Use requestAnimationFrame for smoother injection
   requestAnimationFrame(() => {
     widgetRoot?.render(
       <React.StrictMode>
@@ -257,21 +256,16 @@ export const injectFolderWidget = (): boolean => {
 };
 
 export const setupFolderWidgetInjection = () => {
-  // Pre-fetch settings immediately
   getSettings().then((s) => {
     cachedSettings = s;
-    // apply settings if cached
     applySettings(s);
   });
 
-  // 1. Try immediate injection
   injectFolderWidget();
 
   const observer = new MutationObserver((mutations) => {
-    // Check if our widget is already there to avoid redundant checks
     if (document.getElementById(WIDGET_CONTAINER_ID)) return;
 
-    // Fast-path: Look for the sidebar container specifically
     for (const mutation of mutations) {
       if (mutation.addedNodes.length) {
         const injectionPoint = findInjectionPoint();
@@ -285,7 +279,7 @@ export const setupFolderWidgetInjection = () => {
 
   observer.observe(document.body, {
     childList: true,
-    subtree: true // Necessary because Gemini's nesting is deep
+    subtree: true
   });
 
 

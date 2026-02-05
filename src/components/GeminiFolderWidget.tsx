@@ -69,74 +69,85 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
   }
 
   return (
-    <div className="organizer-flex organizer-flex-col organizer-h-auto organizer-font-sans organizer-scrollbar-gutter-stable">
-      <div className="gemfolders-folder-widget-visible-content">
-        <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-2 organizer-py-2 organizer-pl-6">
-          <div
-            className="organizer-flex organizer-items-center organizer-gap-2 organizer-cursor-pointer"
-          >
-            <span className="organizer-text-sm organizer-font-medium organizer-text-text-primary">
-              Folders
-            </span>
-            <Tooltip text="Hide from sidebar" position="bottom">
-              <div
-                className="organizer-flex organizer-items-center organizer-justify-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  updateSettings({ hideFoldersFromSidebar: true });
-                  toast.success("Folders hidden. You can enable them in settings.", {
-                    id: "folders-hidden-toast",
-                    duration: 4000
-                  });
-                }}
+    <>
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out forwards;
+        }
+      `}</style>
+      <div className="organizer-flex organizer-flex-col organizer-h-auto organizer-font-sans organizer-scrollbar-gutter-stable animate-fadeIn">
+        <div className="gemfolders-folder-widget-visible-content">
+          <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-2 organizer-py-2 organizer-pl-6">
+            <div
+              className="organizer-flex organizer-items-center organizer-gap-2 organizer-cursor-pointer"
+            >
+              <span className="organizer-text-sm organizer-font-medium organizer-text-text-primary">
+                Folders
+              </span>
+              <Tooltip text="Hide from sidebar" position="bottom">
+                <div
+                  className="organizer-flex organizer-items-center organizer-justify-center"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    updateSettings({ hideFoldersFromSidebar: true });
+                    toast.success("Folders hidden. You can enable them in settings.", {
+                      id: "folders-hidden-toast",
+                      duration: 4000
+                    });
+                  }}
+                >
+                  <EyeOff size={14} className="organizer-text-primary" />
+                </div>
+              </Tooltip>
+
+            </div>
+            <Tooltip text="Create Folder" position="left">
+              <Button
+                variant="icon"
+                onClick={handleCreateFolder}
+                className="organizer-text-text-secondary hover:organizer-text-text-primary"
               >
-                <EyeOff size={14} className="organizer-text-primary" />
-              </div>
+                <Plus size={16} />
+              </Button>
             </Tooltip>
-
           </div>
-          <Tooltip text="Create Folder" position="left">
-            <Button
-              variant="icon"
-              onClick={handleCreateFolder}
-              className="organizer-text-text-secondary hover:organizer-text-text-primary"
-            >
-              <Plus size={16} />
-            </Button>
-          </Tooltip>
+
+
+          <div className="organizer-px-2 organizer-pb-2 organizer-pl-6">
+            <Input
+              type="text"
+              placeholder="Search..."
+              className="organizer-rounded-lg"
+              variant="ghost"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          <div className="organizer-px-2 organizer-pl-6">
+            <FolderTree searchTerm={searchTerm} folders={displayedFolders} />
+            {!searchTerm && !showAll && folders && folders.length > 3 && (
+              <button
+                type="button"
+                onClick={() => setShowAll(true)}
+                className="organizer-w-full organizer-text-xs hover:organizer-text-primary/70 organizer-cursor-pointer organizer-text-center organizer-mt-2 organizer-text-text-primary organizer-transition-colors organizer-bg-transparent organizer-border-none organizer-outline-none"
+              >
+                Show {folders.length - 3} more
+              </button>
+            )}
+          </div>
+
+
         </div>
-
-
-        <div className="organizer-px-2 organizer-pb-2 organizer-pl-6">
-          <Input
-            type="text"
-            placeholder="Search..."
-            className="organizer-rounded-lg"
-            variant="ghost"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
-        <div className="organizer-px-2 organizer-pl-6">
-          <FolderTree searchTerm={searchTerm} folders={displayedFolders} />
-          {!searchTerm && !showAll && folders && folders.length > 3 && (
-            <button
-              type="button"
-              onClick={() => setShowAll(true)}
-              className="organizer-w-full organizer-text-xs hover:organizer-text-primary/70 organizer-cursor-pointer organizer-text-center organizer-mt-2 organizer-text-text-primary organizer-transition-colors organizer-bg-transparent organizer-border-none organizer-outline-none"
-            >
-              Show {folders.length - 3} more
-            </button>
-          )}
-        </div>
-
-
+        {contextMenu.isOpen && <FolderContextMenu />}
+        {chatContextMenu.isOpen && <ChatContextMenu />}
+        <ModalManager />
       </div>
-      {contextMenu.isOpen && <FolderContextMenu />}
-      {chatContextMenu.isOpen && <ChatContextMenu />}
-      <ModalManager />
-    </div>
+    </>
   );
 };
 
