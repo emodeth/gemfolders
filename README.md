@@ -1,10 +1,8 @@
 # GemFolders: Gemini Organizer & Chat Manager
 
-![GemFolders Banner](https://via.placeholder.com/1200x500.png?text=GemFolders+Banner+Placeholder)
-
 > Organize your Gemini chats with folders, bookmarks, and search capabilities.
 
-GemFolders is a powerful browser extension designed to enhance your Google Gemini experience. It allows you to create custom folders, bookmark important conversations for quick access, and easily search through your chat history. Say goodbye to clutter and hello to a streamlined workflow.
+Gemfolders is a powerful browser extension designed to enhance your Google Gemini experience. It allows you to create custom folders, bookmark important conversations for quick access, and easily search through your chat history. Say goodbye to clutter and hello to a streamlined workflow.
 
 ## Features
 
