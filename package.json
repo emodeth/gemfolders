@@ -58,6 +58,7 @@
         "https://www.googleapis.com/auth/userinfo.profile"
       ]
     },
+    "key": "$CRX_PUBLIC_KEY",
     "permissions": [
       "storage",
       "identity"
