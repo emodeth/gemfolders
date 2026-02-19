@@ -3,8 +3,11 @@ import {
   getBookmarks,
   addBookmark as addBookmarkToStorage,
   removeBookmark as removeBookmarkFromStorage,
+  saveBookmarksLocal,
   type BookmarkedChat
 } from "../lib/storage"
+import { pullBookmarks, pushBookmarks } from "../lib/cloudStorage"
+import { useAuth } from "./AuthContext"
 import toast from "react-hot-toast"
 
 interface TierLimitOptions {
@@ -26,6 +29,7 @@ const BookmarkContext = createContext<BookmarkContextType | undefined>(undefined
 export const BookmarkProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [bookmarks, setBookmarks] = useState<BookmarkedChat[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const { user } = useAuth()
 
   useEffect(() => {
     const loadBookmarks = async () => {
@@ -56,6 +60,38 @@ export const BookmarkProvider: React.FC<{ children: ReactNode }> = ({ children }
       globalThis.removeEventListener("gemfolders-bookmark-changed", handleExternalBookmarkChange)
     }
   }, [])
+
+  useEffect(() => {
+    const syncFromCloud = async () => {
+      if (user?.id) {
+        setIsLoading(true)
+        try {
+          const cloudBookmarks = await pullBookmarks(user.id)
+          if (cloudBookmarks !== null) {
+            await saveBookmarksLocal(cloudBookmarks)
+            setBookmarks(cloudBookmarks)
+          } else {
+            const localBookmarks = await getBookmarks()
+            if (localBookmarks.length > 0) {
+              await pushBookmarks(user.id, localBookmarks)
+            }
+            setBookmarks(localBookmarks)
+          }
+        } catch (error) {
+          console.error("Cloud sync (bookmarks) failed, falling back to local:", error)
+          const localBookmarks = await getBookmarks()
+          setBookmarks(localBookmarks)
+        } finally {
+          setIsLoading(false)
+        }
+      } else {
+        const localBookmarks = await getBookmarks()
+        setBookmarks(localBookmarks)
+        setIsLoading(false)
+      }
+    }
+    syncFromCloud()
+  }, [user?.id])
 
   const addBookmark = async (
     chat: { id: string; title: string; url: string },
