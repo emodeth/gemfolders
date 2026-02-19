@@ -129,8 +129,9 @@ const PlasmoOverlay = () => {
         sessionStorage.setItem("gemfolders-paywall-reason", reason)
       }
       openSidebar()
+      const modalEvent = reason === "sign-in" ? "gemfolders-open-signin-paywall-modal" : "gemfolders-open-paywall-modal"
       setTimeout(() => {
-        globalThis.dispatchEvent(new CustomEvent("gemfolders-open-paywall-modal", { detail: { reason } }))
+        globalThis.dispatchEvent(new CustomEvent(modalEvent, { detail: { reason } }))
       }, 100)
     }
 

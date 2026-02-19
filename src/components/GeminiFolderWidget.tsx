@@ -13,7 +13,7 @@ import ChatContextMenu from "./ChatContextMenu";
 import ModalManager from "./ModalManager";
 import { useModal } from "../context/ModalContext";
 import { useSettings } from "../context/SettingsContext";
-import { useAuth } from "../context/AuthContext";
+
 
 interface GeminiFolderWidgetProps {
   onOpenExtension?: () => void;
@@ -26,9 +26,6 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
   const { chatContextMenu } = useChat();
   const { onOpen } = useModal();
   const { updateSettings } = useSettings();
-  const { session, isLoading: isAuthLoading } = useAuth();
-
-  const isLoggedIn = !!session?.user;
 
 
 
@@ -64,9 +61,7 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
     return folders.slice(0, 3);
   }, [folders, searchTerm, showAll]);
 
-  if (!isAuthLoading && !isLoggedIn) {
-    return null;
-  }
+
 
   return (
     <>

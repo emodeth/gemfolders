@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState } from "react";
 import Tooltip from "./Tooltip";
 import {
   ArrowRightFromLineIcon,
@@ -17,7 +17,6 @@ import FolderContextMenu from "./FolderContextMenu";
 import ChatContextMenu from "./ChatContextMenu";
 import { useFolder } from "../context/FolderContext";
 import { useChat } from "../context/ChatContext";
-import { useAuth } from "../context/AuthContext";
 
 type TabType = "folders" | "bookmarks" | "account" | "settings";
 
@@ -34,38 +33,15 @@ const ALL_TABS: { id: TabType; icon: React.ReactNode; label: string }[] = [
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const { session, isLoading: isAuthLoading } = useAuth();
-  const isLoggedIn = !!session?.user;
-
-
-  const disabledTabs = useMemo(() => {
-    if (!isAuthLoading && !isLoggedIn) {
-      return ["folders", "bookmarks", "settings"];
-    }
-    return [];
-  }, [isLoggedIn, isAuthLoading]);
+  const disabledTabs: string[] = [];
 
   const [activeTab, setActiveTab] = useState<TabType>("folders");
   const { contextMenu } = useFolder();
   const { chatContextMenu } = useChat();
 
-
-  useEffect(() => {
-    if (!isAuthLoading) {
-      if (isLoggedIn) {
-        setActiveTab("folders");
-      } else {
-        setActiveTab("account");
-      }
-    }
-  }, [isLoggedIn, isAuthLoading]);
-
   const currentTabLabel = ALL_TABS.find((t) => t.id === activeTab)?.label || "Account";
 
   const renderTabContent = () => {
-    if (!isLoggedIn && activeTab !== "account") {
-      return <AccountTab />;
-    }
 
     switch (activeTab) {
       case "folders":
@@ -116,8 +92,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         {renderTabContent()}
       </div>
 
-      {isLoggedIn && contextMenu.isOpen && <FolderContextMenu />}
-      {isLoggedIn && chatContextMenu.isOpen && <ChatContextMenu />}
+      {contextMenu.isOpen && <FolderContextMenu />}
+      {chatContextMenu.isOpen && <ChatContextMenu />}
     </div>
   );
 };
