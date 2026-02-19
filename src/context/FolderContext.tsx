@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, useRef, type ReactNode } from "react"
-import { createFolder, deleteFolder, getFolders, renameFolder, updateFolderColor, addChatsToFolder, moveNodes, type Folder, type ChatToAdd } from "../lib/storage"
+import { createFolder, deleteFolder, getFolders, renameFolder, updateFolderColor, addChatsToFolder, moveNodes, saveFoldersLocal, type Folder, type ChatToAdd } from "../lib/storage"
+import { pullFolders, pushFolders } from "../lib/cloudStorage"
 import { fetchGeminiChats } from "../lib/geminiChats"
 import { useModal } from "./ModalContext"
+import { useAuth } from "./AuthContext"
 
 const FOLDERS_UPDATED_EVENT = "gemfolders-folders-updated"
 
@@ -51,6 +53,7 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [loading, setLoading] = useState(true)
   const [contextMenu, setContextMenu] = useState<ContextMenuState>(initialContextMenuState)
   const { onOpen } = useModal()
+  const { user } = useAuth()
 
   const instanceIdRef = useRef(`folder-provider-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`)
 
@@ -98,6 +101,38 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   useEffect(() => {
     refreshFolders()
   }, [])
+
+  useEffect(() => {
+    const syncFromCloud = async () => {
+      if (user?.id) {
+        setLoading(true)
+        try {
+          const cloudFolders = await pullFolders(user.id)
+          if (cloudFolders !== null) {
+            await saveFoldersLocal(cloudFolders)
+            setFolders(cloudFolders)
+          } else {
+            const localFolders = await getFolders()
+            if (localFolders.length > 0) {
+              await pushFolders(user.id, localFolders)
+            }
+            setFolders(localFolders)
+          }
+        } catch (error) {
+          console.error("Cloud sync (folders) failed, falling back to local:", error)
+          const localFolders = await getFolders()
+          setFolders(localFolders)
+        } finally {
+          setLoading(false)
+        }
+      } else {
+        await saveFoldersLocal([])
+        setFolders([])
+        setLoading(false)
+      }
+    }
+    syncFromCloud()
+  }, [user?.id])
 
   const onCreate = async ({
     parentId,
