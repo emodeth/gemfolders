@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import toast from "react-hot-toast";
 import { Plus, EyeOff } from "lucide-react";
 import FolderTree from "./FolderTree";
@@ -13,11 +14,75 @@ import ChatContextMenu from "./ChatContextMenu";
 import ModalManager from "./ModalManager";
 import { useModal } from "../context/ModalContext";
 import { useSettings } from "../context/SettingsContext";
+import { ThemeWrapper } from "./ThemeWrapper";
+import cssText from "data-text:~style.css";
 
 
 interface GeminiFolderWidgetProps {
   onOpenExtension?: () => void;
 }
+
+const PORTAL_CONTAINER_ID = "gemfolders-widget-portal";
+
+const getOrCreatePortalContainer = (): HTMLElement => {
+  const existing = document.getElementById(PORTAL_CONTAINER_ID);
+  if (existing) {
+    const shadow = existing.shadowRoot;
+    if (shadow) {
+      return shadow.getElementById("gemfolders-portal-mount") || existing;
+    }
+    return existing;
+  }
+
+  // Create host element on document.body
+  const host = document.createElement("div");
+  host.id = PORTAL_CONTAINER_ID;
+  host.style.position = "fixed";
+  host.style.top = "0";
+  host.style.left = "0";
+  host.style.width = "0";
+  host.style.height = "0";
+  host.style.overflow = "visible";
+  host.style.zIndex = "2147483600";
+  host.style.pointerEvents = "none";
+  document.body.appendChild(host);
+
+  // Create shadow DOM with CSS
+  const shadow = host.attachShadow({ mode: "open" });
+
+  const baseFontSize = 16;
+  let css = cssText.replaceAll(":root", ":host");
+  const remRegex = /([\d.]+)rem/g;
+  css = css.replaceAll(remRegex, (_match, remValue) => {
+    const pixelsValue = Number.parseFloat(remValue) * baseFontSize;
+    return `${pixelsValue}px`;
+  });
+
+  const styleEl = document.createElement("style");
+  styleEl.textContent = `
+    :host {
+      line-height: 1.5;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    *, ::before, ::after {
+      box-sizing: border-box;
+      border-width: 0;
+      border-style: solid;
+      border-color: #e5e7eb;
+    }
+    #gemfolders-portal-mount > * {
+      pointer-events: auto;
+    }
+    ${css}
+  `;
+  shadow.appendChild(styleEl);
+
+  const mountPoint = document.createElement("div");
+  mountPoint.id = "gemfolders-portal-mount";
+  shadow.appendChild(mountPoint);
+
+  return mountPoint;
+};
 
 const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,8 +91,11 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
   const { chatContextMenu } = useChat();
   const { onOpen } = useModal();
   const { updateSettings } = useSettings();
+  const portalContainerRef = useRef<HTMLElement | null>(null);
 
-
+  useEffect(() => {
+    portalContainerRef.current = getOrCreatePortalContainer();
+  }, []);
 
   useEffect(() => {
     const handleAddToFolder = (event: CustomEvent) => {
@@ -61,7 +129,13 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
     return folders.slice(0, 3);
   }, [folders, searchTerm, showAll]);
 
-
+  const overlayContent = (
+    <ThemeWrapper>
+      {contextMenu.isOpen && <FolderContextMenu />}
+      {chatContextMenu.isOpen && <ChatContextMenu />}
+      <ModalManager />
+    </ThemeWrapper>
+  );
 
   return (
     <>
@@ -138,13 +212,10 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({ onOpenExtension
 
 
         </div>
-        {contextMenu.isOpen && <FolderContextMenu />}
-        {chatContextMenu.isOpen && <ChatContextMenu />}
-        <ModalManager />
       </div>
+      {portalContainerRef.current && createPortal(overlayContent, portalContainerRef.current)}
     </>
   );
 };
 
 export default GeminiFolderWidget;
-
