@@ -64,7 +64,6 @@ const getShadowStyles = () => {
       font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
       width: 100%;
       padding: 8px 0 16px 0;
-      overflow: hidden;
       display: block;
     }
 
