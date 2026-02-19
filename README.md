@@ -1,33 +1,98 @@
-This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
+# GemFolders: Gemini Organizer & Chat Manager
 
-## Getting Started
+> Organize your Gemini chats with folders, bookmarks, and search capabilities.
 
-First, run the development server:
+Gemfolders is a powerful browser extension designed to enhance your Google Gemini experience. It allows you to create custom folders, bookmark important conversations for quick access, and easily search through your chat history. Say goodbye to clutter and hello to a streamlined workflow.
 
-```bash
-pnpm dev
-# or
-npm run dev
-```
+## Features
 
-Open your browser and load the appropriate development build. For example, if you are developing for the chrome browser, using manifest v3, use: `build/chrome-mv3-dev`.
+- **📁 Custom Folders:** Create, rename, and manage folders to categorize your chats (e.g., "Work," "Personal," "Creative").
+- **🔖 Bookmarks:** Pin your most important conversations for instant access.
+- **🔍 Search:** Quickly find past conversations by keyword.
+- **⚡ Seamless Integration:** Injects a native-looking interface directly into the Gemini sidebar.
+- **🔒 Privacy-Focused:** Your data stays local (or syncs securely via your own Supabase instance).
+- **🎨 Theme Aware:** Automatically adapts to Gemini's light and dark modes.
 
-You can start editing the popup by modifying `popup.tsx`. It should auto-update as you make changes. To add an options page, simply add a `options.tsx` file to the root of the project, with a react component default exported. Likewise to add a content page, add a `content.ts` file to the root of the project, importing some module and do some logic, then reload the extension on your browser.
+## Installation
 
-For further guidance, [visit our Documentation](https://docs.plasmo.com/)
+### For Users
 
-## Making production build
+1.  **Clone the repository:**
 
-Run the following:
+    ```bash
+    git clone https://github.com/yourusername/gem-folders.git
+    cd gem-folders
+    ```
 
-```bash
-pnpm build
-# or
-npm run build
-```
+2.  **Install dependencies:**
+    This project uses `pnpm`. If you don't have it, install it via `npm i -g pnpm`.
 
-This should create a production bundle for your extension, ready to be zipped and published to the stores.
+    ```bash
+    pnpm install
+    # or
+    npm install
+    ```
 
-## Submit to the webstores
+3.  **Build the extension:**
 
-The easiest way to deploy your Plasmo extension is to use the built-in [bpp](https://bpp.browser.market) GitHub action. Prior to using this action however, make sure to build your extension and upload the first version to the store to establish the basic credentials. Then, simply follow [this setup instruction](https://docs.plasmo.com/framework/workflows/submit) and you should be on your way for automated submission!
+    ```bash
+    pnpm build
+    # or
+    npm run build
+    ```
+
+4.  **Load into Chrome:**
+    - Open Chrome and navigate to `chrome://extensions/`.
+    - Toggle **Developer mode** in the top right corner.
+    - Click **Load unpacked**.
+    - Select the `build/chrome-mv3-prod` directory from your project folder.
+
+## Development
+
+To start developing on GemFolders:
+
+1.  **Clone & Install** (as above).
+
+2.  **Environment Setup:**
+    Duplicate `.env.example` to `.env` and fill in your Supabase credentials.
+
+    ```bash
+    cp .env.example .env
+    ```
+
+3.  **Run Development Server:**
+
+    ```bash
+    pnpm dev
+    # or
+    npm run dev
+    ```
+
+    This will start a hot-reloading development server.
+
+4.  **Load Development Build:**
+    - In `chrome://extensions/`, load the `build/chrome-mv3-dev` directory.
+    - Any changes you make to the source code will automatically trigger a rebuild.
+
+## Tech Stack
+
+- **Framework:** [Plasmo](https://docs.plasmo.com/) - The browser extension framework.
+- **UI Library:** [React](https://reactjs.org/) & [Tailwind CSS](https://tailwindcss.com/).
+- **Backend:** [Supabase](https://supabase.com/) (for auth & sync, optional if local-only).
+- **Icons:** [Lucide React](https://lucide.dev/).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
+
+## Author
+
+**Emirhan Keskin**
+
+---
+
+_Note: This project is not affiliated with Google or Gemini._
