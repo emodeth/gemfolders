@@ -10,7 +10,7 @@ import { truncateText } from "~lib/utils";
 const AddSubfolderModal: React.FC = () => {
   const { onClose, data } = useModal();
   const { onCreate, closeContextMenu } = useFolder();
-  const { canCreateFolder, canCreateSubfolder, showPaywall } = useTierLimits();
+  const { canCreateFolder, canCreateSubfolder, showPaywall, showSignInPaywall, isLoggedIn } = useTierLimits();
   const [folderName, setFolderName] = useState('');
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const [isPositioned, setIsPositioned] = useState(false);
@@ -49,12 +49,20 @@ const AddSubfolderModal: React.FC = () => {
     if (!folderName.trim()) return;
 
     if (!canCreateFolder()) {
-      showPaywall("folder limit");
+      if (!isLoggedIn) {
+        showSignInPaywall("folder limit");
+      } else {
+        showPaywall("folder limit");
+      }
       return;
     }
 
     if (parentId && !canCreateSubfolder(parentId)) {
-      showPaywall("subfolder limit");
+      if (!isLoggedIn) {
+        showSignInPaywall("subfolder limit");
+      } else {
+        showPaywall("subfolder limit");
+      }
       return;
     }
 

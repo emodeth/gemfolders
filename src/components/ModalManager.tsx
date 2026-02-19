@@ -12,6 +12,7 @@ import MoveChatModal from '~components/modals/MoveChatModal';
 import AddToFolderModal from '~components/modals/AddToFolderModal';
 
 import PaywallModal from '~components/modals/PaywallModal';
+import SignInPaywallModal from '~components/modals/SignInPaywallModal';
 import OnboardingModal from '~components/modals/OnboardingModal';
 
 interface ModalManagerProps {
@@ -45,10 +46,17 @@ const ModalManager: React.FC<ModalManagerProps> = ({ enablePaywallListener = fal
       onOpen('paywall', { reason });
     };
 
+    const handleOpenSignInPaywall = (event: CustomEvent) => {
+      const { reason } = event.detail || {};
+      onOpen('signInPaywall', { reason });
+    };
+
     globalThis.addEventListener('gemfolders-open-paywall-modal', handleOpenPaywall as EventListener);
+    globalThis.addEventListener('gemfolders-open-signin-paywall-modal', handleOpenSignInPaywall as EventListener);
 
     return () => {
       globalThis.removeEventListener('gemfolders-open-paywall-modal', handleOpenPaywall as EventListener);
+      globalThis.removeEventListener('gemfolders-open-signin-paywall-modal', handleOpenSignInPaywall as EventListener);
     };
   }, [onOpen, enablePaywallListener]);
 
@@ -69,7 +77,7 @@ const ModalManager: React.FC<ModalManagerProps> = ({ enablePaywallListener = fal
     <div
       data-modal-overlay="true"
       className={`organizer-fixed organizer-inset-0
-        ${type === 'paywall' || type === 'onboarding' ? 'organizer-bg-black/50 organizer-backdrop-blur-sm' : 'organizer-bg-transparent'}
+        ${type === 'paywall' || type === 'signInPaywall' || type === 'onboarding' ? 'organizer-bg-black/50 organizer-backdrop-blur-sm' : 'organizer-bg-transparent'}
         ${isTransparentOverlay ? '' : 'organizer-flex organizer-justify-center'}
         ${isTopPositioned ? 'organizer-items-start organizer-pt-[20vh]' : ''}
         ${!isTopPositioned && !isTransparentOverlay ? 'organizer-items-center' : ''}
@@ -92,6 +100,7 @@ const ModalManager: React.FC<ModalManagerProps> = ({ enablePaywallListener = fal
         {type === 'moveChatModal' && <MoveChatModal />}
         {type === 'addToFolder' && <AddToFolderModal />}
         {type === 'paywall' && <PaywallModal />}
+        {type === 'signInPaywall' && <SignInPaywallModal />}
         {type === 'onboarding' && <OnboardingModal />}
       </div>
     </div>

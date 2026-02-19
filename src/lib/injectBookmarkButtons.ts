@@ -15,7 +15,8 @@ const BOOKMARK_BUTTON_CLASS = "gemfolders-organizer-bookmark-btn"
 const BOOKMARK_ICON_FILLED = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`
 const BOOKMARK_ICON_OUTLINE = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`
 
-const FREE_TIER_MAX_BOOKMARKS = 5
+const NOT_LOGGED_IN_MAX_BOOKMARKS = 5
+const FREE_TIER_MAX_BOOKMARKS = 10
 
 let bookmarksCache: BookmarkedChat[] = []
 let settingsCache: Settings = DEFAULT_SETTINGS
@@ -76,15 +77,16 @@ const checkUserProStatus = async (): Promise<boolean> => {
 }
 
 const canAddBookmarkSync = (): { allowed: boolean; reason?: string } => {
-  if (!isLoggedIn) {
-    return { allowed: false, reason: "login" }
-  }
-
   if (userAccessCache?.isPro) {
     return { allowed: true }
   }
-  if (bookmarksCache.length >= FREE_TIER_MAX_BOOKMARKS) {
-    return { allowed: false, reason: "bookmark limit" }
+
+  const maxBookmarks = isLoggedIn
+    ? FREE_TIER_MAX_BOOKMARKS
+    : NOT_LOGGED_IN_MAX_BOOKMARKS
+
+  if (bookmarksCache.length >= maxBookmarks) {
+    return { allowed: false, reason: isLoggedIn ? "bookmark limit" : "sign-in" }
   }
 
   return { allowed: true }
@@ -430,9 +432,6 @@ export const injectBookmarkButtons = async () => {
   injectStyles()
 
   isLoggedIn = await checkLoginStatus()
-  if (!isLoggedIn) {
-    return
-  }
 
   const [bookmarks, settings] = await Promise.all([
     getBookmarks(),
@@ -608,15 +607,10 @@ export const removeAllInjectedButtons = () => {
 
 export const setupAuthListener = () => {
   supabase.auth.onAuthStateChange((event, session) => {
-    const wasLoggedIn = isLoggedIn
     isLoggedIn = !!session?.user
-
     userAccessCache = null
 
-    if (event === "SIGNED_OUT" || (wasLoggedIn && !isLoggedIn)) {
-      removeAllInjectedButtons()
-    } else if (event === "SIGNED_IN" || (!wasLoggedIn && isLoggedIn)) {
-      injectBookmarkButtons()
-    }
+    // Refresh buttons on any auth state change to reflect current tier limits
+    refreshBookmarkButtons()
   })
 }
