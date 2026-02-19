@@ -50,12 +50,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logout = async () => {
     await signOutFromGoogle()
     await supabase.auth.signOut()
-    await new Promise<void>((resolve) => {
-      chrome.storage.local.remove(
-        ["gemfolders-folders", "gemfolders-bookmarks"],
-        () => resolve()
-      )
-    })
     setSession(null)
     setUser(null)
   }

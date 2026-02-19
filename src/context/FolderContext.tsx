@@ -126,8 +126,8 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           setLoading(false)
         }
       } else {
-        await saveFoldersLocal([])
-        setFolders([])
+        const localFolders = await getFolders()
+        setFolders(localFolders)
         setLoading(false)
       }
     }

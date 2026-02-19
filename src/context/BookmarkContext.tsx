@@ -85,8 +85,8 @@ export const BookmarkProvider: React.FC<{ children: ReactNode }> = ({ children }
           setIsLoading(false)
         }
       } else {
-        await saveBookmarksLocal([])
-        setBookmarks([])
+        const localBookmarks = await getBookmarks()
+        setBookmarks(localBookmarks)
         setIsLoading(false)
       }
     }
