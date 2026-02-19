@@ -22,7 +22,6 @@ const SignInPaywallModal: React.FC = () => {
         await refreshSession();
         toast.success('Signed in successfully!', { duration: 1000 });
         onClose();
-        globalThis.location.reload();
       }
     } catch (error) {
       toast.error('An unexpected error occurred');
