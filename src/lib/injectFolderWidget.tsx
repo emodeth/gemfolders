@@ -226,6 +226,23 @@ export const injectFolderWidget = (): boolean => {
 
   const container = createWidgetContainer();
 
+  const spinnerStyleId = "gemfolders-hide-sidebar-spinner";
+  if (!document.getElementById(spinnerStyleId)) {
+    const spinnerStyle = document.createElement("style");
+    spinnerStyle.id = spinnerStyleId;
+    spinnerStyle.textContent = `
+      side-navigation mat-spinner,
+      side-navigation mat-progress-spinner,
+      [role="navigation"] mat-spinner,
+      [role="navigation"] mat-progress-spinner,
+      nav mat-spinner,
+      nav mat-progress-spinner {
+        display: none !important;
+      }
+    `;
+    document.head.appendChild(spinnerStyle);
+  }
+
   if (injectionPoint.position === "before") {
     injectionPoint.element.parentNode?.insertBefore(container, injectionPoint.element);
   } else {
@@ -312,6 +329,9 @@ export const removeFolderWidget = () => {
 
   const globalStyles = document.getElementById(WIDGET_STYLES_ID);
   globalStyles?.remove();
+
+  const spinnerStyles = document.getElementById("gemfolders-hide-sidebar-spinner");
+  spinnerStyles?.remove();
 
   const separator = document.querySelector(".gemfolders-folder-separator");
   separator?.remove();
