@@ -129,18 +129,89 @@ const injectStyles = () => {
     }
 
     body.gemfolders-organizer-native-view .gemfolders-organizer-actions-wrapper {
-      display: flex !important;
-    }
-    
-    body.gemfolders-organizer-native-view .gemfolders-organizer-conversation-modified {
-      padding-right: 0 !important;
-    }
-    
-    body.gemfolders-organizer-native-view .gemfolders-organizer-title-modified {
-       max-width: 100% !important;
+      display: none !important;
     }
   `
   document.head.appendChild(style)
+}
+
+const restoreNativeView = () => {
+  document
+    .querySelectorAll(".gemfolders-organizer-actions-wrapper")
+    .forEach((wrapper) => {
+      const nativeActions = wrapper.querySelector(
+        ".conversation-actions-container"
+      ) as HTMLElement
+      if (nativeActions && wrapper.parentElement) {
+        nativeActions.style.cssText = ""
+        wrapper.parentElement.appendChild(nativeActions)
+      }
+    })
+
+  document
+    .querySelectorAll(".gemfolders-organizer-conversation-modified")
+    .forEach((el) => {
+      el.classList.remove("gemfolders-organizer-conversation-modified")
+    })
+
+  document
+    .querySelectorAll(".gemfolders-organizer-title-modified")
+    .forEach((el) => {
+      el.classList.remove("gemfolders-organizer-title-modified")
+    })
+
+  document
+    .querySelectorAll(".gemfolders-organizer-parent-modified")
+    .forEach((el) => {
+      el.classList.remove("gemfolders-organizer-parent-modified")
+    })
+}
+
+const enableCustomView = () => {
+  document
+    .querySelectorAll(".gemfolders-organizer-actions-wrapper")
+    .forEach((wrapper) => {
+      const parentContainer = wrapper.parentElement
+      if (!parentContainer) return
+
+      parentContainer.classList.add("gemfolders-organizer-parent-modified")
+
+      const conversationEl = parentContainer.querySelector(
+        ".conversation"
+      ) as HTMLElement
+      if (conversationEl) {
+        conversationEl.classList.add(
+          "gemfolders-organizer-conversation-modified"
+        )
+      }
+
+      const titleEl = parentContainer.querySelector(
+        ".conversation-title"
+      ) as HTMLElement
+      if (titleEl) {
+        titleEl.classList.add("gemfolders-organizer-title-modified")
+      }
+
+      const nativeActions = parentContainer.querySelector(
+        ".conversation-actions-container"
+      ) as HTMLElement
+      if (
+        nativeActions &&
+        !nativeActions.closest(".gemfolders-organizer-actions-wrapper")
+      ) {
+        styleActionsContainer(nativeActions)
+        wrapper.insertBefore(nativeActions, wrapper.firstChild)
+
+        parentContainer.addEventListener("mouseenter", () => {
+          nativeActions.style.opacity = "1"
+        })
+        parentContainer.addEventListener("mouseleave", () => {
+          nativeActions.style.opacity = "0"
+        })
+      }
+    })
+
+  injectButtonsIntoVisibleConversations()
 }
 
 const applySettings = (settings: Settings) => {
@@ -156,13 +227,15 @@ const applySettings = (settings: Settings) => {
     document.body.classList.remove("gemfolders-organizer-hide-add-to-folder")
   }
 
-  if (
-    settings.hideBookmarksFromSidebar &&
-    settings.hideAddToFolderFromSidebar
-  ) {
+  const isNativeView =
+    settings.hideBookmarksFromSidebar && settings.hideAddToFolderFromSidebar
+
+  if (isNativeView) {
     document.body.classList.add("gemfolders-organizer-native-view")
+    restoreNativeView()
   } else {
     document.body.classList.remove("gemfolders-organizer-native-view")
+    enableCustomView()
   }
 }
 
@@ -310,7 +383,12 @@ const styleActionsContainer = (actionsContainer: HTMLElement) => {
   `
 }
 
+const isNativeViewActive = () =>
+  document.body.classList.contains("gemfolders-organizer-native-view")
+
 const injectButtonIntoConversation = (conversationElement: Element) => {
+  if (isNativeViewActive()) return
+
   const parentContainer = conversationElement.parentElement
   if (!parentContainer) return
 
@@ -392,6 +470,8 @@ const updateAllBookmarkButtons = () => {
 }
 
 const handleOrphanActionsContainer = (actionsContainer: Element) => {
+  if (isNativeViewActive()) return
+
   const parentContainer = actionsContainer.parentElement
   if (!parentContainer) return
 
@@ -420,6 +500,8 @@ const injectButtonsIntoVisibleConversations = () => {
 }
 
 const attemptInjection = () => {
+  if (isNativeViewActive()) return
+
   injectButtonsIntoVisibleConversations()
 
   if (injectionAttempts < MAX_INJECTION_ATTEMPTS) {
