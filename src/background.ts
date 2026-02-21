@@ -136,7 +136,7 @@ chrome.runtime.onMessageExternal.addListener(
             }
 
             const checkoutUrl = new URL(url)
-            checkoutUrl.searchParams.set("email", user.email)
+            checkoutUrl.searchParams.set("customer_email", user.email)
             checkoutUrl.searchParams.set("metadata[user_email]", user.email)
 
             chrome.tabs.create({ url: checkoutUrl.toString() })
