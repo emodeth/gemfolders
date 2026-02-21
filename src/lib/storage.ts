@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid"
 
 import { getRandomColor } from "../constants/colors"
+import { getCurrentUserId, pushBookmarks, pushFolders } from "./cloudStorage"
 
 export interface Folder {
   id: string
@@ -23,6 +24,20 @@ export const getFolders = async (): Promise<Folder[]> => {
 }
 
 export const saveFolders = async (folders: Folder[]): Promise<void> => {
+  await new Promise<void>((resolve) => {
+    chrome.storage.local.set({ [STORAGE_KEY]: folders }, () => {
+      resolve()
+    })
+  })
+  const userId = await getCurrentUserId()
+  if (userId) {
+    pushFolders(userId, folders).catch((err) =>
+      console.error("Cloud sync (folders) failed:", err)
+    )
+  }
+}
+
+export const saveFoldersLocal = async (folders: Folder[]): Promise<void> => {
   return new Promise((resolve) => {
     chrome.storage.local.set({ [STORAGE_KEY]: folders }, () => {
       resolve()
@@ -425,6 +440,24 @@ export const getBookmarks = async (): Promise<BookmarkedChat[]> => {
 }
 
 export const saveBookmarks = async (
+  bookmarks: BookmarkedChat[]
+): Promise<void> => {
+  await new Promise<void>((resolve) => {
+    chrome.storage.local.set({ [BOOKMARKS_STORAGE_KEY]: bookmarks }, () => {
+      resolve()
+    })
+  })
+  // Cloud sync (fire-and-forget)
+  const userId = await getCurrentUserId()
+  if (userId) {
+    pushBookmarks(userId, bookmarks).catch((err) =>
+      console.error("Cloud sync (bookmarks) failed:", err)
+    )
+  }
+}
+
+/** Save bookmarks to local storage only (no cloud push). Used during cloud pull. */
+export const saveBookmarksLocal = async (
   bookmarks: BookmarkedChat[]
 ): Promise<void> => {
   return new Promise((resolve) => {

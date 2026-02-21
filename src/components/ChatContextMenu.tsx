@@ -44,7 +44,7 @@ const ChatContextMenu: React.FC = () => {
   } = useChat();
 
   const { isBookmarked, toggleBookmark } = useBookmark();
-  const { canBookmark, showPaywall } = useTierLimits();
+  const { canBookmark, showPaywall, showSignInPaywall, isLoggedIn } = useTierLimits();
 
   const menuRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
@@ -62,7 +62,13 @@ const ChatContextMenu: React.FC = () => {
       },
       {
         canAdd: canBookmark,
-        onLimitReached: () => showPaywall("bookmark limit"),
+        onLimitReached: () => {
+          if (!isLoggedIn) {
+            showSignInPaywall("bookmark limit");
+          } else {
+            showPaywall("bookmark limit");
+          }
+        },
       }
     );
     closeChatContextMenu();

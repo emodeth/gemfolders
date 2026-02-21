@@ -8,22 +8,31 @@ import { useFolder } from "./FolderContext"
 import { useModal } from "./ModalContext"
 import { useSubscription } from "./SubscriptionContext"
 
-export const FREE_TIER_LIMITS = {
+export const NOT_LOGGED_IN_LIMITS = {
   maxBookmarks: 5,
   maxFolders: 5,
   maxSubfolderDepth: 1
+} as const
+
+export const FREE_TIER_LIMITS = {
+  maxBookmarks: 10,
+  maxFolders: 10,
+  maxSubfolderDepth: 2
 } as const
 
 interface TierLimitsContextType {
   // Counts
   totalFolderCount: number
   bookmarkCount: number
+  // State
+  isLoggedIn: boolean
   // Permission checks
   canCreateFolder: () => boolean
   canCreateSubfolder: (parentId: string) => boolean
   canBookmark: () => boolean
-  // Paywall trigger
+  // Paywall triggers
   showPaywall: (reason?: string) => void
+  showSignInPaywall: (reason?: string) => void
   // Helper
   getFolderDepth: (folderId: string) => number
 }
@@ -74,6 +83,9 @@ export const TierLimitsProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const isLoggedIn = !!session?.user
 
+  // Select the correct limits based on login state
+  const currentLimits = isLoggedIn ? FREE_TIER_LIMITS : NOT_LOGGED_IN_LIMITS
+
   const totalFolderCount = useMemo(
     () => countAllFolders(folders),
     [folders]
@@ -95,45 +107,53 @@ export const TierLimitsProvider: React.FC<{ children: React.ReactNode }> = ({
     [onOpen]
   )
 
+  const showSignInPaywall = useCallback(
+    (reason?: string) => {
+      onOpen("signInPaywall", { reason })
+    },
+    [onOpen]
+  )
+
   const canCreateFolder = useCallback((): boolean => {
-    if (!isLoggedIn) return false
     if (isPro) return true
-    return totalFolderCount < FREE_TIER_LIMITS.maxFolders
-  }, [isLoggedIn, isPro, totalFolderCount])
+    return totalFolderCount < currentLimits.maxFolders
+  }, [isPro, totalFolderCount, currentLimits])
 
   const canCreateSubfolder = useCallback(
     (parentId: string): boolean => {
-      if (!isLoggedIn) return false
       if (isPro) return true
       const parentDepth = getFolderDepth(parentId)
-      return parentDepth < FREE_TIER_LIMITS.maxSubfolderDepth
+      return parentDepth < currentLimits.maxSubfolderDepth
     },
-    [isLoggedIn, isPro, getFolderDepth]
+    [isPro, getFolderDepth, currentLimits]
   )
 
   const canBookmark = useCallback((): boolean => {
-    if (!isLoggedIn) return false
     if (isPro) return true
-    return bookmarkCount < FREE_TIER_LIMITS.maxBookmarks
-  }, [isLoggedIn, isPro, bookmarkCount])
+    return bookmarkCount < currentLimits.maxBookmarks
+  }, [isPro, bookmarkCount, currentLimits])
 
   const value = useMemo(
     () => ({
       totalFolderCount,
       bookmarkCount,
+      isLoggedIn,
       canCreateFolder,
       canCreateSubfolder,
       canBookmark,
       showPaywall,
+      showSignInPaywall,
       getFolderDepth
     }),
     [
       totalFolderCount,
       bookmarkCount,
+      isLoggedIn,
       canCreateFolder,
       canCreateSubfolder,
       canBookmark,
       showPaywall,
+      showSignInPaywall,
       getFolderDepth
     ]
   )

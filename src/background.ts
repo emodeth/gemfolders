@@ -112,45 +112,49 @@ function getAuthToken(): Promise<string | null> {
 // Gemfolders website payment redirection
 
 chrome.runtime.onMessageExternal.addListener(
-  async (request, sender, sendResponse) => {
+  (request, _sender, sendResponse) => {
     if (request.action === "TRIGGER_PURCHASE") {
-      try {
-        const { data: session } = await supabase.auth.getSession()
-        const user = session?.session?.user
+      ;(async () => {
+        try {
+          const { data: session } = await supabase.auth.getSession()
+          const user = session?.session?.user
 
-        if (user && user.email) {
-          let url: string = POLAR_CHECKOUT_LINKS.yearly
-          switch (request.plan) {
-            case "Monthly":
-              url = POLAR_CHECKOUT_LINKS.monthly
-              break
-            case "Yearly":
-              url = POLAR_CHECKOUT_LINKS.yearly
-              break
-            case "Lifetime":
-              url = POLAR_CHECKOUT_LINKS.lifetime
-              break
-            default:
-              url = POLAR_CHECKOUT_LINKS.yearly
+          if (user && user.email) {
+            let url: string = POLAR_CHECKOUT_LINKS.yearly
+            switch (request.plan) {
+              case "Monthly":
+                url = POLAR_CHECKOUT_LINKS.monthly
+                break
+              case "Yearly":
+                url = POLAR_CHECKOUT_LINKS.yearly
+                break
+              case "Lifetime":
+                url = POLAR_CHECKOUT_LINKS.lifetime
+                break
+              default:
+                url = POLAR_CHECKOUT_LINKS.yearly
+            }
+
+            const checkoutUrl = new URL(url)
+            checkoutUrl.searchParams.set("customer_email", user.email)
+            checkoutUrl.searchParams.set("metadata[user_email]", user.email)
+
+            chrome.tabs.create({ url: checkoutUrl.toString() })
+            sendResponse({ success: true, message: "Redirecting to payment" })
+          } else {
+            chrome.tabs.create({
+              url: chrome.runtime.getURL("tabs/login-required.html")
+            })
+            sendResponse({
+              success: false,
+              message: "User not logged in, opened login page"
+            })
           }
-
-          const checkoutUrl = new URL(url)
-          checkoutUrl.searchParams.set("email", user.email)
-          checkoutUrl.searchParams.set("metadata[user_email]", user.email)
-
-          chrome.tabs.create({ url: checkoutUrl.toString() })
-          sendResponse({ success: true, message: "Redirecting to payment" })
-        } else {
-          chrome.tabs.create({ url: chrome.runtime.getURL("options.html") })
-          sendResponse({
-            success: false,
-            message: "User not logged in, opened login page"
-          })
+        } catch (e) {
+          console.error("Error in external message handler:", e)
+          sendResponse({ success: false, error: "Internal error" })
         }
-      } catch (e) {
-        console.error("Error in external message handler:", e)
-        sendResponse({ success: false, error: "Internal error" })
-      }
+      })()
     }
     // Return true to indicate we wish to send a response asynchronously
     return true

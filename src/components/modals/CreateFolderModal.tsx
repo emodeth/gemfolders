@@ -24,14 +24,18 @@ const CreateFolderModal: React.FC = () => {
   }, [onClose]);
 
   const { onCreate } = useFolder();
-  const { canCreateFolder, showPaywall } = useTierLimits();
+  const { canCreateFolder, showPaywall, showSignInPaywall, isLoggedIn } = useTierLimits();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!folderName.trim()) return;
 
     if (!canCreateFolder()) {
-      showPaywall("folder limit");
+      if (!isLoggedIn) {
+        showSignInPaywall("folder limit");
+      } else {
+        showPaywall("folder limit");
+      }
       return;
     }
 

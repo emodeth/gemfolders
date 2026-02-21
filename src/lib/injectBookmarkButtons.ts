@@ -15,13 +15,19 @@ const BOOKMARK_BUTTON_CLASS = "gemfolders-organizer-bookmark-btn"
 const BOOKMARK_ICON_FILLED = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`
 const BOOKMARK_ICON_OUTLINE = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>`
 
-const FREE_TIER_MAX_BOOKMARKS = 5
+const NOT_LOGGED_IN_MAX_BOOKMARKS = 5
+const FREE_TIER_MAX_BOOKMARKS = 10
 
 let bookmarksCache: BookmarkedChat[] = []
 let settingsCache: Settings = DEFAULT_SETTINGS
 let isLoggedIn = false
 let userAccessCache: { isPro: boolean; checkedAt: number } | null = null
 const USER_ACCESS_CACHE_TTL = 5 * 60 * 1000
+
+let injectionAttempts = 0
+const MAX_INJECTION_ATTEMPTS = 50
+const INJECTION_RETRY_DELAY = 100 // ms
+let observer: MutationObserver | null = null
 
 const checkLoginStatus = async (): Promise<boolean> => {
   try {
@@ -71,15 +77,16 @@ const checkUserProStatus = async (): Promise<boolean> => {
 }
 
 const canAddBookmarkSync = (): { allowed: boolean; reason?: string } => {
-  if (!isLoggedIn) {
-    return { allowed: false, reason: "login" }
-  }
-
   if (userAccessCache?.isPro) {
     return { allowed: true }
   }
-  if (bookmarksCache.length >= FREE_TIER_MAX_BOOKMARKS) {
-    return { allowed: false, reason: "bookmark limit" }
+
+  const maxBookmarks = isLoggedIn
+    ? FREE_TIER_MAX_BOOKMARKS
+    : NOT_LOGGED_IN_MAX_BOOKMARKS
+
+  if (bookmarksCache.length >= maxBookmarks) {
+    return { allowed: false, reason: isLoggedIn ? "bookmark limit" : "sign-in" }
   }
 
   return { allowed: true }
@@ -122,18 +129,89 @@ const injectStyles = () => {
     }
 
     body.gemfolders-organizer-native-view .gemfolders-organizer-actions-wrapper {
-      display: flex !important;
-    }
-    
-    body.gemfolders-organizer-native-view .gemfolders-organizer-conversation-modified {
-      padding-right: 0 !important;
-    }
-    
-    body.gemfolders-organizer-native-view .gemfolders-organizer-title-modified {
-       max-width: 100% !important;
+      display: none !important;
     }
   `
   document.head.appendChild(style)
+}
+
+const restoreNativeView = () => {
+  document
+    .querySelectorAll(".gemfolders-organizer-actions-wrapper")
+    .forEach((wrapper) => {
+      const nativeActions = wrapper.querySelector(
+        ".conversation-actions-container"
+      ) as HTMLElement
+      if (nativeActions && wrapper.parentElement) {
+        nativeActions.style.cssText = ""
+        wrapper.parentElement.appendChild(nativeActions)
+      }
+    })
+
+  document
+    .querySelectorAll(".gemfolders-organizer-conversation-modified")
+    .forEach((el) => {
+      el.classList.remove("gemfolders-organizer-conversation-modified")
+    })
+
+  document
+    .querySelectorAll(".gemfolders-organizer-title-modified")
+    .forEach((el) => {
+      el.classList.remove("gemfolders-organizer-title-modified")
+    })
+
+  document
+    .querySelectorAll(".gemfolders-organizer-parent-modified")
+    .forEach((el) => {
+      el.classList.remove("gemfolders-organizer-parent-modified")
+    })
+}
+
+const enableCustomView = () => {
+  document
+    .querySelectorAll(".gemfolders-organizer-actions-wrapper")
+    .forEach((wrapper) => {
+      const parentContainer = wrapper.parentElement
+      if (!parentContainer) return
+
+      parentContainer.classList.add("gemfolders-organizer-parent-modified")
+
+      const conversationEl = parentContainer.querySelector(
+        ".conversation"
+      ) as HTMLElement
+      if (conversationEl) {
+        conversationEl.classList.add(
+          "gemfolders-organizer-conversation-modified"
+        )
+      }
+
+      const titleEl = parentContainer.querySelector(
+        ".conversation-title"
+      ) as HTMLElement
+      if (titleEl) {
+        titleEl.classList.add("gemfolders-organizer-title-modified")
+      }
+
+      const nativeActions = parentContainer.querySelector(
+        ".conversation-actions-container"
+      ) as HTMLElement
+      if (
+        nativeActions &&
+        !nativeActions.closest(".gemfolders-organizer-actions-wrapper")
+      ) {
+        styleActionsContainer(nativeActions)
+        wrapper.insertBefore(nativeActions, wrapper.firstChild)
+
+        parentContainer.addEventListener("mouseenter", () => {
+          nativeActions.style.opacity = "1"
+        })
+        parentContainer.addEventListener("mouseleave", () => {
+          nativeActions.style.opacity = "0"
+        })
+      }
+    })
+
+  injectButtonsIntoVisibleConversations()
 }
 
 const applySettings = (settings: Settings) => {
@@ -149,13 +227,15 @@ const applySettings = (settings: Settings) => {
     document.body.classList.remove("gemfolders-organizer-hide-add-to-folder")
   }
 
-  if (
-    settings.hideBookmarksFromSidebar &&
-    settings.hideAddToFolderFromSidebar
-  ) {
+  const isNativeView =
+    settings.hideBookmarksFromSidebar && settings.hideAddToFolderFromSidebar
+
+  if (isNativeView) {
     document.body.classList.add("gemfolders-organizer-native-view")
+    restoreNativeView()
   } else {
     document.body.classList.remove("gemfolders-organizer-native-view")
+    enableCustomView()
   }
 }
 
@@ -303,7 +383,12 @@ const styleActionsContainer = (actionsContainer: HTMLElement) => {
   `
 }
 
+const isNativeViewActive = () =>
+  document.body.classList.contains("gemfolders-organizer-native-view")
+
 const injectButtonIntoConversation = (conversationElement: Element) => {
+  if (isNativeViewActive()) return
+
   const parentContainer = conversationElement.parentElement
   if (!parentContainer) return
 
@@ -384,13 +469,51 @@ const updateAllBookmarkButtons = () => {
   })
 }
 
+const handleOrphanActionsContainer = (actionsContainer: Element) => {
+  if (isNativeViewActive()) return
+
+  const parentContainer = actionsContainer.parentElement
+  if (!parentContainer) return
+
+  const existingWrapper = parentContainer.querySelector(
+    ".gemfolders-organizer-actions-wrapper"
+  )
+  if (!existingWrapper) return
+
+  if (!actionsContainer.closest(".gemfolders-organizer-actions-wrapper")) {
+    const actionEl = actionsContainer as HTMLElement
+    styleActionsContainer(actionEl)
+    existingWrapper.insertBefore(actionsContainer, existingWrapper.firstChild)
+
+    parentContainer.addEventListener("mouseenter", () => {
+      actionEl.style.opacity = "1"
+    })
+    parentContainer.addEventListener("mouseleave", () => {
+      actionEl.style.opacity = "0"
+    })
+  }
+}
+
+const injectButtonsIntoVisibleConversations = () => {
+  const conversations = document.querySelectorAll(".conversation")
+  conversations.forEach(injectButtonIntoConversation)
+}
+
+const attemptInjection = () => {
+  if (isNativeViewActive()) return
+
+  injectButtonsIntoVisibleConversations()
+
+  if (injectionAttempts < MAX_INJECTION_ATTEMPTS) {
+    injectionAttempts++
+    setTimeout(attemptInjection, INJECTION_RETRY_DELAY)
+  }
+}
+
 export const injectBookmarkButtons = async () => {
   injectStyles()
 
   isLoggedIn = await checkLoginStatus()
-  if (!isLoggedIn) {
-    return
-  }
 
   const [bookmarks, settings] = await Promise.all([
     getBookmarks(),
@@ -402,65 +525,61 @@ export const injectBookmarkButtons = async () => {
   settingsCache = settings
   applySettings(settingsCache)
 
-  const conversations = document.querySelectorAll(".conversation")
-  conversations.forEach(injectButtonIntoConversation)
+  attemptInjection()
 
-  const handleOrphanActionsContainer = (actionsContainer: Element) => {
-    const parentContainer = actionsContainer.parentElement
-    if (!parentContainer) return
-
-    const existingWrapper = parentContainer.querySelector(
-      ".gemfolders-organizer-actions-wrapper"
-    )
-    if (!existingWrapper) return
-
-    if (!actionsContainer.closest(".gemfolders-organizer-actions-wrapper")) {
-      const actionEl = actionsContainer as HTMLElement
-      styleActionsContainer(actionEl)
-      existingWrapper.insertBefore(actionsContainer, existingWrapper.firstChild)
-
-      parentContainer.addEventListener("mouseenter", () => {
-        actionEl.style.opacity = "1"
-      })
-      parentContainer.addEventListener("mouseleave", () => {
-        actionEl.style.opacity = "0"
-      })
-    }
+  if (observer) {
+    observer.disconnect()
   }
 
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      mutation.addedNodes.forEach((node) => {
-        if (node instanceof Element) {
-          if (node.classList?.contains("conversation")) {
-            injectButtonIntoConversation(node)
-          }
-          const nestedConversations = node.querySelectorAll?.(".conversation")
-          nestedConversations?.forEach(injectButtonIntoConversation)
+  observer = new MutationObserver((mutations) => {
+    let shouldInject = false
 
-          if (node.classList?.contains("conversation-actions-container")) {
-            handleOrphanActionsContainer(node)
+    for (const mutation of mutations) {
+      if (mutation.type === "childList") {
+        for (const node of mutation.addedNodes) {
+          if (node instanceof Element) {
+            if (
+              node.classList?.contains("conversation") ||
+              node.querySelector(".conversation")
+            ) {
+              shouldInject = true
+
+              if (node.classList?.contains("conversation")) {
+                injectButtonIntoConversation(node)
+              }
+              const nestedConversations =
+                node.querySelectorAll?.(".conversation")
+              nestedConversations?.forEach(injectButtonIntoConversation)
+            }
+
+            if (
+              node.classList?.contains("conversation-actions-container") ||
+              node.querySelector(".conversation-actions-container")
+            ) {
+              if (node.classList?.contains("conversation-actions-container")) {
+                handleOrphanActionsContainer(node)
+              }
+              const nestedActions = node.querySelectorAll?.(
+                ".conversation-actions-container"
+              )
+              nestedActions?.forEach(handleOrphanActionsContainer)
+            }
           }
-          const nestedActions = node.querySelectorAll?.(
-            ".conversation-actions-container"
-          )
-          nestedActions?.forEach(handleOrphanActionsContainer)
         }
-      })
-    })
+      }
+    }
+
+    // Also re-run generic injection if we detected relevant mutations, just to be safe
+    if (shouldInject) {
+      injectButtonsIntoVisibleConversations()
+    }
   })
 
-  const sidebarContainer =
-    document.querySelector("infinite-scroller") ||
-    document.querySelector('[role="navigation"]') ||
-    document.body
-
-  if (sidebarContainer) {
-    observer.observe(sidebarContainer, {
-      childList: true,
-      subtree: true
-    })
-  }
+  // Observe body to catch navigation loading
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
+  })
 
   chrome.storage.onChanged.addListener((changes, areaName) => {
     if (areaName === "local") {
@@ -483,12 +602,30 @@ export const injectBookmarkButtons = async () => {
     bookmarksCache = await getBookmarks()
     updateAllBookmarkButtons()
   })
+
+  // Visibility change handling
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      injectButtonsIntoVisibleConversations()
+    }
+  })
+
+  // URL change handling
+  let lastUrl = location.href
+  new MutationObserver(() => {
+    const url = location.href
+    if (url !== lastUrl) {
+      lastUrl = url
+      // Re-trigger aggressive injection on URL change (navigation)
+      injectionAttempts = 0
+      attemptInjection()
+    }
+  }).observe(document.body, { subtree: true, childList: true })
 }
 
 export const refreshBookmarkButtons = async () => {
   bookmarksCache = await getBookmarks()
-  const conversations = document.querySelectorAll(".conversation")
-  conversations.forEach(injectButtonIntoConversation)
+  injectButtonsIntoVisibleConversations()
   updateAllBookmarkButtons()
 }
 
@@ -541,19 +678,21 @@ export const removeAllInjectedButtons = () => {
   if (styleTag) {
     styleTag.remove()
   }
+
+  if (observer) {
+    observer.disconnect()
+    observer = null
+  }
+
+  injectionAttempts = 0
 }
 
 export const setupAuthListener = () => {
   supabase.auth.onAuthStateChange((event, session) => {
-    const wasLoggedIn = isLoggedIn
     isLoggedIn = !!session?.user
-
     userAccessCache = null
 
-    if (event === "SIGNED_OUT" || (wasLoggedIn && !isLoggedIn)) {
-      removeAllInjectedButtons()
-    } else if (event === "SIGNED_IN" || (!wasLoggedIn && isLoggedIn)) {
-      injectBookmarkButtons()
-    }
+    // Refresh buttons on any auth state change to reflect current tier limits
+    refreshBookmarkButtons()
   })
 }

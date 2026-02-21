@@ -1,8 +1,8 @@
 {
   "name": "gemfolders",
   "displayName": "Gemini Folders, Bookmarks & Search - Gemfolders: Chat Organizer",
-  "version": "1.0.0",
-  "description": "A browser extension to organize your Gemini chats",
+  "version": "1.1.0",
+  "description": "A chrome extension to organize your Gemini chats",
   "author": "Emirhan Keskin",
   "scripts": {
     "dev": "plasmo dev",
@@ -58,7 +58,6 @@
         "https://www.googleapis.com/auth/userinfo.profile"
       ]
     },
-    "key": "$CRX_PUBLIC_KEY",
     "permissions": [
       "storage",
       "identity"
@@ -66,7 +65,8 @@
     "web_accessible_resources": [
       {
         "resources": [
-          "options.html"
+          "options.html",
+          "tabs/login-required.html"
         ],
         "matches": [
           "<all_urls>"
@@ -78,7 +78,8 @@
     ],
     "externally_connectable": {
       "matches": [
-        "https://gemfolders.com/*"
+        "https://gemfolders.com/*",
+        "https://www.gemfolders.com/*"
       ]
     }
   }
