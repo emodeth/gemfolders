@@ -11,7 +11,7 @@ const PaywallModal: React.FC = () => {
   const openCheckout = (url: string) => {
     const checkoutUrl = new URL(url);
     if (user?.email) {
-      checkoutUrl.searchParams.set('email', user.email);
+      checkoutUrl.searchParams.set('customer_email', user.email);
       checkoutUrl.searchParams.set('metadata[user_email]', user.email);
     }
     window.open(checkoutUrl.toString(), '_blank');
