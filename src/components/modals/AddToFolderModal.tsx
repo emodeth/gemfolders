@@ -3,10 +3,13 @@ import toast from "react-hot-toast";
 import { X, FolderPlus } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { useFolder } from "~context/FolderContext";
+import { useTierLimits } from "~context/TierLimitsContext";
 import type { Folder as FolderType } from "~lib/storage";
 import { Input } from "../ui/Input";
+import { Button } from "../ui/Button";
 import { isLightColor } from "~constants/colors";
 import { truncateText } from "~lib/utils";
+import Tooltip from "../Tooltip";
 
 interface AddToFolderItemProps {
   folder: FolderType;
@@ -45,10 +48,13 @@ const AddToFolderItem: React.FC<AddToFolderItemProps> = ({
 
 const AddToFolderModal: React.FC = () => {
   const { onClose, data } = useModal();
-  const { folders, onAddChatsToFolder } = useFolder();
+  const { folders, onAddChatsToFolder, onCreate } = useFolder();
+  const { canCreateFolder, showPaywall, showSignInPaywall, isLoggedIn } = useTierLimits();
   const { chatId, chatTitle, chatUrl } = data || {};
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [folderName, setFolderName] = useState("");
 
   const flattenFolders = (folderList: FolderType[]): FolderType[] => {
     return folderList.flatMap((item) => {
@@ -89,6 +95,34 @@ const AddToFolderModal: React.FC = () => {
     }
   };
 
+  const handleToggleCreateForm = () => {
+    if (!canCreateFolder()) {
+      if (!isLoggedIn) {
+        showSignInPaywall("folder limit");
+      } else {
+        showPaywall("folder limit");
+      }
+      return;
+    }
+    setShowCreateForm((prev) => !prev);
+    setFolderName("");
+  };
+
+  const handleCreateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!folderName.trim()) return;
+
+    await onCreate({
+      name: folderName,
+      type: "folder",
+      parentId: null,
+      index: 0,
+    });
+    toast.success(`Folder "${truncateText(folderName)}" created`);
+    setShowCreateForm(false);
+    setFolderName("");
+  };
+
   return (
     <div
       className="organizer-w-[520px] organizer-min-h-[600px] organizer-bg-bg-background organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col"
@@ -118,9 +152,45 @@ const AddToFolderModal: React.FC = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Filter folders by name..."
             variant="ghost"
-            autoFocus
+            autoFocus={!showCreateForm}
           />
         </div>
+        <div className="organizer-flex organizer-items-center organizer-justify-end organizer-mt-2">
+          <Tooltip text="Create folder" position="left">
+            <Button
+              variant="icon"
+              onClick={handleToggleCreateForm}
+              className="organizer-text-text-secondary hover:organizer-text-text-primary"
+            >
+              <FolderPlus size={18} />
+            </Button>
+          </Tooltip>
+        </div>
+
+        {showCreateForm && (
+          <div className="organizer-mt-2 organizer-bg-bg-input organizer-rounded-lg organizer-p-4">
+            <h3 className="organizer-text-text-primary organizer-font-medium organizer-mb-3 organizer-text-sm">
+              Enter folder name
+            </h3>
+            <form onSubmit={handleCreateSubmit}>
+              <Input
+                type="text"
+                placeholder="New Folder"
+                value={folderName}
+                onChange={(e) => setFolderName(e.target.value)}
+                variant="secondary"
+                className="organizer-mb-3 organizer-rounded-lg"
+                autoFocus
+              />
+              <Button
+                type="submit"
+                className="organizer-w-full !organizer-bg-bg-background organizer-text-text-primary organizer-font-medium organizer-py-2 organizer-text-sm"
+              >
+                Add Folder
+              </Button>
+            </form>
+          </div>
+        )}
       </div>
 
       <div className="organizer-flex-1 organizer-overflow-y-auto organizer-px-4 organizer-pb-4 organizer-min-h-[200px] organizer-max-h-[300px]">
