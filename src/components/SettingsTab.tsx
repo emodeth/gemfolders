@@ -6,6 +6,7 @@ import { useSettings } from "~context/SettingsContext";
 import { Switch } from "./ui/Switch";
 import SettingsSectionHeader from "./SettingsSectionHeader";
 import Tooltip from "./Tooltip";
+import ExportData from "./ExportData";
 
 const SettingsTab: React.FC = () => {
   const { theme, setTheme } = useTheme();
@@ -119,6 +120,12 @@ const SettingsTab: React.FC = () => {
             })}
           </div>
         </div>
+      </div>
+
+      <SettingsSectionHeader>Data</SettingsSectionHeader>
+
+      <div className="organizer-flex organizer-flex-col organizer-gap-4">
+        <ExportData />
       </div>
     </div>
   );
