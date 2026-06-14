@@ -17,6 +17,7 @@ import FolderContextMenu from "./FolderContextMenu";
 import ChatContextMenu from "./ChatContextMenu";
 import { useFolder } from "../context/FolderContext";
 import { useChat } from "../context/ChatContext";
+import { useTheme } from "../context/ThemeContext";
 
 type TabType = "folders" | "bookmarks" | "account" | "settings";
 
@@ -38,6 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<TabType>("folders");
   const { contextMenu } = useFolder();
   const { chatContextMenu } = useChat();
+  const { effectiveTheme } = useTheme();
 
   const currentTabLabel = ALL_TABS.find((t) => t.id === activeTab)?.label || "Account";
 
@@ -59,7 +61,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className={`organizer-px-6 organizer-py-8 organizer-fixed organizer-top-0 organizer-right-0 organizer-h-full organizer-w-96 organizer-bg-bg-background organizer-shadow-2xl organizer-transform organizer-transition-transform organizer-duration-300 organizer-ease-in-out organizer-z-[9999] organizer-flex organizer-flex-col ${isOpen ? "organizer-translate-x-0" : "organizer-translate-x-full"
+      className={`organizer-px-6 organizer-py-8 organizer-fixed organizer-top-0 organizer-right-0 organizer-h-full organizer-w-96 organizer-shadow-2xl organizer-transform organizer-transition-transform organizer-duration-300 organizer-ease-in-out organizer-z-[9999] organizer-flex organizer-flex-col ${
+        effectiveTheme === "light"
+          ? "organizer-bg-bg-surface"
+          : "organizer-bg-bg-background"
+      } ${isOpen ? "organizer-translate-x-0" : "organizer-translate-x-full"
         }`}
     >
       <div className="organizer-flex organizer-items-center  ">

@@ -178,7 +178,7 @@ const AddChatModal: React.FC = () => {
 
   return (
     <div
-      className="organizer-w-[520px] organizer-bg-bg-background organizer-rounded-md organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col"
+      className="organizer-w-[520px] organizer-bg-bg-surface organizer-rounded-md organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col"
       style={{ maxHeight: "80vh" }}
       onClick={(e) => e.stopPropagation()}
     >

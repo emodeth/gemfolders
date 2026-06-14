@@ -8,27 +8,6 @@ interface ContextMenuItemProps {
   isDanger?: boolean;
 }
 
-const styles = {
-  item: {
-    display: "flex",
-    alignItems: "center",
-    padding: "6px 12px",
-    fontSize: 13,
-    color: "var(--text-primary)",
-    cursor: "pointer",
-    borderRadius: 4,
-    transition: "all 0.15s ease",
-    userSelect: "none" as const,
-    backgroundColor: "transparent",
-  },
-  icon: {
-    marginRight: 8,
-    opacity: 0.9,
-    display: "flex",
-    alignItems: "center",
-  },
-};
-
 const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
   icon,
   label,
@@ -37,18 +16,7 @@ const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
   isDanger = false,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const itemRef = useRef<HTMLDivElement>(null);
-
-  const itemStyle: React.CSSProperties = {
-    ...styles.item,
-    backgroundColor: isHovered ? (isDanger ? "#d32f2f" : "var(--bg-surface-hover)") : "transparent",
-    color: isDanger && isHovered ? "#fff" : "var(--text-primary)",
-  };
-
-  const iconStyle: React.CSSProperties = {
-    ...styles.icon,
-    opacity: isHovered ? 1 : 0.8,
-  };
+  const itemRef = useRef<HTMLButtonElement>(null);
 
   const handleClick = () => {
     if (onClickWithRect && itemRef.current) {
@@ -60,18 +28,51 @@ const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
   };
 
   return (
-    <div
+    <button
       ref={itemRef}
-      style={itemStyle}
+      type="button"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        width: "100%",
+        padding: "10px 16px",
+        fontSize: 14,
+        fontWeight: 400,
+        fontFamily: "inherit",
+        lineHeight: "20px",
+        color: isHovered && isDanger ? "#fff" : "var(--text-primary)",
+        cursor: "pointer",
+        borderRadius: 8,
+        border: "none",
+        transition: "background-color 0.15s ease",
+        userSelect: "none",
+        backgroundColor: isHovered
+          ? isDanger
+            ? "#b3261e"
+            : "var(--bg-surface-hover)"
+          : "transparent",
+        textAlign: "left",
+      }}
       onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <span style={iconStyle}>{icon}</span>
+      <span
+        style={{
+          marginRight: 12,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: 20,
+          height: 20,
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </span>
       <span style={{ flex: 1 }}>{label}</span>
-    </div>
+    </button>
   );
 };
 
 export default ContextMenuItem;
-

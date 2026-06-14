@@ -52,7 +52,7 @@ const MoveChatModal: React.FC = () => {
 
   return (
     <div
-      className="organizer-w-[520px] organizer-min-h-[600px] organizer-bg-bg-background organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col"
+      className="organizer-w-[520px] organizer-min-h-[600px] organizer-bg-bg-surface organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col"
       style={{ maxHeight: "70vh" }}
       onClick={(e) => e.stopPropagation()}
     >

@@ -11,9 +11,9 @@ const MoveChatModalItem: React.FC<MoveChatModalItemProps> = ({
   folder,
   onSelect,
 }) => {
-  const bgColor = folder.color || "#60a5fa";
+  const bgColor = folder.color || "#4e8ff8";
   const itemCount = folder.children?.length || 0;
-  const textColor = isLightColor(bgColor) ? "#1f2937" : "#f9fafb";
+  const textColor = isLightColor(bgColor) ? "#1f1f1f" : "#f9fafb";
 
   return (
     <div

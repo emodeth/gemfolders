@@ -1,13 +1,15 @@
-const LUCIDE_ICON_SIZE = 20
+export const MENU_ICON_SIZE = 18
+export const MENU_ICON_STROKE = 1.25
 
 const createLucideSvg = (
   inner: string,
-  options: { fill?: string; size?: number } = {}
+  options: { fill?: string; size?: number; strokeWidth?: number } = {}
 ): string => {
-  const size = options.size ?? LUCIDE_ICON_SIZE
+  const size = options.size ?? MENU_ICON_SIZE
   const fill = options.fill ?? "none"
+  const strokeWidth = options.strokeWidth ?? MENU_ICON_STROKE
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="${strokeWidth}" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`
 }
 
 const BOOKMARK_PATH =

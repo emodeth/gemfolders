@@ -41,7 +41,7 @@ const initialContextMenuState: ContextMenuState = {
   y: 0,
   folderId: "",
   folderName: "",
-  folderColor: "#60a5fa",
+  folderColor: "#4e8ff8",
   itemCount: 0,
 }
 
@@ -186,7 +186,7 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       y: e.clientY,
       folderId: folder.id,
       folderName: folder.name,
-      folderColor: folder.color || "#60a5fa",
+      folderColor: folder.color || "#4e8ff8",
       itemCount: folder.childrenCount,
     })
   }

@@ -8,6 +8,12 @@ import {
   getConversationFromActionsButton,
   isConversationMenuTrigger
 } from "./geminiDom"
+import {
+  ADD_TO_FOLDER_MENU_LABEL,
+  getBookmarkMenuIconSvg,
+  getBookmarkMenuLabel,
+  getFolderMenuIconSvg
+} from "./lucideMenuIcons"
 import { DEFAULT_SETTINGS, getSettings, type Settings } from "./settings"
 import {
   addBookmark,
@@ -19,12 +25,6 @@ import {
   type Folder
 } from "./storage"
 import { supabase } from "./supabase"
-import {
-  ADD_TO_FOLDER_MENU_LABEL,
-  getBookmarkMenuIconSvg,
-  getBookmarkMenuLabel,
-  getFolderMenuIconSvg
-} from "./lucideMenuIcons"
 
 const GEMFOLDERS_MENU_ITEM_ATTR = "data-gemfolders-menu-item"
 const INJECTED_CLASS_NAMES = {
@@ -227,6 +227,9 @@ const setMenuItemLucideIcon = (button: HTMLElement, svgHtml: string) => {
   icon.style.display = "inline-flex"
   icon.style.alignItems = "center"
   icon.style.justifyContent = "center"
+  icon.style.width = "20px"
+  icon.style.height = "20px"
+  icon.style.fontSize = "20px"
   icon.innerHTML = svgHtml
   icon.setAttribute("aria-hidden", "true")
 }
@@ -238,7 +241,10 @@ const createMenuItemFromTemplate = (
   iconSvg: string,
   onClick: () => void
 ): HTMLElement | null => {
-  const template = findTemplateMenuItem(menuPanel, Object.values(INJECTED_CLASS_NAMES))
+  const template = findTemplateMenuItem(
+    menuPanel,
+    Object.values(INJECTED_CLASS_NAMES)
+  )
   if (!template) return null
 
   const item = template.cloneNode(true) as HTMLElement
@@ -337,7 +343,9 @@ const getInjectionKey = (menuPanel: Element, chatId: string): string => {
 }
 
 const findDeleteButton = (menuContent: HTMLElement): HTMLElement | null => {
-  const deleteButton = menuContent.querySelector('[data-test-id="delete-button"]')
+  const deleteButton = menuContent.querySelector(
+    '[data-test-id="delete-button"]'
+  )
   return deleteButton instanceof HTMLElement ? deleteButton : null
 }
 
@@ -396,7 +404,9 @@ const relocateExistingItems = (menuContent: HTMLElement): boolean => {
   }
 
   const orderedItems = [
-    existingItems.find((item) => item.dataset.gemfoldersMenuItem === "bookmark"),
+    existingItems.find(
+      (item) => item.dataset.gemfoldersMenuItem === "bookmark"
+    ),
     existingItems.find((item) => item.dataset.gemfoldersMenuItem === "folder")
   ].filter((item): item is HTMLElement => item instanceof HTMLElement)
 
@@ -586,9 +596,8 @@ export const setupNativeMenuInjection = async () => {
   settingsCache = await getSettings()
   await checkUserProStatus()
 
-  document.addEventListener(
-    "click",
-    (event) => handleActionsMenuClick(event.target)
+  document.addEventListener("click", (event) =>
+    handleActionsMenuClick(event.target)
   )
 
   chrome.storage.onChanged.addListener((changes, areaName) => {

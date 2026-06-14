@@ -20,9 +20,9 @@ const AddToFolderItem: React.FC<AddToFolderItemProps> = ({
   folder,
   onSelect,
 }) => {
-  const bgColor = folder.color || "#60a5fa";
+  const bgColor = folder.color || "#4e8ff8";
   const itemCount = folder.children?.length || 0;
-  const textColor = isLightColor(bgColor) ? "#1f2937" : "#f9fafb";
+  const textColor = isLightColor(bgColor) ? "#1f1f1f" : "#f9fafb";
 
   return (
     <div
@@ -125,7 +125,7 @@ const AddToFolderModal: React.FC = () => {
 
   return (
     <div
-      className="organizer-w-[520px] organizer-min-h-[600px] organizer-bg-bg-background organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col"
+      className="organizer-w-[520px] organizer-min-h-[600px] organizer-bg-bg-surface organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col"
       style={{ maxHeight: "70vh" }}
       onClick={(e) => e.stopPropagation()}
     >
@@ -184,7 +184,7 @@ const AddToFolderModal: React.FC = () => {
               />
               <Button
                 type="submit"
-                className="organizer-w-full !organizer-bg-bg-background organizer-text-text-primary organizer-font-medium organizer-py-2 organizer-text-sm"
+                className="organizer-w-full organizer-font-medium organizer-py-2 organizer-text-sm"
               >
                 Add Folder
               </Button>

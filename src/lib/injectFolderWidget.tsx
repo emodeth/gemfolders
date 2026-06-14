@@ -46,7 +46,7 @@ const getProcessedStyles = (() => {
       box-sizing: border-box;
       border-width: 0;
       border-style: solid;
-      border-color: #e5e7eb;
+      border-color: var(--border-default, #e3e3e3);
     }
   `;
     let css = cssText.replaceAll(":root", ":host");
@@ -92,6 +92,11 @@ const getShadowStyles = () => {
 
     :host(.collapsed) {
       display: none !important;
+    }
+
+    .gemfolders-skeleton-bar {
+      background: var(--border-default, #e3e3e3);
+      border-radius: 4px;
     }
   `;
   return styleElement;
@@ -164,10 +169,10 @@ const createWidgetContainer = (): HTMLDivElement => {
   // Skeleton Loader
   mountPoint.innerHTML = `
     <div style="padding: 16px; opacity: 0.6; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">
-      <div style="height: 20px; background: #e5e7eb; border-radius: 4px; margin-bottom: 12px; width: 70%;"></div>
-      <div style="height: 16px; background: #e5e7eb; border-radius: 4px; margin-bottom: 8px;"></div>
-      <div style="height: 16px; background: #e5e7eb; border-radius: 4px; margin-bottom: 8px;"></div>
-      <div style="height: 16px; background: #e5e7eb; border-radius: 4px; width: 80%;"></div>
+      <div class="gemfolders-skeleton-bar" style="height: 20px; margin-bottom: 12px; width: 70%;"></div>
+      <div class="gemfolders-skeleton-bar" style="height: 16px; margin-bottom: 8px;"></div>
+      <div class="gemfolders-skeleton-bar" style="height: 16px; margin-bottom: 8px;"></div>
+      <div class="gemfolders-skeleton-bar" style="height: 16px; width: 80%;"></div>
     </div>
     <style>
       @keyframes pulse {

@@ -7,22 +7,25 @@ import {
   Trash2,
 } from "lucide-react";
 import ContextMenuItem from "./ContextMenuItem";
+import { MENU_ICON_SIZE, MENU_ICON_STROKE } from "../lib/lucideMenuIcons";
 import { useFolder } from "../context/FolderContext";
 import { useModal } from "../context/ModalContext";
+
+const menuIconProps = { size: MENU_ICON_SIZE, strokeWidth: MENU_ICON_STROKE };
 
 const styles = {
   menu: {
     position: "fixed" as const,
     zIndex: 100000,
-    minWidth: 150,
-    backgroundColor: "var(--bg-background)",
-    border: "1px solid var(--border-default)",
-    borderRadius: 6,
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-    padding: 4,
+    minWidth: 180,
+    backgroundColor: "var(--bg-surface)",
+    border: "none",
+    borderRadius: 16,
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08)",
+    padding: 8,
     display: "flex",
     flexDirection: "column" as const,
-    gap: 1,
+    gap: 0,
     fontFamily: "var(--font-sans)",
   },
   header: {
@@ -168,32 +171,31 @@ const FolderContextMenu: React.FC = () => {
       <div style={styles.header}>{folderName}</div>
 
       <ContextMenuItem
-        icon={<FolderPlus size={16} />}
+        icon={<FolderPlus {...menuIconProps} />}
         label="Add subfolder"
         onClickWithRect={handleAddSubfolder}
       />
 
       <ContextMenuItem
-        icon={<MessageSquarePlus size={16} />}
+        icon={<MessageSquarePlus {...menuIconProps} />}
         label="Add chat"
         onClick={handleAddChat}
       />
 
-
       <ContextMenuItem
-        icon={<Palette size={16} />}
+        icon={<Palette {...menuIconProps} />}
         label="Change color"
         onClick={handleChangeColor}
       />
 
       <ContextMenuItem
-        icon={<Pencil size={16} />}
+        icon={<Pencil {...menuIconProps} />}
         label="Rename"
         onClick={handleRename}
       />
 
       <ContextMenuItem
-        icon={<Trash2 size={16} />}
+        icon={<Trash2 {...menuIconProps} />}
         label="Delete"
         isDanger
         onClick={handleDelete}

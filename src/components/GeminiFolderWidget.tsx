@@ -67,7 +67,7 @@ const getOrCreatePortalContainer = (): HTMLElement => {
       box-sizing: border-box;
       border-width: 0;
       border-style: solid;
-      border-color: #e5e7eb;
+      border-color: var(--border-default, #e3e3e3);
     }
     #gemfolders-portal-mount > * {
       pointer-events: auto;

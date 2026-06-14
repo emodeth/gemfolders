@@ -3,54 +3,64 @@
 @tailwind utilities;
 
 :root {
-  --bg-background: #1e1e1e;
-  --bg-surface: #2a2a2a;
-  --bg-surface-hover: #333333;
-  --bg-input: #2b2b2b;
-  --font-sans: "apple-system", BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
+  /* Dark theme — matches Gemini surface tokens */
+  --bg-background: #131314;
+  --bg-surface: #282a2c;
+  --bg-surface-hover: #333537;
+  --bg-input: #282a2c;
+  --font-sans: "Google Sans", "Google Sans Text", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
-  --text-primary: #ffffff;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
-  --text-placeholder: #3d3d3d;
+  --text-primary: #e3e3e3;
+  --text-secondary: #8e918f;
+  --text-muted: #8e918f;
+  --text-placeholder: #8e918f;
 
-  --border-default: #3a3a3a;
+  --border-default: #3c4043;
 
-  --color-primary: #3b82f6;
+  --color-primary: #a8c7fa;
 
-  --tooltip-bg: #121212;
-  --tooltip-text: #ffffff;
+  --tooltip-bg: #303030;
+  --tooltip-text: #f2f2f2;
 
-  --bg-switch-off: #3a3a3a;
+  --bg-switch-off: #444746;
 }
 
 [data-theme="light"] {
+  /* Light theme — matches Gemini surface tokens */
   --bg-background: #f0f4f9;
   --bg-surface: #ffffff;
-  --bg-surface-hover: #e5e7eb;
-  --bg-input: #fcfeff;
+  --bg-surface-hover: #e1e3e1;
+  --bg-input: #ffffff;
 
-  --text-primary: #1f2937;
-  --text-secondary: #4b5563;
-  --text-muted: #9ca3af;
-  --text-placeholder: #fffc;
+  --text-primary: #1f1f1f;
+  --text-secondary: #444746;
+  --text-muted: #444746;
+  --text-placeholder: #70757a;
 
-  --border-default: #e5e7eb;
+  --border-default: #e3e3e3;
 
-  --color-primary: #2563eb;
+  --color-primary: #0b57d0;
 
-  --tooltip-bg: #4b5563;
-  --tooltip-text: #ffffff;
+  --tooltip-bg: #303030;
+  --tooltip-text: #f2f2f2;
 
-  --bg-switch-off: #d1d5db;
+  --bg-switch-off: #747775;
 }
 
 #plasmo-shadow-container {
   all: initial;
   box-sizing: border-box;
-  font-family: "apple-system", BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
+  font-family:
+    "Google Sans",
+    "Google Sans Text",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
 }
 
 plasmo-csui {
@@ -68,8 +78,16 @@ plasmo-csui > * {
 }
 
 .organizer-font-sans {
-  font-family: "apple-system", BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
+  font-family:
+    "Google Sans",
+    "Google Sans Text",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
 }
 
 /* Custom Scrollbar */

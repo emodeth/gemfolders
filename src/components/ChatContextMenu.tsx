@@ -1,25 +1,28 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import { Bookmark, FolderPlus, Pencil, Trash2 } from "lucide-react";
 import ContextMenuItem from "./ContextMenuItem";
+import { MENU_ICON_SIZE, MENU_ICON_STROKE } from "../lib/lucideMenuIcons";
 import { useChat } from "../context/ChatContext";
 import { useBookmark } from "../context/BookmarkContext";
 import { useFolder } from "../context/FolderContext";
 import { useTierLimits } from "../context/TierLimitsContext";
 import { isChatInAnyFolder } from "../lib/storage";
 
+const menuIconProps = { size: MENU_ICON_SIZE, strokeWidth: MENU_ICON_STROKE };
+
 const styles = {
   menu: {
     position: "fixed" as const,
     zIndex: 100000,
-    minWidth: 150,
-    backgroundColor: "var(--bg-background)",
-    border: "1px solid var(--border-default)",
-    borderRadius: 6,
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-    padding: 4,
+    minWidth: 180,
+    backgroundColor: "var(--bg-surface)",
+    border: "none",
+    borderRadius: 16,
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08)",
+    padding: 8,
     display: "flex",
     flexDirection: "column" as const,
-    gap: 1,
+    gap: 0,
     fontFamily: "var(--font-sans)",
   },
   header: {
@@ -171,25 +174,35 @@ const ChatContextMenu: React.FC = () => {
       <div style={styles.header}>{chatName}</div>
 
       <ContextMenuItem
-        icon={<Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />}
+        icon={
+          <Bookmark
+            {...menuIconProps}
+            fill={bookmarked ? "currentColor" : "none"}
+          />
+        }
         label={bookmarked ? "Remove Bookmark" : "Bookmark"}
         onClick={handleBookmarkClick}
       />
 
       <ContextMenuItem
-        icon={<FolderPlus size={16} fill={inFolder ? "currentColor" : "none"} />}
+        icon={
+          <FolderPlus
+            {...menuIconProps}
+            fill={inFolder ? "currentColor" : "none"}
+          />
+        }
         label="Add to folder"
         onClick={handleChatMoveTo}
       />
 
       <ContextMenuItem
-        icon={<Pencil size={16} />}
+        icon={<Pencil {...menuIconProps} />}
         label="Rename"
         onClick={handleChatRename}
       />
 
       <ContextMenuItem
-        icon={<Trash2 size={16} />}
+        icon={<Trash2 {...menuIconProps} />}
         label="Delete"
         isDanger
         onClick={handleChatDelete}
