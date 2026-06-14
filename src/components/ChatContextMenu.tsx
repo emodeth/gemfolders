@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
-import { Bookmark, FolderInput, Pencil, Trash2 } from "lucide-react";
+import { Bookmark, FolderPlus, Pencil, Trash2 } from "lucide-react";
 import ContextMenuItem from "./ContextMenuItem";
 import { useChat } from "../context/ChatContext";
 import { useBookmark } from "../context/BookmarkContext";
+import { useFolder } from "../context/FolderContext";
 import { useTierLimits } from "../context/TierLimitsContext";
+import { isChatInAnyFolder } from "../lib/storage";
 
 const styles = {
   menu: {
@@ -44,6 +46,7 @@ const ChatContextMenu: React.FC = () => {
   } = useChat();
 
   const { isBookmarked, toggleBookmark } = useBookmark();
+  const { folders } = useFolder();
   const { canBookmark, showPaywall, showSignInPaywall, isLoggedIn } = useTierLimits();
 
   const menuRef = useRef<HTMLDivElement>(null);
@@ -52,6 +55,7 @@ const ChatContextMenu: React.FC = () => {
 
   const { x, y, chatName, chatId, chatUrl, originalId } = chatContextMenu;
   const bookmarked = isBookmarked(originalId || chatId);
+  const inFolder = isChatInAnyFolder(folders, originalId || chatId);
 
   const handleBookmarkClick = () => {
     toggleBookmark(
@@ -173,8 +177,8 @@ const ChatContextMenu: React.FC = () => {
       />
 
       <ContextMenuItem
-        icon={<FolderInput size={16} />}
-        label="Move to..."
+        icon={<FolderPlus size={16} fill={inFolder ? "currentColor" : "none"} />}
+        label="Add to folder"
         onClick={handleChatMoveTo}
       />
 

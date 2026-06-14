@@ -29,8 +29,19 @@ const SCROLL_CONTAINER_SELECTORS = [
 
 const ACTIONS_CONTAINER_SELECTORS = [
   ".conversation-actions-container",
-  '[data-test-id="actions-menu-button"]'
+  '[data-test-id="actions-menu-button"]',
+  '[data-test-id="conversation-actions-menu-icon-button"]'
 ] as const
+
+const CONVERSATION_MENU_TRIGGER_TEST_IDS = new Set([
+  "actions-menu-button",
+  "conversation-actions-menu-icon-button"
+])
+
+export const CONVERSATION_MENU_PANEL_SELECTOR =
+  '.mat-mdc-menu-panel[role="menu"], gem-menu'
+
+const NATIVE_MENU_ITEM_SELECTOR = "button.mat-mdc-menu-item, gem-menu-item"
 
 const JSLOG_CHAT_ID_REGEX = /\["c_([^"]+)"/
 const JSLOG_APP_PATH_REGEX = /\/app\/([^/?#]+)/
@@ -268,6 +279,137 @@ export const isConversationElement = (element: Element): boolean => {
 
 export const isActionsContainerElement = (element: Element): boolean => {
   return element.matches(ACTIONS_CONTAINER_SELECTORS.join(","))
+}
+
+const isVisibleElement = (element: Element): boolean => {
+  const rect = element.getBoundingClientRect()
+  return rect.width > 0 && rect.height > 0
+}
+
+const isGemMenu = (menuPanel: Element): boolean =>
+  menuPanel.tagName.toLowerCase() === "gem-menu"
+
+export const findMenuContent = (menuPanel: Element): HTMLElement | null => {
+  if (menuPanel instanceof HTMLElement && isGemMenu(menuPanel)) {
+    return menuPanel
+  }
+
+  const content = menuPanel.querySelector(".mat-mdc-menu-content")
+  return content instanceof HTMLElement ? content : null
+}
+
+export const isConversationMenuPanel = (menuPanel: Element): boolean => {
+  if (!(menuPanel instanceof HTMLElement)) return false
+  if (!menuPanel.matches(CONVERSATION_MENU_PANEL_SELECTOR)) return false
+  if (menuPanel.classList.contains("gds-mode-switch-menu")) return false
+  if (menuPanel.querySelector(".bard-mode-list-button")) return false
+
+  const menuContent = findMenuContent(menuPanel)
+  if (!menuContent) return false
+
+  const hasConversationActions = Boolean(
+    menuContent.querySelector('[data-test-id="pin-button"]') ||
+      menuContent.querySelector('[data-test-id="rename-button"]') ||
+      menuContent.querySelector('[data-test-id="delete-button"]')
+  )
+  if (hasConversationActions) return true
+
+  return Boolean(menuContent.querySelector('[data-test-id="share-button"]'))
+}
+
+export const getConversationFromActionsButton = (
+  actionsButton: Element
+): HTMLElement | null => {
+  let current: Element | null = actionsButton
+
+  while (current) {
+    const row = getConversationRow(current)
+    if (row) return row
+    current = current.parentElement
+  }
+
+  return null
+}
+
+export const closeNativeConversationMenu = (): void => {
+  const backdrop = document.querySelector(
+    ".cdk-overlay-backdrop.cdk-overlay-backdrop-showing"
+  )
+  if (backdrop instanceof HTMLElement) {
+    backdrop.click()
+    return
+  }
+
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", {
+      key: "Escape",
+      code: "Escape",
+      bubbles: true,
+      cancelable: true
+    })
+  )
+}
+
+export const findNativeMenuPanel = (): HTMLElement | null => {
+  const panels = document.querySelectorAll<HTMLElement>(
+    CONVERSATION_MENU_PANEL_SELECTOR
+  )
+
+  for (let index = panels.length - 1; index >= 0; index--) {
+    const panel = panels[index]
+    if (!isVisibleElement(panel)) continue
+    if (isConversationMenuPanel(panel)) return panel
+  }
+
+  return null
+}
+
+export const findNativeMenuItems = (menuPanel: Element): HTMLElement[] => {
+  const menuContent = findMenuContent(menuPanel) ?? menuPanel
+  const directChildren = Array.from(menuContent.children).filter(
+    (node): node is HTMLElement =>
+      node instanceof HTMLElement &&
+      (node.tagName.toLowerCase() === "gem-menu-item" ||
+        node.classList.contains("mat-mdc-menu-item"))
+  )
+
+  const nested = Array.from(
+    menuContent.querySelectorAll<HTMLElement>(NATIVE_MENU_ITEM_SELECTOR)
+  )
+
+  const seen = new Set<HTMLElement>()
+  const results: HTMLElement[] = []
+
+  for (const item of [...directChildren, ...nested]) {
+    if (seen.has(item)) continue
+    if (item.dataset.gemfoldersMenuItem) continue
+    seen.add(item)
+    results.push(item)
+  }
+
+  return results
+}
+
+export const findTemplateMenuItem = (
+  menuPanel: Element,
+  excluded: string[] = []
+): HTMLElement | null => {
+  const items = findNativeMenuItems(menuPanel)
+  return (
+    items.find(
+      (item) => !excluded.some((className) => item.classList.contains(className))
+    ) ?? null
+  )
+}
+
+export const isConversationMenuTrigger = (element: Element): boolean => {
+  const testId = element.getAttribute("data-test-id") || ""
+  if (CONVERSATION_MENU_TRIGGER_TEST_IDS.has(testId)) return true
+
+  return Boolean(
+    element.closest(".conversation-actions-container") &&
+      element.matches('[aria-haspopup="menu"], button')
+  )
 }
 
 const NOTEBOOK_SECTION_SELECTORS = [

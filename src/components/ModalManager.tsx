@@ -41,6 +41,28 @@ const ModalManager: React.FC<ModalManagerProps> = ({ enablePaywallListener = fal
   useEffect(() => {
     if (!enablePaywallListener) return;
 
+    const handleAddToFolder = (event: CustomEvent) => {
+      const { chatId, chatTitle, chatUrl } = event.detail || {}
+      if (!chatId) return
+      onOpen("addToFolder", { chatId, chatTitle, chatUrl })
+    }
+
+    globalThis.addEventListener(
+      "gemfolders-add-to-folder",
+      handleAddToFolder as EventListener
+    )
+
+    return () => {
+      globalThis.removeEventListener(
+        "gemfolders-add-to-folder",
+        handleAddToFolder as EventListener
+      )
+    }
+  }, [onOpen, enablePaywallListener])
+
+  useEffect(() => {
+    if (!enablePaywallListener) return;
+
     const handleOpenPaywall = (event: CustomEvent) => {
       const { reason } = event.detail || {};
       onOpen('paywall', { reason });

@@ -25,6 +25,8 @@ const WIDGET_STYLES_ID = "gemfolders-organizer-folder-styles";
 
 let widgetRoot: Root | null = null;
 let containerObserver: ResizeObserver | null = null;
+let repositionTimeout: ReturnType<typeof setTimeout> | null = null;
+let isRepositioning = false;
 
 const getProcessedStyles = (() => {
   let processed: string | null = null;
@@ -294,6 +296,32 @@ export const injectFolderWidget = (): boolean => {
   return true;
 };
 
+const scheduleWidgetReposition = (
+  existingWidget: HTMLDivElement,
+  injectionPoint: FolderWidgetInjectionPoint
+) => {
+  if (isRepositioning || isCorrectlyPositioned(existingWidget, injectionPoint)) {
+    return;
+  }
+
+  if (repositionTimeout) {
+    clearTimeout(repositionTimeout);
+  }
+
+  repositionTimeout = setTimeout(() => {
+    if (isRepositioning || isCorrectlyPositioned(existingWidget, injectionPoint)) {
+      return;
+    }
+
+    isRepositioning = true;
+    try {
+      insertAtInjectionPoint(existingWidget, injectionPoint);
+    } finally {
+      isRepositioning = false;
+    }
+  }, 250);
+};
+
 export const setupFolderWidgetInjection = () => {
   getSettings().then((s) => {
     cachedSettings = s;
@@ -308,9 +336,7 @@ export const setupFolderWidgetInjection = () => {
 
     const existingWidget = document.getElementById(WIDGET_CONTAINER_ID) as HTMLDivElement | null;
     if (existingWidget) {
-      if (!isCorrectlyPositioned(existingWidget, injectionPoint)) {
-        insertAtInjectionPoint(existingWidget, injectionPoint);
-      }
+      scheduleWidgetReposition(existingWidget, injectionPoint);
       return;
     }
 
@@ -322,7 +348,13 @@ export const setupFolderWidgetInjection = () => {
     }
   });
 
-  observer.observe(document.body, {
+  const sidebar =
+    document.querySelector('[data-test-id="side-nav"]') ||
+    document.querySelector('[role="navigation"]') ||
+    document.querySelector("side-navigation") ||
+    document.querySelector("nav");
+
+  observer.observe(sidebar ?? document.body, {
     childList: true,
     subtree: true
   });

@@ -98,29 +98,6 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({
     portalContainerRef.current = getOrCreatePortalContainer()
   }, [])
 
-  useEffect(() => {
-    const handleAddToFolder = (event: CustomEvent) => {
-      const { chatId, chatTitle, chatUrl } = event.detail
-      onOpen("addToFolder", {
-        chatId,
-        chatTitle,
-        chatUrl
-      })
-    }
-
-    globalThis.addEventListener(
-      "gemfolders-add-to-folder",
-      handleAddToFolder as EventListener
-    )
-
-    return () => {
-      globalThis.removeEventListener(
-        "gemfolders-add-to-folder",
-        handleAddToFolder as EventListener
-      )
-    }
-  }, [onOpen])
-
   const handleCreateFolder = (e: React.MouseEvent) => {
     e.stopPropagation()
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
