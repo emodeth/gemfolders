@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/icon.png" alt="Gemfolders Logo" width="128" height="128" />
+  <img src="assets/icon.png" alt="Gemfolders — blue folder with Gemini diamond" width="160" height="160" />
 </p>
 
 <h1 align="center">Gemfolders</h1>
@@ -31,6 +31,11 @@
 ---
 
 Stop losing important threads. Gemfolders is a browser extension that brings structure to your Google Gemini workflow with native folders, instant search, and bookmarks — all directly inside Gemini's sidebar.
+
+## 🛠️ What's New in v2.0.0
+
+- **Gemini UI Fix** — Resolved all extension breakage caused by recent Gemini frontend updates. The extension is now more stable, faster, and perfectly aligned with the new layout.
+- **Seamless Integration** — Fully optimized to match Gemini's native dark and light theme settings flawlessly.
 
 ## ✨ Features
 
