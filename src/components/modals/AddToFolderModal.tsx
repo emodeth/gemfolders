@@ -132,7 +132,7 @@ const AddToFolderModal: React.FC = () => {
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-4 organizer-py-3">
         <div className="organizer-flex organizer-items-center organizer-gap-2 organizer-overflow-hidden">
           <FolderPlus size={18} className="organizer-text-text-secondary organizer-flex-shrink-0" />
-          <span className="organizer-text-[14px] organizer-font-medium organizer-text-text-primary organizer-truncate">
+          <span className="organizer-text-[13px] organizer-font-medium organizer-text-text-primary organizer-truncate">
             Add "{chatTitle || 'Untitled Chat'}" to
           </span>
         </div>

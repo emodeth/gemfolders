@@ -13,7 +13,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     padding: "6px 12px",
-    fontSize: 14,
+    fontSize: 13,
     color: "var(--text-primary)",
     cursor: "pointer",
     borderRadius: 4,

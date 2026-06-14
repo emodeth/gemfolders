@@ -20,7 +20,7 @@ const ToastProvider: React.FC = () => {
           color: isDark ? "#ffffff" : "#1f2937",
           borderRadius: "8px",
           padding: "12px 16px",
-          fontSize: "14px",
+          fontSize: "13px",
           fontFamily: "var(--font-sans)",
           boxShadow: isDark
             ? "0 4px 12px rgba(0, 0, 0, 0.4)"

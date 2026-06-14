@@ -14,6 +14,10 @@ import { ThemeWrapper } from "../components/ThemeWrapper";
 import ToastProvider from "../components/ToastProvider";
 import cssText from "data-text:~style.css";
 import { getSettings, type Settings } from "./settings";
+import {
+  findFolderWidgetInjectionPoint,
+  type FolderWidgetInjectionPoint
+} from "./geminiDom";
 
 let cachedSettings: Settings | null = null;
 const WIDGET_CONTAINER_ID = "gemfolders-organizer-folder-widget";
@@ -62,6 +66,7 @@ const getShadowStyles = () => {
 
     :host {
       font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      font-size: 13px;
       width: 100%;
       padding: 8px 0 16px 0;
       display: block;
@@ -90,7 +95,36 @@ const getShadowStyles = () => {
   return styleElement;
 };
 
-const findInjectionPoint = (): { element: Element; position: "before" | "after" } | null => {
+const insertAtInjectionPoint = (
+  container: HTMLElement,
+  injectionPoint: FolderWidgetInjectionPoint
+) => {
+  if (injectionPoint.position === "before") {
+    injectionPoint.element.parentNode?.insertBefore(container, injectionPoint.element);
+    return;
+  }
+
+  const nextSibling = injectionPoint.element.nextSibling;
+  injectionPoint.element.parentNode?.insertBefore(container, nextSibling);
+};
+
+const isCorrectlyPositioned = (
+  container: HTMLElement,
+  injectionPoint: FolderWidgetInjectionPoint
+): boolean => {
+  if (injectionPoint.position === "after") {
+    return container.previousElementSibling === injectionPoint.element;
+  }
+
+  return container.nextElementSibling === injectionPoint.element;
+};
+
+const findInjectionPoint = (): FolderWidgetInjectionPoint | null => {
+  const notebooksAnchor = findFolderWidgetInjectionPoint();
+  if (notebooksAnchor) {
+    return notebooksAnchor;
+  }
+
   const gemsChip = document.querySelector('[data-test-id="gems-chip"]');
   if (gemsChip) {
     const gemsContainer =
@@ -109,11 +143,6 @@ const findInjectionPoint = (): { element: Element; position: "before" | "after" 
     const gemsListContainer = sideNavContent.querySelector('.gems-list-container');
     if (gemsListContainer) {
       return { element: gemsListContainer, position: "after" };
-    }
-
-    const chatsHeader = sideNavContent.querySelector('.chat-history-list');
-    if (chatsHeader) {
-      return { element: chatsHeader, position: "before" };
     }
   }
 
@@ -208,21 +237,20 @@ const applySettings = (settings: Settings) => {
 };
 
 export const injectFolderWidget = (): boolean => {
-  if (document.getElementById(WIDGET_CONTAINER_ID)) {
-    return true;
+  const injectionPoint = findInjectionPoint();
+  if (!injectionPoint) {
+    return false;
   }
 
-  if (document.getElementById(WIDGET_CONTAINER_ID)) {
+  const existingWidget = document.getElementById(WIDGET_CONTAINER_ID) as HTMLDivElement | null;
+  if (existingWidget) {
+    if (!isCorrectlyPositioned(existingWidget, injectionPoint)) {
+      insertAtInjectionPoint(existingWidget, injectionPoint);
+    }
     return true;
   }
 
   getSettings().then(applySettings);
-
-  const injectionPoint = findInjectionPoint();
-
-  if (!injectionPoint) {
-    return false;
-  }
 
   const container = createWidgetContainer();
 
@@ -243,12 +271,7 @@ export const injectFolderWidget = (): boolean => {
     document.head.appendChild(spinnerStyle);
   }
 
-  if (injectionPoint.position === "before") {
-    injectionPoint.element.parentNode?.insertBefore(container, injectionPoint.element);
-  } else {
-    const nextSibling = injectionPoint.element.nextSibling;
-    injectionPoint.element.parentNode?.insertBefore(container, nextSibling);
-  }
+  insertAtInjectionPoint(container, injectionPoint);
 
   if (containerObserver) {
     containerObserver.disconnect();
@@ -280,15 +303,21 @@ export const setupFolderWidgetInjection = () => {
   injectFolderWidget();
 
   const observer = new MutationObserver((mutations) => {
-    if (document.getElementById(WIDGET_CONTAINER_ID)) return;
+    const injectionPoint = findInjectionPoint();
+    if (!injectionPoint) return;
+
+    const existingWidget = document.getElementById(WIDGET_CONTAINER_ID) as HTMLDivElement | null;
+    if (existingWidget) {
+      if (!isCorrectlyPositioned(existingWidget, injectionPoint)) {
+        insertAtInjectionPoint(existingWidget, injectionPoint);
+      }
+      return;
+    }
 
     for (const mutation of mutations) {
       if (mutation.addedNodes.length) {
-        const injectionPoint = findInjectionPoint();
-        if (injectionPoint) {
-          injectFolderWidget();
-          break;
-        }
+        injectFolderWidget();
+        break;
       }
     }
   });

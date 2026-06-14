@@ -1,16 +1,16 @@
+import {
+  extractChatId,
+  findConversationTitleElement,
+  getSidebarScrollContainer
+} from "./geminiDom"
 import { getCachedChats, saveCachedChats } from "./geminiChats"
 import { renameChat, updateBookmarkTitle } from "./storage"
 
-const extractChatId = (element: Element | null): string | null => {
+const extractChatIdFromTitleElement = (element: Element | null): string | null => {
   if (!element) return null
-  const conversation = element.closest(".conversation")
-  if (!conversation) return null
-  const jslog = conversation.getAttribute("jslog")
-  if (!jslog) return null
-
-  const regex = /\["c_([^"]+)"/
-  const match = regex.exec(jslog)
-  return match ? match[1] : null
+  const titleElement = findConversationTitleElement(element)
+  if (!titleElement) return null
+  return extractChatId(titleElement)
 }
 
 const SYNC_COOLDOWN = 2000
@@ -63,11 +63,13 @@ export const setupRenameHandler = () => {
       if (mutation.type === "characterData" || mutation.type === "childList") {
         const target = mutation.target as HTMLElement
         const titleElement =
-          target.parentElement?.closest(".conversation-title") ||
-          (target.classList?.contains("conversation-title") ? target : null)
+          findConversationTitleElement(target) ||
+          (target.closest(
+            '[data-test-id="conversation-title"], .conversation-title-text, .conversation-title, .gds-label-l'
+          ) as HTMLElement | null)
 
         if (titleElement) {
-          const chatId = extractChatId(titleElement)
+          const chatId = extractChatIdFromTitleElement(titleElement)
           const newTitle = titleElement.textContent?.trim()
 
           if (chatId && newTitle) {
@@ -79,10 +81,7 @@ export const setupRenameHandler = () => {
   })
 
   const findAndObserveList = () => {
-    const sidebarContainer =
-      document.querySelector("infinite-scroller") ||
-      document.querySelector('[role="navigation"]') ||
-      document.querySelector(".conversation-list")
+    const sidebarContainer = getSidebarScrollContainer()
 
     if (sidebarContainer) {
       observer.observe(sidebarContainer, {

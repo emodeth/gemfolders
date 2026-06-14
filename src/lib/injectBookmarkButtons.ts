@@ -2,6 +2,17 @@ import {
   createFolderButton,
   updateAllFolderButtons
 } from "./injectFolderButtons"
+import {
+  extractChatId,
+  extractChatTitle,
+  findConversationActionsContainer,
+  findConversationTitleElement,
+  getConversationParentContainer,
+  getConversationRow,
+  isActionsContainerElement,
+  isConversationElement,
+  queryConversationElements
+} from "./geminiDom"
 import { DEFAULT_SETTINGS, getSettings, type Settings } from "./settings"
 import {
   addBookmark,
@@ -140,7 +151,7 @@ const restoreNativeView = () => {
     .querySelectorAll(".gemfolders-organizer-actions-wrapper")
     .forEach((wrapper) => {
       const nativeActions = wrapper.querySelector(
-        ".conversation-actions-container"
+        '.conversation-actions-container, [data-test-id="actions-menu-button"]'
       ) as HTMLElement
       if (nativeActions && wrapper.parentElement) {
         nativeActions.style.cssText = ""
@@ -176,25 +187,19 @@ const enableCustomView = () => {
 
       parentContainer.classList.add("gemfolders-organizer-parent-modified")
 
-      const conversationEl = parentContainer.querySelector(
-        ".conversation"
-      ) as HTMLElement
+      const conversationEl = getConversationRow(parentContainer)
       if (conversationEl) {
         conversationEl.classList.add(
           "gemfolders-organizer-conversation-modified"
         )
       }
 
-      const titleEl = parentContainer.querySelector(
-        ".conversation-title"
-      ) as HTMLElement
+      const titleEl = findConversationTitleElement(parentContainer)
       if (titleEl) {
         titleEl.classList.add("gemfolders-organizer-title-modified")
       }
 
-      const nativeActions = parentContainer.querySelector(
-        ".conversation-actions-container"
-      ) as HTMLElement
+      const nativeActions = findConversationActionsContainer(parentContainer)
       if (
         nativeActions &&
         !nativeActions.closest(".gemfolders-organizer-actions-wrapper")
@@ -237,12 +242,6 @@ const applySettings = (settings: Settings) => {
     document.body.classList.remove("gemfolders-organizer-native-view")
     enableCustomView()
   }
-}
-
-const extractChatIdFromJslog = (jslog: string): string | null => {
-  const regex = /\["c_([^"]+)"/
-  const result = regex.exec(jslog)
-  return result ? result[1] : null
 }
 
 const isBookmarked = (chatId: string): boolean => {
@@ -389,29 +388,23 @@ const isNativeViewActive = () =>
 const injectButtonIntoConversation = (conversationElement: Element) => {
   if (isNativeViewActive()) return
 
-  const parentContainer = conversationElement.parentElement
+  const parentContainer = getConversationParentContainer(conversationElement)
   if (!parentContainer) return
 
   if (parentContainer.querySelector(`.${BOOKMARK_BUTTON_CLASS}`)) {
     return
   }
 
-  const jslog = conversationElement.getAttribute("jslog") || ""
-  const chatId = extractChatIdFromJslog(jslog)
-
+  const chatId = extractChatId(conversationElement)
   if (!chatId) return
 
-  const titleElement = conversationElement.querySelector(
-    ".conversation-title"
-  ) as HTMLElement
-  const chatTitle = titleElement?.textContent?.trim() || "Untitled Chat"
+  const titleElement = findConversationTitleElement(conversationElement)
+  const chatTitle = extractChatTitle(conversationElement)
 
   const bookmarkButton = createBookmarkButton(chatId, chatTitle)
   const folderButton = createFolderButton(chatId, chatTitle)
 
-  const actionsContainer = parentContainer.querySelector(
-    ".conversation-actions-container"
-  ) as HTMLElement
+  const actionsContainer = findConversationActionsContainer(conversationElement)
   const parentEl = parentContainer as HTMLElement
   parentEl.classList.add("gemfolders-organizer-parent-modified")
 
@@ -449,7 +442,7 @@ const injectButtonIntoConversation = (conversationElement: Element) => {
     titleElement.classList.add("gemfolders-organizer-title-modified")
   }
 
-  const convEl = conversationElement as HTMLElement
+  const convEl = getConversationRow(conversationElement) ?? (conversationElement as HTMLElement)
   convEl.classList.add("gemfolders-organizer-conversation-modified")
 }
 
@@ -495,8 +488,7 @@ const handleOrphanActionsContainer = (actionsContainer: Element) => {
 }
 
 const injectButtonsIntoVisibleConversations = () => {
-  const conversations = document.querySelectorAll(".conversation")
-  conversations.forEach(injectButtonIntoConversation)
+  queryConversationElements().forEach(injectButtonIntoConversation)
 }
 
 const attemptInjection = () => {
@@ -538,31 +530,27 @@ export const injectBookmarkButtons = async () => {
       if (mutation.type === "childList") {
         for (const node of mutation.addedNodes) {
           if (node instanceof Element) {
-            if (
-              node.classList?.contains("conversation") ||
-              node.querySelector(".conversation")
-            ) {
+            if (isConversationElement(node) || node.querySelector('[data-test-id="conversation"], .conversation')) {
               shouldInject = true
 
-              if (node.classList?.contains("conversation")) {
+              if (isConversationElement(node)) {
                 injectButtonIntoConversation(node)
               }
-              const nestedConversations =
-                node.querySelectorAll?.(".conversation")
-              nestedConversations?.forEach(injectButtonIntoConversation)
+              node
+                .querySelectorAll('[data-test-id="conversation"], .conversation')
+                .forEach(injectButtonIntoConversation)
             }
 
             if (
-              node.classList?.contains("conversation-actions-container") ||
-              node.querySelector(".conversation-actions-container")
+              isActionsContainerElement(node) ||
+              node.querySelector('.conversation-actions-container, [data-test-id="actions-menu-button"]')
             ) {
-              if (node.classList?.contains("conversation-actions-container")) {
+              if (isActionsContainerElement(node)) {
                 handleOrphanActionsContainer(node)
               }
-              const nestedActions = node.querySelectorAll?.(
-                ".conversation-actions-container"
-              )
-              nestedActions?.forEach(handleOrphanActionsContainer)
+              node
+                .querySelectorAll('.conversation-actions-container, [data-test-id="actions-menu-button"]')
+                .forEach(handleOrphanActionsContainer)
             }
           }
         }
@@ -643,7 +631,7 @@ export const removeAllInjectedButtons = () => {
   )
   wrappers.forEach((wrapper) => {
     const nativeActions = wrapper.querySelector(
-      ".conversation-actions-container"
+      '.conversation-actions-container, [data-test-id="actions-menu-button"]'
     )
     if (nativeActions && wrapper.parentElement) {
       // Reset styles applied to the native container

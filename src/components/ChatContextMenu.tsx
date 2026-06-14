@@ -22,7 +22,7 @@ const styles = {
   },
   header: {
     padding: "6px 10px",
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: 600,
     color: "var(--text-primary)",
     marginBottom: 4,

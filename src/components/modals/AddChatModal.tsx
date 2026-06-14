@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { X, Loader2 } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import ChatItem from "../ChatItem";
-import { loadMoreGeminiChats, type GeminiChat } from "~lib/geminiChats";
+import { fetchGeminiChats, loadMoreGeminiChats, type GeminiChat } from "~lib/geminiChats";
 import type { ChatToAdd } from "~lib/storage";
 import { Button } from "~components/ui/Button";
 import { Input } from "~components/ui/Input";
@@ -26,11 +26,45 @@ const AddChatModal: React.FC = () => {
   const [selectedChats, setSelectedChats] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [chats, setChats] = useState<GeminiChat[]>(initialChats);
+  const [isInitialLoading, setIsInitialLoading] = useState(initialChats.length === 0);
   const [loadState, setLoadState] = useState<LoadState>({
     isLoadingMore: false,
     progress: 0,
   });
 
+  useEffect(() => {
+    if (initialChats.length > 0) {
+      setChats(initialChats);
+      setIsInitialLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadChats = async () => {
+      try {
+        const loadedChats = await fetchGeminiChats();
+        if (!cancelled) {
+          setChats(loadedChats);
+        }
+      } catch (error) {
+        console.error("Failed to load chats:", error);
+        if (!cancelled) {
+          toast.error("Failed to load chats");
+        }
+      } finally {
+        if (!cancelled) {
+          setIsInitialLoading(false);
+        }
+      }
+    };
+
+    loadChats();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [initialChats]);
 
   const handleLoadMore = async () => {
     setLoadState({ isLoadingMore: true, progress: chats.length });
@@ -92,6 +126,9 @@ const AddChatModal: React.FC = () => {
     });
 
   const getEmptyStateMessage = () => {
+    if (isInitialLoading) {
+      return "Loading chats from sidebar...";
+    }
     if (chats.length === 0) {
       return "No chats found. Open the sidebar to load your chat history.";
     }
@@ -99,6 +136,17 @@ const AddChatModal: React.FC = () => {
   };
 
   const renderChatList = () => {
+    if (isInitialLoading) {
+      return (
+        <div className="organizer-text-center organizer-py-8 organizer-flex organizer-flex-col organizer-items-center organizer-gap-2">
+          <Loader2 size={20} className="organizer-animate-spin organizer-text-primary" />
+          <p className="organizer-text-text-muted organizer-text-sm">
+            Loading chats from sidebar...
+          </p>
+        </div>
+      );
+    }
+
     if (filteredChats.length === 0) {
       return (
         <div className="organizer-text-center organizer-py-8">
@@ -164,12 +212,14 @@ const AddChatModal: React.FC = () => {
           <p className="organizer-text-text-primary organizer-text-xs organizer-mb-1">
             {loadState.isLoadingMore
               ? `Loading chats... (${loadState.progress} found)`
-              : "Chat history is scraped from the sidebar. Some chats may not be shown."}
+              : isInitialLoading
+                ? "Loading visible chats from sidebar..."
+                : "Chat history is scraped from the sidebar. Some chats may not be shown."}
           </p>
           <button
             className="organizer-text-primary organizer-text-xs organizer-p-2 hover:organizer-bg-bg-surface-hover organizer-rounded-lg organizer-text-decoration-none organizer-mt-1 organizer-inline-flex organizer-items-center organizer-gap-1.5 disabled:organizer-opacity-50 disabled:organizer-cursor-not-allowed"
             onClick={handleLoadMore}
-            disabled={loadState.isLoadingMore}
+            disabled={loadState.isLoadingMore || isInitialLoading}
           >
             {loadState.isLoadingMore && <Loader2 size={12} className="organizer-animate-spin" />}
             {loadState.isLoadingMore ? "Loading..." : "Import all chats"}

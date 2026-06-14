@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef, type ReactNode } from "react"
 import { createFolder, deleteFolder, getFolders, renameFolder, updateFolderColor, addChatsToFolder, moveNodes, saveFoldersLocal, type Folder, type ChatToAdd } from "../lib/storage"
 import { pullFolders, pushFolders } from "../lib/cloudStorage"
-import { fetchGeminiChats } from "../lib/geminiChats"
 import { useModal } from "./ModalContext"
 import { useAuth } from "./AuthContext"
 
@@ -233,13 +232,11 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       .filter((child) => child.type === 'chat')
       .map((child) => child.originalId || child.id) || []
 
-    const chats = await fetchGeminiChats()
-
     onOpen("addChat", {
       folderId,
       folderName,
       existingChatIds,
-      initialChats: chats,
+      initialChats: [],
       onAddChatsToFolder,
     })
   }
