@@ -28,11 +28,11 @@ const RenameFolderModal: React.FC = () => {
 
   return (
     <div
-      className="organizer-w-[400px] organizer-bg-bg-background organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden"
+      className="organizer-w-[400px] organizer-bg-bg-surface organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-4 organizer-py-3">
-        <div className="organizer-text-[14px] organizer-font-medium organizer-text-text-primary">
+        <div className="organizer-text-[13px] organizer-font-medium organizer-text-text-primary">
           Rename Folder
         </div>
         <button

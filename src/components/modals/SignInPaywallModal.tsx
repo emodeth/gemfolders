@@ -50,7 +50,7 @@ const SignInPaywallModal: React.FC = () => {
   ];
 
   return (
-    <div className="organizer-w-[420px] organizer-bg-bg-background organizer-rounded-md organizer-text-text-primary organizer-relative organizer-shadow-2xl organizer-border organizer-border-border-default">
+    <div className="organizer-w-[420px] organizer-bg-bg-surface organizer-rounded-md organizer-text-text-primary organizer-relative organizer-shadow-2xl organizer-border organizer-border-border-default">
       <div className="organizer-flex organizer-justify-between organizer-items-center organizer-p-4 organizer-pb-2">
         <h2 className="organizer-text-lg organizer-font-bold">Sign in for more</h2>
         <button

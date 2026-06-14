@@ -499,6 +499,28 @@ export const removeBookmark = async (
   return updatedBookmarks
 }
 
+export const isChatInAnyFolder = (
+  folders: Folder[],
+  chatId: string
+): boolean => {
+  const checkInFolders = (nodes: Folder[]): boolean => {
+    for (const node of nodes) {
+      if (node.type === "folder") {
+        const inThisFolder = node.children?.some(
+          (child) =>
+            child.type === "chat" &&
+            (child.id === chatId || child.originalId === chatId)
+        )
+        if (inThisFolder) return true
+        if (node.children && checkInFolders(node.children)) return true
+      }
+    }
+    return false
+  }
+
+  return checkInFolders(folders)
+}
+
 export const isBookmarked = async (chatId: string): Promise<boolean> => {
   const bookmarks = await getBookmarks()
   return bookmarks.some((b) => b.id === chatId)

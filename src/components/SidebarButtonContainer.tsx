@@ -12,7 +12,7 @@ const SidebarButtonContainer = ({ onClick }: { onClick: () => void }) => {
   const positionClass =
     settings.sidebarButtonPosition === "bottom"
       ? "organizer-bottom-8"
-      : "organizer-top-[72px]"
+      : "organizer-top-[56px]"
 
   return (
     <div

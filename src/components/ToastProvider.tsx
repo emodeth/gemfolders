@@ -16,11 +16,11 @@ const ToastProvider: React.FC = () => {
       toastOptions={{
         duration: 3000,
         style: {
-          background: isDark ? "#1e1e1e" : "#ffffff",
-          color: isDark ? "#ffffff" : "#1f2937",
+          background: "var(--bg-surface)",
+          color: "var(--text-primary)",
           borderRadius: "8px",
           padding: "12px 16px",
-          fontSize: "14px",
+          fontSize: "13px",
           fontFamily: "var(--font-sans)",
           boxShadow: isDark
             ? "0 4px 12px rgba(0, 0, 0, 0.4)"
@@ -50,7 +50,7 @@ const ToastProvider: React.FC = () => {
               {t.type === "error" && (
                 <XCircle
                   size={20}
-                  style={{ color: "#ef4444" }}
+                  style={{ color: "#b3261e" }}
                   className="organizer-flex-shrink-0"
                 />
               )}

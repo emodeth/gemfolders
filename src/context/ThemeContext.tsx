@@ -47,12 +47,16 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     if (theme === "gemini") {
-      applyTheme(getGeminiTheme())
+      const syncGeminiTheme = () => {
+        applyTheme(getGeminiTheme())
+      }
+
+      syncGeminiTheme()
 
       const observer = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
           if (mutation.type === "attributes" && mutation.attributeName === "class") {
-            applyTheme(getGeminiTheme())
+            syncGeminiTheme()
           }
         }
       })

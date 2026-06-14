@@ -51,7 +51,7 @@ const Tooltip = ({
         <div
           className={`organizer-z-20 organizer-h-2 organizer-w-2 organizer-rotate-45 organizer-bg-tooltip-bg ${arrowClasses[position]}`}
         />
-        <span className="organizer-z-10 organizer-relative organizer-rounded-md organizer-bg-tooltip-bg organizer-px-2 organizer-py-1.5 organizer-text-[14px] organizer-text-tooltip-text organizer-whitespace-nowrap">
+        <span className="organizer-z-10 organizer-relative organizer-rounded-md organizer-bg-tooltip-bg organizer-px-2 organizer-py-1.5 organizer-text-[13px] organizer-text-tooltip-text organizer-whitespace-nowrap">
           {text}
         </span>
       </div>

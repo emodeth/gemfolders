@@ -1,94 +1,100 @@
-import React, { useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
-import { useModal } from '../../context/ModalContext';
-import { useFolder } from '../../context/FolderContext';
-import { useTierLimits } from '../../context/TierLimitsContext';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
-import { truncateText } from "~lib/utils";
+import React, { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+
+import { truncateText } from "~lib/utils"
+
+import { useFolder } from "../../context/FolderContext"
+import { useModal } from "../../context/ModalContext"
+import { useTierLimits } from "../../context/TierLimitsContext"
+import { Button } from "../ui/Button"
+import { Input } from "../ui/Input"
 
 const CreateFolderModal: React.FC = () => {
-  const { onClose, data } = useModal();
-  const [folderName, setFolderName] = useState('');
-  const rect = data?.anchorRect;
+  const { onClose, data } = useModal()
+  const [folderName, setFolderName] = useState("")
+  const rect = data?.anchorRect
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
+      if (e.key === "Escape") {
+        onClose()
       }
-    };
+    }
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [onClose])
 
-  const { onCreate } = useFolder();
-  const { canCreateFolder, showPaywall, showSignInPaywall, isLoggedIn } = useTierLimits();
+  const { onCreate } = useFolder()
+  const { canCreateFolder, showPaywall, showSignInPaywall, isLoggedIn } =
+    useTierLimits()
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!folderName.trim()) return;
+    e.preventDefault()
+    if (!folderName.trim()) return
 
     if (!canCreateFolder()) {
       if (!isLoggedIn) {
-        showSignInPaywall("folder limit");
+        showSignInPaywall("folder limit")
       } else {
-        showPaywall("folder limit");
+        showPaywall("folder limit")
       }
-      return;
+      return
     }
 
     await onCreate({
       name: folderName,
-      type: 'folder',
+      type: "folder",
       parentId: data?.parentId || null,
-      index: 0,
-    });
-    toast.success(`Folder "${truncateText(folderName)}" created`);
-    onClose();
-  };
+      index: 0
+    })
+    toast.success(`Folder "${truncateText(folderName)}" created`)
+    onClose()
+  }
 
-  const placement = data?.placement;
+  const placement = data?.placement
 
   const getModalStyle = (): React.CSSProperties => {
-    if (!rect) return {};
+    if (!rect) return {}
 
-    if (placement === 'right-start') {
+    if (placement === "right-start") {
       return {
-        position: 'absolute',
+        position: "absolute",
         top: rect.top - 10,
         left: rect.right + 14,
         margin: 0
-      };
+      }
     }
 
     return {
-      position: 'absolute',
+      position: "absolute",
       top: rect.bottom + 12,
       left: rect.right - 215,
       margin: 0
-    };
-  };
+    }
+  }
 
-  const style = getModalStyle();
+  const style = getModalStyle()
 
   return (
     <div
       style={style}
       onClick={(e) => e.stopPropagation()}
-      className="organizer-w-[215px] organizer-bg-bg-input organizer-rounded-lg organizer-p-4 organizer-relative modal-animate-fade"
-    >
+      className="organizer-w-[215px] organizer-bg-bg-input organizer-rounded-lg organizer-p-4 organizer-relative modal-animate-fade">
       {rect && (
         <div
           className="organizer-absolute organizer-w-3 organizer-h-3 organizer-bg-bg-input organizer-transform organizer-rotate-45"
-          style={placement === 'right-start' ? {
-            top: '16px',
-            left: '-6px',
-          } : {
-            top: '-6px',
-            right: (rect.width / 2) - 6,
-          }}
+          style={
+            placement === "right-start"
+              ? {
+                  top: "16px",
+                  left: "-6px"
+                }
+              : {
+                  top: "-6px",
+                  right: rect.width / 2 - 6
+                }
+          }
         />
       )}
       <h3 className="organizer-text-text-primary organizer-font-medium organizer-mb-3 organizer-text-sm">
@@ -106,13 +112,12 @@ const CreateFolderModal: React.FC = () => {
         />
         <Button
           type="submit"
-          className="organizer-w-full !organizer-bg-bg-background organizer-text-text-primary organizer-font-medium organizer-py-2 organizer-text-sm"
-        >
+          className="organizer-w-full organizer-font-medium organizer-py-2 organizer-text-sm">
           Add Folder
         </Button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default CreateFolderModal;
+export default CreateFolderModal

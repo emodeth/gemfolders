@@ -20,9 +20,9 @@ const AddToFolderItem: React.FC<AddToFolderItemProps> = ({
   folder,
   onSelect,
 }) => {
-  const bgColor = folder.color || "#60a5fa";
+  const bgColor = folder.color || "#4e8ff8";
   const itemCount = folder.children?.length || 0;
-  const textColor = isLightColor(bgColor) ? "#1f2937" : "#f9fafb";
+  const textColor = isLightColor(bgColor) ? "#1f1f1f" : "#f9fafb";
 
   return (
     <div
@@ -125,14 +125,14 @@ const AddToFolderModal: React.FC = () => {
 
   return (
     <div
-      className="organizer-w-[520px] organizer-min-h-[600px] organizer-bg-bg-background organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col"
+      className="organizer-w-[520px] organizer-min-h-[600px] organizer-bg-bg-surface organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col"
       style={{ maxHeight: "70vh" }}
       onClick={(e) => e.stopPropagation()}
     >
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-4 organizer-py-3">
         <div className="organizer-flex organizer-items-center organizer-gap-2 organizer-overflow-hidden">
           <FolderPlus size={18} className="organizer-text-text-secondary organizer-flex-shrink-0" />
-          <span className="organizer-text-[14px] organizer-font-medium organizer-text-text-primary organizer-truncate">
+          <span className="organizer-text-[13px] organizer-font-medium organizer-text-text-primary organizer-truncate">
             Add "{chatTitle || 'Untitled Chat'}" to
           </span>
         </div>
@@ -184,7 +184,7 @@ const AddToFolderModal: React.FC = () => {
               />
               <Button
                 type="submit"
-                className="organizer-w-full !organizer-bg-bg-background organizer-text-text-primary organizer-font-medium organizer-py-2 organizer-text-sm"
+                className="organizer-w-full organizer-font-medium organizer-py-2 organizer-text-sm"
               >
                 Add Folder
               </Button>

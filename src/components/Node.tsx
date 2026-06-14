@@ -38,8 +38,8 @@ const Node = ({ node, style, dragHandle, dragWidth = 260 }: any) => {
   };
 
   function renderFolder() {
-    const bgColor = node.data.color || "#60a5fa";
-    const textColor = isLightColor(bgColor) ? "#1f2937" : "#fff";
+    const bgColor = node.data.color || "#4e8ff8";
+    const textColor = isLightColor(bgColor) ? "#1f1f1f" : "#fff";
     const hasChildren = node.data.children?.length > 0;
 
     const renderIcon = () => {

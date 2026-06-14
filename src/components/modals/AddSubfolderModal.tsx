@@ -1,99 +1,106 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
-import toast from 'react-hot-toast';
-import { useModal } from '../../context/ModalContext';
-import { useFolder } from '../../context/FolderContext';
-import { useTierLimits } from '../../context/TierLimitsContext';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
-import { truncateText } from "~lib/utils";
+import React, { useLayoutEffect, useRef, useState } from "react"
+import toast from "react-hot-toast"
+
+import { truncateText } from "~lib/utils"
+
+import { useFolder } from "../../context/FolderContext"
+import { useModal } from "../../context/ModalContext"
+import { useTierLimits } from "../../context/TierLimitsContext"
+import { Button } from "../ui/Button"
+import { Input } from "../ui/Input"
 
 const AddSubfolderModal: React.FC = () => {
-  const { onClose, data } = useModal();
-  const { onCreate, closeContextMenu } = useFolder();
-  const { canCreateFolder, canCreateSubfolder, showPaywall, showSignInPaywall, isLoggedIn } = useTierLimits();
-  const [folderName, setFolderName] = useState('');
-  const [position, setPosition] = useState({ top: 0, left: 0 });
-  const [isPositioned, setIsPositioned] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
+  const { onClose, data } = useModal()
+  const { onCreate, closeContextMenu } = useFolder()
+  const {
+    canCreateFolder,
+    canCreateSubfolder,
+    showPaywall,
+    showSignInPaywall,
+    isLoggedIn
+  } = useTierLimits()
+  const [folderName, setFolderName] = useState("")
+  const [position, setPosition] = useState({ top: 0, left: 0 })
+  const [isPositioned, setIsPositioned] = useState(false)
+  const modalRef = useRef<HTMLDivElement>(null)
 
-  const { buttonRect, parentId } = data || {};
+  const { buttonRect, parentId } = data || {}
 
   useLayoutEffect(() => {
     if (modalRef.current && buttonRect) {
-      const modalRect = modalRef.current.getBoundingClientRect();
-      const modalWidth = modalRect.width || 215;
-      const modalHeight = modalRect.height || 150;
-      const gap = 2;
+      const modalRect = modalRef.current.getBoundingClientRect()
+      const modalWidth = modalRect.width || 215
+      const modalHeight = modalRect.height || 150
+      const gap = 2
 
-      let newLeft = buttonRect.left - modalWidth - gap;
-      let newTop = buttonRect.top;
+      let newLeft = buttonRect.left - modalWidth - gap
+      let newTop = buttonRect.top
 
       if (newLeft < 10) {
-        newLeft = buttonRect.right + gap;
+        newLeft = buttonRect.right + gap
       }
 
       if (newTop + modalHeight > window.innerHeight - 10) {
-        newTop = window.innerHeight - modalHeight - 10;
+        newTop = window.innerHeight - modalHeight - 10
       }
 
-      newTop = Math.max(10, newTop);
-      newLeft = Math.max(10, newLeft);
+      newTop = Math.max(10, newTop)
+      newLeft = Math.max(10, newLeft)
 
-      setPosition({ top: newTop, left: newLeft });
-      setIsPositioned(true);
+      setPosition({ top: newTop, left: newLeft })
+      setIsPositioned(true)
     }
-  }, [buttonRect]);
+  }, [buttonRect])
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!folderName.trim()) return;
+    e.preventDefault()
+    if (!folderName.trim()) return
 
     if (!canCreateFolder()) {
       if (!isLoggedIn) {
-        showSignInPaywall("folder limit");
+        showSignInPaywall("folder limit")
       } else {
-        showPaywall("folder limit");
+        showPaywall("folder limit")
       }
-      return;
+      return
     }
 
     if (parentId && !canCreateSubfolder(parentId)) {
       if (!isLoggedIn) {
-        showSignInPaywall("subfolder limit");
+        showSignInPaywall("subfolder limit")
       } else {
-        showPaywall("subfolder limit");
+        showPaywall("subfolder limit")
       }
-      return;
+      return
     }
 
     await onCreate({
       name: folderName,
-      type: 'folder',
+      type: "folder",
       parentId: parentId || null,
-      index: 0,
-    });
-    toast.success(`Subfolder "${truncateText(folderName)}" created`);
-    closeContextMenu();
-    onClose();
-  };
+      index: 0
+    })
+    toast.success(`Subfolder "${truncateText(folderName)}" created`)
+    closeContextMenu()
+    onClose()
+  }
 
   const style: React.CSSProperties = {
-    position: 'fixed',
+    position: "fixed",
     top: position.top,
     left: position.left,
     margin: 0,
     zIndex: 999999,
-    visibility: isPositioned ? 'visible' : 'hidden',
-  };
+    visibility: isPositioned ? "visible" : "hidden"
+  }
 
   return (
     <div
       ref={modalRef}
       style={style}
-      className="organizer-w-[215px] organizer-bg-bg-background organizer-rounded-md organizer-p-4 organizer-shadow-lg modal-animate-fade"
+      className="organizer-w-[215px] organizer-bg-bg-surface organizer-rounded-md organizer-p-4 organizer-shadow-lg modal-animate-fade"
       onClick={(e) => e.stopPropagation()}
-      onMouseDown={(e) => e.stopPropagation()}
-    >
+      onMouseDown={(e) => e.stopPropagation()}>
       <form onSubmit={handleSubmit}>
         <Input
           type="text"
@@ -106,13 +113,12 @@ const AddSubfolderModal: React.FC = () => {
         />
         <Button
           type="submit"
-          className="organizer-w-full organizer-bg-bg-input hover:organizer-bg-bg-surface-hover organizer-text-text-primary organizer-font-medium organizer-py-2 organizer-text-sm"
-        >
+          className="organizer-w-full organizer-font-medium organizer-py-2 organizer-text-sm">
           Add Subfolder
         </Button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default AddSubfolderModal;
+export default AddSubfolderModal

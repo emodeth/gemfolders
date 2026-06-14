@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef, type ReactNode } from "react"
 import { createFolder, deleteFolder, getFolders, renameFolder, updateFolderColor, addChatsToFolder, moveNodes, saveFoldersLocal, type Folder, type ChatToAdd } from "../lib/storage"
 import { pullFolders, pushFolders } from "../lib/cloudStorage"
-import { fetchGeminiChats } from "../lib/geminiChats"
 import { useModal } from "./ModalContext"
 import { useAuth } from "./AuthContext"
 
@@ -42,7 +41,7 @@ const initialContextMenuState: ContextMenuState = {
   y: 0,
   folderId: "",
   folderName: "",
-  folderColor: "#60a5fa",
+  folderColor: "#4e8ff8",
   itemCount: 0,
 }
 
@@ -187,7 +186,7 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       y: e.clientY,
       folderId: folder.id,
       folderName: folder.name,
-      folderColor: folder.color || "#60a5fa",
+      folderColor: folder.color || "#4e8ff8",
       itemCount: folder.childrenCount,
     })
   }
@@ -233,13 +232,11 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       .filter((child) => child.type === 'chat')
       .map((child) => child.originalId || child.id) || []
 
-    const chats = await fetchGeminiChats()
-
     onOpen("addChat", {
       folderId,
       folderName,
       existingChatIds,
-      initialChats: chats,
+      initialChats: [],
       onAddChatsToFolder,
     })
   }

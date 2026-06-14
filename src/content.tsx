@@ -13,7 +13,10 @@ import { SubscriptionProvider } from "~context/SubscriptionContext"
 import { TierLimitsProvider } from "~context/TierLimitsContext"
 import { ThemeWrapper } from "~components/ThemeWrapper"
 import ToastProvider from "~components/ToastProvider"
-import { injectBookmarkButtons, setupAuthListener } from "~lib/injectBookmarkButtons"
+import {
+  setupAuthListener,
+  setupNativeMenuInjection
+} from "~lib/injectNativeMenuItems"
 import { setupFolderWidgetInjection } from "~lib/injectFolderWidget"
 import { getSettings } from "~lib/settings"
 import { setupDeleteHandler } from "~lib/deleteHandler"
@@ -73,12 +76,8 @@ const PlasmoOverlay = () => {
   }
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      injectBookmarkButtons()
-      setupAuthListener()
-    }, 1000)
-
-    return () => clearTimeout(timeoutId)
+    setupNativeMenuInjection()
+    setupAuthListener()
   }, [])
 
   useEffect(() => {

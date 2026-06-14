@@ -21,7 +21,7 @@ const OnboardingModal: React.FC = () => {
   };
 
   return (
-    <div className="organizer-w-[600px] organizer-bg-bg-background organizer-rounded-md organizer-text-text-primary organizer-relative organizer-shadow-2xl organizer-border organizer-border-border-default">
+    <div className="organizer-w-[600px] organizer-bg-bg-surface organizer-rounded-md organizer-text-text-primary organizer-relative organizer-shadow-2xl organizer-border organizer-border-border-default">
       <div className="organizer-text-center organizer-p-8 organizer-pb-4">
         <h1 className="organizer-text-2xl organizer-font-bold organizer-mb-2">
           Welcome to Gemfolders

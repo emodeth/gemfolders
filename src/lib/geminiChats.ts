@@ -1,3 +1,11 @@
+import {
+  extractChatId,
+  extractChatTitle,
+  getSidebarScrollContainer,
+  queryConversationElements,
+  waitForConversationElements
+} from "./geminiDom"
+
 export interface GeminiChat {
   id: string
   title: string
@@ -8,33 +16,20 @@ export interface GeminiChat {
 
 const CHATS_STORAGE_KEY = "gemfolders-chats"
 
-const extractChatIdFromJslog = (jslog: string): string | null => {
-  const regex = /\["c_([^"]+)"/
-  const result = regex.exec(jslog)
-  return result ? result[1] : null
-}
-
 export const scrapeGeminiChats = (): GeminiChat[] => {
   const chats: GeminiChat[] = []
 
-  const conversationElements = document.querySelectorAll(".conversation")
+  queryConversationElements().forEach((element, index) => {
+    const chatId = extractChatId(element)
+    if (!chatId) return
 
-  conversationElements.forEach((element, index) => {
-    const titleElement = element.querySelector(".conversation-title")
-    const title = titleElement?.textContent?.trim() || "Untitled Chat"
-
-    const jslog = element.getAttribute("jslog") || ""
-    const chatId = extractChatIdFromJslog(jslog)
-
-    if (chatId) {
-      chats.push({
-        id: chatId,
-        title,
-        url: `https://gemini.google.com/app/${chatId}`,
-        lastUpdated: new Date().toISOString(),
-        sortIndex: index
-      })
-    }
+    chats.push({
+      id: chatId,
+      title: extractChatTitle(element),
+      url: `https://gemini.google.com/app/${chatId}`,
+      lastUpdated: new Date().toISOString(),
+      sortIndex: index
+    })
   })
 
   return chats
@@ -57,6 +52,8 @@ export const saveCachedChats = async (chats: GeminiChat[]): Promise<void> => {
 }
 
 export const fetchGeminiChats = async (): Promise<GeminiChat[]> => {
+  await waitForConversationElements(3000)
+
   const scrapedChats = scrapeGeminiChats()
 
   const cachedChats = await getCachedChats()
@@ -93,28 +90,10 @@ export const clearCachedChats = async (): Promise<void> => {
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-const getScrollableContainer = (): Element | null => {
-  const infiniteScroller = document.querySelector("infinite-scroller")
-  if (infiniteScroller) return infiniteScroller
-
-  const sidebarSelectors = [
-    '[role="navigation"] [style*="overflow"]',
-    ".conversation-list",
-    '[data-test-id="conversation-list"]'
-  ]
-
-  for (const selector of sidebarSelectors) {
-    const element = document.querySelector(selector)
-    if (element) return element
-  }
-
-  return null
-}
-
 export const loadMoreGeminiChats = async (
   onProgress?: (loaded: number) => void
 ): Promise<GeminiChat[]> => {
-  const scrollContainer = getScrollableContainer()
+  const scrollContainer = getSidebarScrollContainer()
 
   if (!scrollContainer) {
     console.warn("Could not find Gemini sidebar scroll container")
@@ -130,7 +109,6 @@ export const loadMoreGeminiChats = async (
   })
 
   let previousCount = 0
-  let currentCount = document.querySelectorAll(".conversation").length
   let noNewChatsCount = 0
   const maxScrollAttempts = 10
 
@@ -144,7 +122,7 @@ export const loadMoreGeminiChats = async (
       chatMap.set(chat.id, chat)
     })
 
-    currentCount = document.querySelectorAll(".conversation").length
+    const currentCount = queryConversationElements().length
 
     if (onProgress) {
       onProgress(chatMap.size)
@@ -169,3 +147,5 @@ export const loadMoreGeminiChats = async (
 
   return allChats
 }
+
+export { waitForConversationElements } from "./geminiDom"

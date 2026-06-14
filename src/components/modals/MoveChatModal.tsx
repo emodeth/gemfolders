@@ -52,14 +52,14 @@ const MoveChatModal: React.FC = () => {
 
   return (
     <div
-      className="organizer-w-[520px] organizer-min-h-[600px] organizer-bg-bg-background organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col"
+      className="organizer-w-[520px] organizer-min-h-[600px] organizer-bg-bg-surface organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col"
       style={{ maxHeight: "70vh" }}
       onClick={(e) => e.stopPropagation()}
     >
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-4 organizer-py-3">
         <div className="organizer-flex organizer-items-center organizer-gap-2 organizer-overflow-hidden">
           <MessageSquareText size={18} className="organizer-text-text-secondary organizer-flex-shrink-0" />
-          <span className="organizer-text-[14px] organizer-font-medium organizer-text-text-primary organizer-truncate">
+          <span className="organizer-text-[13px] organizer-font-medium organizer-text-text-primary organizer-truncate">
             Move "{chatName}" to
           </span>
         </div>

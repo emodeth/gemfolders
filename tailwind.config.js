@@ -16,6 +16,9 @@ module.exports = {
           "sans-serif"
         ]
       },
+      fontSize: {
+        sm: ["13px", { lineHeight: "1.25rem" }]
+      },
       colors: {
         bg: {
           background: "var(--bg-background)",

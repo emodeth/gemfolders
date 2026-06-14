@@ -38,13 +38,13 @@ const SettingsTab: React.FC = () => {
               updateSettings({ hideFoldersFromSidebar: checked })
           },
           {
-            label: "Hide add to folder from left sidebar",
+            label: "Hide add to folder from chat menu",
             checked: settings.hideAddToFolderFromSidebar,
             onChange: (checked: boolean) =>
               updateSettings({ hideAddToFolderFromSidebar: checked })
           },
           {
-            label: "Hide toggle bookmarks from left sidebar",
+            label: "Hide bookmark from chat menu",
             checked: settings.hideBookmarksFromSidebar,
             onChange: (checked: boolean) =>
               updateSettings({ hideBookmarksFromSidebar: checked })

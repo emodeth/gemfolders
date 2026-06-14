@@ -14,6 +14,10 @@ import { ThemeWrapper } from "../components/ThemeWrapper";
 import ToastProvider from "../components/ToastProvider";
 import cssText from "data-text:~style.css";
 import { getSettings, type Settings } from "./settings";
+import {
+  findFolderWidgetInjectionPoint,
+  type FolderWidgetInjectionPoint
+} from "./geminiDom";
 
 let cachedSettings: Settings | null = null;
 const WIDGET_CONTAINER_ID = "gemfolders-organizer-folder-widget";
@@ -21,6 +25,8 @@ const WIDGET_STYLES_ID = "gemfolders-organizer-folder-styles";
 
 let widgetRoot: Root | null = null;
 let containerObserver: ResizeObserver | null = null;
+let repositionTimeout: ReturnType<typeof setTimeout> | null = null;
+let isRepositioning = false;
 
 const getProcessedStyles = (() => {
   let processed: string | null = null;
@@ -40,7 +46,7 @@ const getProcessedStyles = (() => {
       box-sizing: border-box;
       border-width: 0;
       border-style: solid;
-      border-color: #e5e7eb;
+      border-color: var(--border-default, #e3e3e3);
     }
   `;
     let css = cssText.replaceAll(":root", ":host");
@@ -62,6 +68,7 @@ const getShadowStyles = () => {
 
     :host {
       font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      font-size: 13px;
       width: 100%;
       padding: 8px 0 16px 0;
       display: block;
@@ -86,11 +93,45 @@ const getShadowStyles = () => {
     :host(.collapsed) {
       display: none !important;
     }
+
+    .gemfolders-skeleton-bar {
+      background: var(--border-default, #e3e3e3);
+      border-radius: 4px;
+    }
   `;
   return styleElement;
 };
 
-const findInjectionPoint = (): { element: Element; position: "before" | "after" } | null => {
+const insertAtInjectionPoint = (
+  container: HTMLElement,
+  injectionPoint: FolderWidgetInjectionPoint
+) => {
+  if (injectionPoint.position === "before") {
+    injectionPoint.element.parentNode?.insertBefore(container, injectionPoint.element);
+    return;
+  }
+
+  const nextSibling = injectionPoint.element.nextSibling;
+  injectionPoint.element.parentNode?.insertBefore(container, nextSibling);
+};
+
+const isCorrectlyPositioned = (
+  container: HTMLElement,
+  injectionPoint: FolderWidgetInjectionPoint
+): boolean => {
+  if (injectionPoint.position === "after") {
+    return container.previousElementSibling === injectionPoint.element;
+  }
+
+  return container.nextElementSibling === injectionPoint.element;
+};
+
+const findInjectionPoint = (): FolderWidgetInjectionPoint | null => {
+  const notebooksAnchor = findFolderWidgetInjectionPoint();
+  if (notebooksAnchor) {
+    return notebooksAnchor;
+  }
+
   const gemsChip = document.querySelector('[data-test-id="gems-chip"]');
   if (gemsChip) {
     const gemsContainer =
@@ -110,11 +151,6 @@ const findInjectionPoint = (): { element: Element; position: "before" | "after" 
     if (gemsListContainer) {
       return { element: gemsListContainer, position: "after" };
     }
-
-    const chatsHeader = sideNavContent.querySelector('.chat-history-list');
-    if (chatsHeader) {
-      return { element: chatsHeader, position: "before" };
-    }
   }
 
   return null;
@@ -133,10 +169,10 @@ const createWidgetContainer = (): HTMLDivElement => {
   // Skeleton Loader
   mountPoint.innerHTML = `
     <div style="padding: 16px; opacity: 0.6; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;">
-      <div style="height: 20px; background: #e5e7eb; border-radius: 4px; margin-bottom: 12px; width: 70%;"></div>
-      <div style="height: 16px; background: #e5e7eb; border-radius: 4px; margin-bottom: 8px;"></div>
-      <div style="height: 16px; background: #e5e7eb; border-radius: 4px; margin-bottom: 8px;"></div>
-      <div style="height: 16px; background: #e5e7eb; border-radius: 4px; width: 80%;"></div>
+      <div class="gemfolders-skeleton-bar" style="height: 20px; margin-bottom: 12px; width: 70%;"></div>
+      <div class="gemfolders-skeleton-bar" style="height: 16px; margin-bottom: 8px;"></div>
+      <div class="gemfolders-skeleton-bar" style="height: 16px; margin-bottom: 8px;"></div>
+      <div class="gemfolders-skeleton-bar" style="height: 16px; width: 80%;"></div>
     </div>
     <style>
       @keyframes pulse {
@@ -208,21 +244,20 @@ const applySettings = (settings: Settings) => {
 };
 
 export const injectFolderWidget = (): boolean => {
-  if (document.getElementById(WIDGET_CONTAINER_ID)) {
-    return true;
+  const injectionPoint = findInjectionPoint();
+  if (!injectionPoint) {
+    return false;
   }
 
-  if (document.getElementById(WIDGET_CONTAINER_ID)) {
+  const existingWidget = document.getElementById(WIDGET_CONTAINER_ID) as HTMLDivElement | null;
+  if (existingWidget) {
+    if (!isCorrectlyPositioned(existingWidget, injectionPoint)) {
+      insertAtInjectionPoint(existingWidget, injectionPoint);
+    }
     return true;
   }
 
   getSettings().then(applySettings);
-
-  const injectionPoint = findInjectionPoint();
-
-  if (!injectionPoint) {
-    return false;
-  }
 
   const container = createWidgetContainer();
 
@@ -243,12 +278,7 @@ export const injectFolderWidget = (): boolean => {
     document.head.appendChild(spinnerStyle);
   }
 
-  if (injectionPoint.position === "before") {
-    injectionPoint.element.parentNode?.insertBefore(container, injectionPoint.element);
-  } else {
-    const nextSibling = injectionPoint.element.nextSibling;
-    injectionPoint.element.parentNode?.insertBefore(container, nextSibling);
-  }
+  insertAtInjectionPoint(container, injectionPoint);
 
   if (containerObserver) {
     containerObserver.disconnect();
@@ -271,6 +301,32 @@ export const injectFolderWidget = (): boolean => {
   return true;
 };
 
+const scheduleWidgetReposition = (
+  existingWidget: HTMLDivElement,
+  injectionPoint: FolderWidgetInjectionPoint
+) => {
+  if (isRepositioning || isCorrectlyPositioned(existingWidget, injectionPoint)) {
+    return;
+  }
+
+  if (repositionTimeout) {
+    clearTimeout(repositionTimeout);
+  }
+
+  repositionTimeout = setTimeout(() => {
+    if (isRepositioning || isCorrectlyPositioned(existingWidget, injectionPoint)) {
+      return;
+    }
+
+    isRepositioning = true;
+    try {
+      insertAtInjectionPoint(existingWidget, injectionPoint);
+    } finally {
+      isRepositioning = false;
+    }
+  }, 250);
+};
+
 export const setupFolderWidgetInjection = () => {
   getSettings().then((s) => {
     cachedSettings = s;
@@ -280,20 +336,30 @@ export const setupFolderWidgetInjection = () => {
   injectFolderWidget();
 
   const observer = new MutationObserver((mutations) => {
-    if (document.getElementById(WIDGET_CONTAINER_ID)) return;
+    const injectionPoint = findInjectionPoint();
+    if (!injectionPoint) return;
+
+    const existingWidget = document.getElementById(WIDGET_CONTAINER_ID) as HTMLDivElement | null;
+    if (existingWidget) {
+      scheduleWidgetReposition(existingWidget, injectionPoint);
+      return;
+    }
 
     for (const mutation of mutations) {
       if (mutation.addedNodes.length) {
-        const injectionPoint = findInjectionPoint();
-        if (injectionPoint) {
-          injectFolderWidget();
-          break;
-        }
+        injectFolderWidget();
+        break;
       }
     }
   });
 
-  observer.observe(document.body, {
+  const sidebar =
+    document.querySelector('[data-test-id="side-nav"]') ||
+    document.querySelector('[role="navigation"]') ||
+    document.querySelector("side-navigation") ||
+    document.querySelector("nav");
+
+  observer.observe(sidebar ?? document.body, {
     childList: true,
     subtree: true
   });

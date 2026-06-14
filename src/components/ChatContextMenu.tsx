@@ -1,28 +1,33 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
-import { Bookmark, FolderInput, Pencil, Trash2 } from "lucide-react";
+import { Bookmark, FolderPlus, Pencil, Trash2 } from "lucide-react";
 import ContextMenuItem from "./ContextMenuItem";
+import { MENU_ICON_SIZE, MENU_ICON_STROKE } from "../lib/lucideMenuIcons";
 import { useChat } from "../context/ChatContext";
 import { useBookmark } from "../context/BookmarkContext";
+import { useFolder } from "../context/FolderContext";
 import { useTierLimits } from "../context/TierLimitsContext";
+import { isChatInAnyFolder } from "../lib/storage";
+
+const menuIconProps = { size: MENU_ICON_SIZE, strokeWidth: MENU_ICON_STROKE };
 
 const styles = {
   menu: {
     position: "fixed" as const,
     zIndex: 100000,
-    minWidth: 150,
-    backgroundColor: "var(--bg-background)",
-    border: "1px solid var(--border-default)",
-    borderRadius: 6,
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
-    padding: 4,
+    minWidth: 180,
+    backgroundColor: "var(--bg-surface)",
+    border: "none",
+    borderRadius: 16,
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08)",
+    padding: 8,
     display: "flex",
     flexDirection: "column" as const,
-    gap: 1,
+    gap: 0,
     fontFamily: "var(--font-sans)",
   },
   header: {
     padding: "6px 10px",
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: 600,
     color: "var(--text-primary)",
     marginBottom: 4,
@@ -44,6 +49,7 @@ const ChatContextMenu: React.FC = () => {
   } = useChat();
 
   const { isBookmarked, toggleBookmark } = useBookmark();
+  const { folders } = useFolder();
   const { canBookmark, showPaywall, showSignInPaywall, isLoggedIn } = useTierLimits();
 
   const menuRef = useRef<HTMLDivElement>(null);
@@ -52,6 +58,7 @@ const ChatContextMenu: React.FC = () => {
 
   const { x, y, chatName, chatId, chatUrl, originalId } = chatContextMenu;
   const bookmarked = isBookmarked(originalId || chatId);
+  const inFolder = isChatInAnyFolder(folders, originalId || chatId);
 
   const handleBookmarkClick = () => {
     toggleBookmark(
@@ -167,25 +174,35 @@ const ChatContextMenu: React.FC = () => {
       <div style={styles.header}>{chatName}</div>
 
       <ContextMenuItem
-        icon={<Bookmark size={16} fill={bookmarked ? "currentColor" : "none"} />}
+        icon={
+          <Bookmark
+            {...menuIconProps}
+            fill={bookmarked ? "currentColor" : "none"}
+          />
+        }
         label={bookmarked ? "Remove Bookmark" : "Bookmark"}
         onClick={handleBookmarkClick}
       />
 
       <ContextMenuItem
-        icon={<FolderInput size={16} />}
-        label="Move to..."
+        icon={
+          <FolderPlus
+            {...menuIconProps}
+            fill={inFolder ? "currentColor" : "none"}
+          />
+        }
+        label="Add to folder"
         onClick={handleChatMoveTo}
       />
 
       <ContextMenuItem
-        icon={<Pencil size={16} />}
+        icon={<Pencil {...menuIconProps} />}
         label="Rename"
         onClick={handleChatRename}
       />
 
       <ContextMenuItem
-        icon={<Trash2 size={16} />}
+        icon={<Trash2 {...menuIconProps} />}
         label="Delete"
         isDanger
         onClick={handleChatDelete}
