@@ -15,8 +15,8 @@ import { ThemeWrapper } from "~components/ThemeWrapper"
 import ToastProvider from "~components/ToastProvider"
 import {
   setupAuthListener,
-  setupNativeMenuInjection
-} from "~lib/injectNativeMenuItems"
+  setupSidebarActionButtons
+} from "~lib/injectSidebarActionButtons"
 import { setupFolderWidgetInjection } from "~lib/injectFolderWidget"
 import { getSettings } from "~lib/settings"
 import { setupDeleteHandler } from "~lib/deleteHandler"
@@ -76,7 +76,7 @@ const PlasmoOverlay = () => {
   }
 
   useEffect(() => {
-    setupNativeMenuInjection()
+    setupSidebarActionButtons()
     setupAuthListener()
   }, [])
 

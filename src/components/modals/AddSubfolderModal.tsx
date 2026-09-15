@@ -8,6 +8,7 @@ import { useModal } from "../../context/ModalContext"
 import { useTierLimits } from "../../context/TierLimitsContext"
 import { Button } from "../ui/Button"
 import { Input } from "../ui/Input"
+import { useI18n } from "~lib/i18n"
 
 const AddSubfolderModal: React.FC = () => {
   const { onClose, data } = useModal()
@@ -20,6 +21,7 @@ const AddSubfolderModal: React.FC = () => {
     isLoggedIn
   } = useTierLimits()
   const [folderName, setFolderName] = useState("")
+  const { t } = useI18n()
   const [position, setPosition] = useState({ top: 0, left: 0 })
   const [isPositioned, setIsPositioned] = useState(false)
   const modalRef = useRef<HTMLDivElement>(null)
@@ -80,7 +82,7 @@ const AddSubfolderModal: React.FC = () => {
       parentId: parentId || null,
       index: 0
     })
-    toast.success(`Subfolder "${truncateText(folderName)}" created`)
+    toast.success(t("subfolderCreated", { name: truncateText(folderName) }))
     closeContextMenu()
     onClose()
   }
@@ -104,7 +106,7 @@ const AddSubfolderModal: React.FC = () => {
       <form onSubmit={handleSubmit}>
         <Input
           type="text"
-          placeholder="New Folder"
+          placeholder={t("newFolder")}
           value={folderName}
           onChange={(e) => setFolderName(e.target.value)}
           variant="ghost"
@@ -114,7 +116,7 @@ const AddSubfolderModal: React.FC = () => {
         <Button
           type="submit"
           className="organizer-w-full organizer-font-medium organizer-py-2 organizer-text-sm">
-          Add Subfolder
+          {t("addSubfolder")}
         </Button>
       </form>
     </div>

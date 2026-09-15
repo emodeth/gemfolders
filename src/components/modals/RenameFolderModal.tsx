@@ -5,11 +5,13 @@ import { useModal } from "~context/ModalContext";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { truncateText } from "~lib/utils";
+import { useI18n } from "~lib/i18n";
 
 const RenameFolderModal: React.FC = () => {
   const { onClose, data } = useModal();
   const { folderName = "", folderId, onRename } = data || {};
   const [newName, setNewName] = useState(folderName);
+  const { t } = useI18n();
 
   useEffect(() => {
     setNewName(folderName);
@@ -22,7 +24,7 @@ const RenameFolderModal: React.FC = () => {
     if (onRename) {
       await onRename(folderId, newName.trim());
     }
-    toast.success(`Folder renamed to "${truncateText(newName.trim())}"`);
+    toast.success(t("folderRenamed", { name: truncateText(newName.trim()) }));
     onClose();
   };
 
@@ -33,7 +35,7 @@ const RenameFolderModal: React.FC = () => {
     >
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-4 organizer-py-3">
         <div className="organizer-text-[13px] organizer-font-medium organizer-text-text-primary">
-          Rename Folder
+          {t("renameFolder")}
         </div>
         <button
           className="organizer-text-text-primary organizer-transition-colors"
@@ -49,7 +51,7 @@ const RenameFolderModal: React.FC = () => {
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            placeholder="Enter folder name"
+            placeholder={t("enterFolderName")}
             variant="ghost"
             autoFocus
           />
@@ -57,10 +59,10 @@ const RenameFolderModal: React.FC = () => {
 
         <div className="organizer-px-4 organizer-pb-4 organizer-flex organizer-justify-end organizer-gap-2">
           <Button variant="cancel" type="button" onClick={onClose}>
-            Cancel
+            {t("cancel")}
           </Button>
           <Button type="submit">
-            Rename
+            {t("rename")}
           </Button>
         </div>
       </form>

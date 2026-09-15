@@ -16,14 +16,16 @@
     BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
   --text-primary: #e3e3e3;
+  --text-folder: #e3e3e3;
+  --text-folder-hover: #e3e3e3;
   --text-secondary: #8e918f;
   --text-muted: #8e918f;
   --text-placeholder: #8e918f;
 
   --border-default: #3c4043;
 
-  --color-primary: #07f;
-  --color-primary-hover: #1883FE;
+  --color-primary: #2f6fdb;
+  --color-primary-hover: #3d7be5;
 
   --tooltip-bg: #303030;
   --tooltip-text: #f2f2f2;
@@ -43,6 +45,8 @@
   --bg-button-surface: #f2f0f0;
 
   --text-primary: #1f1f1f;
+  --text-folder: #0000008c;
+  --text-folder-hover: #0000008c;
   --text-secondary: #444746;
   --text-muted: #444746;
   --text-placeholder: #70757a;
@@ -73,7 +77,7 @@
     sans-serif;
 }
 
-plasmo-csui {
+:host(plasmo-csui) {
   position: fixed;
   top: 0;
   left: 0;
@@ -81,9 +85,14 @@ plasmo-csui {
   height: 100vh;
   pointer-events: none;
   z-index: 2147483647;
+  isolation: isolate;
 }
 
-plasmo-csui > * {
+.plasmo-csui-container {
+  pointer-events: none;
+}
+
+.plasmo-csui-container > [data-theme] > * {
   pointer-events: auto;
 }
 

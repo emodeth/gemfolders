@@ -7,6 +7,7 @@ import { fetchGeminiChats, loadMoreGeminiChats, type GeminiChat } from "~lib/gem
 import type { ChatToAdd } from "~lib/storage";
 import { Button } from "~components/ui/Button";
 import { Input } from "~components/ui/Input";
+import { useI18n } from "~lib/i18n";
 
 interface LoadState {
   isLoadingMore: boolean;
@@ -16,6 +17,7 @@ interface LoadState {
 const CHATS_PER_PAGE = 10;
 
 const AddChatModal: React.FC = () => {
+  const { t } = useI18n();
   const { onClose, data } = useModal();
   const {
     folderName = "folder",
@@ -205,7 +207,7 @@ const AddChatModal: React.FC = () => {
         <div className="organizer-relative organizer-mb-4 organizer-px-2">
           <Input
             type="text"
-            placeholder="Filter chats by title..."
+            placeholder={t("filterChats")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             variant="ghost"
@@ -239,7 +241,7 @@ const AddChatModal: React.FC = () => {
                 className="organizer-min-h-10 organizer-rounded-lg organizer-px-4 organizer-text-xs organizer-font-medium organizer-text-primary hover:organizer-bg-bg-surface-hover organizer-transition-[background-color,transform] active:organizer-scale-[0.96]"
                 onClick={() => setVisibleChatCount((count) => count + CHATS_PER_PAGE)}
               >
-                Show more
+                {t("showMore", { count: Math.min(CHATS_PER_PAGE, filteredChats.length - visibleChatCount) })}
               </button>
             </div>
           )}
@@ -258,14 +260,14 @@ const AddChatModal: React.FC = () => {
             onClick={() => setSelectedChats([])}
             disabled={selectedChats.length === 0}
           >
-            Clear
+            {t("clear")}
           </Button>
           <Button
             variant="default"
             onClick={handleSave}
             disabled={selectedChats.length === 0}
           >
-            Save
+            {t("save")}
           </Button>
         </div>
       </div>

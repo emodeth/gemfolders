@@ -7,11 +7,13 @@ import type { Folder as FolderType } from "~lib/storage";
 import MoveChatModalItem from "./MoveChatModalItem";
 import { Input } from "../ui/Input";
 import { truncateText } from "~lib/utils";
+import { useI18n } from "~lib/i18n";
 
 const MoveChatModal: React.FC = () => {
   const { onClose, data } = useModal();
   const { folders } = useFolder();
   const { chatName = "", chatId, currentFolderId, onMove } = data || {};
+  const { t } = useI18n();
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -46,7 +48,7 @@ const MoveChatModal: React.FC = () => {
 
     const targetFolder = allFlatFolders.find(f => f.id === folderId);
     await onMove(chatId, folderId);
-    toast.success(`Moved to "${truncateText(targetFolder?.name || 'folder')}"`);
+    toast.success(t("movedTo", { name: truncateText(targetFolder?.name || t("folders")) }));
     onClose();
   };
 
@@ -60,7 +62,7 @@ const MoveChatModal: React.FC = () => {
         <div className="organizer-flex organizer-items-center organizer-gap-2 organizer-overflow-hidden">
           <MessageSquareText size={18} className="organizer-text-text-secondary organizer-flex-shrink-0" />
           <span className="organizer-text-[13px] organizer-font-medium organizer-text-text-primary organizer-truncate">
-            Move "{chatName}" to
+            {t("moveTo", { name: chatName })}
           </span>
         </div>
         <button
@@ -77,7 +79,7 @@ const MoveChatModal: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Filter folders by name..."
+            placeholder={t("filterFolders")}
             variant="ghost"
             autoFocus
           />
@@ -88,7 +90,7 @@ const MoveChatModal: React.FC = () => {
         {filteredFolders.length === 0 ? (
           <div className="organizer-text-center organizer-py-8">
             <p className="organizer-text-text-secondary organizer-text-sm">
-              {searchQuery ? "No folders match your search." : "No folders available."}
+              {searchQuery ? t("noFoldersMatch") : t("noFoldersAvailable")}
             </p>
           </div>
         ) : (

@@ -4,16 +4,18 @@ import { X, Folder } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { Button } from "../ui/Button";
 import { truncateText } from "~lib/utils";
+import { useI18n } from "~lib/i18n";
 
 const DeleteFolderModal: React.FC = () => {
   const { onClose, data } = useModal();
   const { folderName = "Folder", itemCount = 0, onDelete } = data || {};
+  const { t } = useI18n();
 
   const handleDelete = () => {
     if (onDelete) {
       onDelete();
     }
-    toast.success(`"${truncateText(folderName)}" deleted`);
+    toast.success(t("deleted", { name: truncateText(folderName) }));
     onClose();
   };
 
@@ -28,9 +30,9 @@ const DeleteFolderModal: React.FC = () => {
             <Folder size={20} />
           </div>
           <div className="organizer-text-[16px] organizer-font-medium organizer-text-text-primary organizer-flex organizer-items-center organizer-min-w-0">
-            <span className="organizer-whitespace-nowrap">Delete&nbsp;</span>
+            <span className="organizer-whitespace-nowrap">{t("delete")}&nbsp;</span>
             <span className="organizer-truncate">{folderName}</span>
-            <span className="organizer-whitespace-nowrap">&nbsp;and its chats ({itemCount} items)</span>
+            <span className="organizer-whitespace-nowrap">&nbsp;({itemCount} {t(itemCount === 1 ? "item" : "items")})</span>
           </div>
         </div>
         <button
@@ -43,10 +45,10 @@ const DeleteFolderModal: React.FC = () => {
 
       <div className="organizer-p-5 organizer-pt-6 organizer-flex organizer-justify-end organizer-gap-3">
         <Button variant="cancel" onClick={onClose}>
-          Cancel
+          {t("cancel")}
         </Button>
         <Button variant="default" onClick={handleDelete}>
-          Delete
+          {t("delete")}
         </Button>
       </div>
     </div>

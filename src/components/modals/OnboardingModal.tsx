@@ -5,18 +5,22 @@ import toast from "react-hot-toast"
 
 import { useModal } from "../../context/ModalContext"
 import { useSettings } from "../../context/SettingsContext"
+import { useI18n } from "../../lib/i18n"
+import LanguageSelect from "../ui/LanguageSelect"
 
 const OnboardingModal: React.FC = () => {
   const { onClose } = useModal()
-  const { updateSettings } = useSettings()
+  const { settings, updateSettings } = useSettings()
+  const { t } = useI18n()
 
   const handleChoice = async (hideFolders: boolean) => {
     await updateSettings({
       hideFoldersFromSidebar: hideFolders,
-      hasSeenOnboarding: true
+      hasSeenOnboarding: true,
+      languagePreferenceSet: true
     })
     onClose()
-    toast.success("You can change the setting in Settings", {
+    toast.success(t("settingChanged"), {
       id: "onboarding-toast",
       duration: 4000
     })
@@ -35,14 +39,14 @@ const OnboardingModal: React.FC = () => {
           />
         </span>
         <h1 className="organizer-text-balance organizer-text-2xl organizer-font-semibold organizer-leading-8 organizer-tracking-[-0.01em] organizer-text-text-primary">
-          Welcome to Gemfolders
+          {t("welcome")}
         </h1>
         <p className="organizer-mt-1 organizer-text-pretty organizer-text-base organizer-font-normal organizer-leading-6 organizer-text-text-secondary">
-          Choose how you want to access your folders
+          {t("chooseAccess")}
         </p>
       </div>
 
-      <div className="organizer-grid organizer-grid-cols-2 organizer-gap-4 organizer-p-8 organizer-pt-4">
+      <div className="organizer-grid organizer-grid-cols-2 organizer-gap-4 organizer-px-8 organizer-pb-4">
         <button
           onClick={() => handleChoice(true)}
           className="organizer-group organizer-relative organizer-flex organizer-min-h-[210px] organizer-flex-col organizer-items-start organizer-rounded-md organizer-bg-bg-card organizer-p-5 organizer-text-left organizer-shadow-md organizer-outline organizer-outline-1 organizer-outline-transparent organizer-transition-[outline-color,transform] organizer-duration-200 hover:organizer-outline-border-default active:organizer-scale-[0.96]">
@@ -50,14 +54,13 @@ const OnboardingModal: React.FC = () => {
             <Blocks size={16} strokeWidth={2} />
           </span>
           <h3 className="organizer-mb-2 organizer-text-base organizer-font-semibold organizer-leading-6 organizer-text-text-primary">
-            Extension only
+            {t("extensionOnly")}
           </h3>
           <p className="organizer-mb-4 organizer-text-sm organizer-leading-5 organizer-text-text-secondary">
-            Keep Gemini's sidebar clean and access folders only through the
-            extension sidebar.
+            {t("extensionOnlyHelp")}
           </p>
           <span className="organizer-mt-auto organizer-inline-flex organizer-items-center organizer-rounded-full organizer-bg-bg-surface organizer-px-2.5 organizer-py-0.5 organizer-text-xs organizer-font-medium organizer-leading-4 organizer-text-text-primary">
-            Recommended
+            {t("recommended")}
           </span>
         </button>
 
@@ -68,13 +71,31 @@ const OnboardingModal: React.FC = () => {
             <Sidebar size={16} strokeWidth={2} />
           </span>
           <h3 className="organizer-mb-2 organizer-text-base organizer-font-semibold organizer-leading-6 organizer-text-text-primary">
-            Integrated mode
+            {t("integratedMode")}
           </h3>
           <p className="organizer-text-sm organizer-leading-5 organizer-text-text-secondary">
-            Use folders directly within Gemini's existing sidebar for a seamless
-            experience.
+            {t("integratedModeHelp")}
           </p>
         </button>
+      </div>
+
+      <div className="organizer-px-8 organizer-pb-8">
+        <div className="organizer-w-full organizer-rounded-xl organizer-bg-bg-background organizer-p-4 organizer-shadow-sm">
+          <label
+            htmlFor="gemfolders-onboarding-language"
+            className="organizer-mb-3 organizer-block organizer-text-pretty organizer-text-left organizer-text-sm organizer-font-medium organizer-text-text-primary"
+          >
+            {t("chooseLanguage")}
+          </label>
+          <LanguageSelect
+            id="gemfolders-onboarding-language"
+            value={settings.language || "en"}
+            onChange={(language) =>
+              updateSettings({ language, languagePreferenceSet: true })
+            }
+            className="organizer-w-full"
+          />
+        </div>
       </div>
     </div>
   )

@@ -33,6 +33,8 @@ module.exports = {
         },
         text: {
           primary: "var(--text-primary)",
+          folder: "var(--text-folder)",
+          "folder-hover": "var(--text-folder-hover)",
           secondary: "var(--text-secondary)",
           muted: "var(--text-muted)",
           placeholder: "var(--text-placeholder)"

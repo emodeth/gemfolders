@@ -8,10 +8,12 @@ import { useModal } from "../../context/ModalContext"
 import { useTierLimits } from "../../context/TierLimitsContext"
 import { Button } from "../ui/Button"
 import { Input } from "../ui/Input"
+import { useI18n } from "~lib/i18n"
 
 const CreateFolderModal: React.FC = () => {
   const { onClose, data } = useModal()
   const [folderName, setFolderName] = useState("")
+  const { t } = useI18n()
   const rect = data?.anchorRect
 
   useEffect(() => {
@@ -48,7 +50,7 @@ const CreateFolderModal: React.FC = () => {
       parentId: data?.parentId || null,
       index: 0
     })
-    toast.success(`Folder "${truncateText(folderName)}" created`)
+    toast.success(t("folderCreated", { name: truncateText(folderName) }))
     onClose()
   }
 
@@ -98,12 +100,12 @@ const CreateFolderModal: React.FC = () => {
         />
       )}
       <h3 className="organizer-text-text-primary organizer-font-medium organizer-mb-3 organizer-text-sm">
-        Enter folder name
+        {t("enterFolderName")}
       </h3>
       <form onSubmit={handleSubmit}>
         <Input
           type="text"
-          placeholder="New Folder"
+          placeholder={t("newFolder")}
           value={folderName}
           onChange={(e) => setFolderName(e.target.value)}
           variant="default"
@@ -114,7 +116,7 @@ const CreateFolderModal: React.FC = () => {
           type="submit"
           variant="surface"
           className="organizer-w-full organizer-h-10 organizer-rounded-full organizer-font-medium organizer-text-sm active:organizer-scale-[0.96] organizer-transition-[background-color,transform]">
-          Add Folder
+          {t("addFolder")}
         </Button>
       </form>
     </div>

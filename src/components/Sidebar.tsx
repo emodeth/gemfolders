@@ -18,6 +18,7 @@ import FolderContextMenu from "./FolderContextMenu";
 import ChatContextMenu from "./ChatContextMenu";
 import { useFolder } from "../context/FolderContext";
 import { useChat } from "../context/ChatContext";
+import { useI18n } from "../lib/i18n";
 
 type TabType = "folders" | "bookmarks" | "account" | "settings";
 
@@ -26,21 +27,21 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const ALL_TABS: { id: TabType; icon: React.ReactNode; label: string }[] = [
-  { id: "folders", icon: <Folders size={18} />, label: "Folders" },
-  { id: "bookmarks", icon: <Bookmark size={18} />, label: "Bookmarks" },
-  { id: "account", icon: <User size={18} />, label: "Account" },
-  { id: "settings", icon: <Settings size={18} />, label: "Settings" },
-];
-
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const { t } = useI18n();
+  const tabs: { id: TabType; icon: React.ReactNode; label: string }[] = [
+    { id: "folders", icon: <Folders size={18} />, label: t("folders") },
+    { id: "bookmarks", icon: <Bookmark size={18} />, label: t("bookmarks") },
+    { id: "account", icon: <User size={18} />, label: t("account") },
+    { id: "settings", icon: <Settings size={18} />, label: t("settings") },
+  ];
   const disabledTabs: string[] = [];
 
   const [activeTab, setActiveTab] = useState<TabType>("folders");
   const { contextMenu } = useFolder();
   const { chatContextMenu } = useChat();
 
-  const currentTabLabel = ALL_TABS.find((t) => t.id === activeTab)?.label || "Account";
+  const currentTabLabel = tabs.find((tab) => tab.id === activeTab)?.label || t("account");
 
   const renderTabContent = () => {
 
@@ -64,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         }`}
     >
       <div className="organizer-flex organizer-items-center  ">
-        <Tooltip text="Hide" position="bottom">
+        <Tooltip text={t("hide")} position="bottom">
           <button
             onClick={onClose}
             className="organizer-group organizer-rounded-lg organizer-text-text-primary hover:organizer-text-text-secondary organizer-p-2"
@@ -78,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
         <div className="organizer-flex organizer-items-center organizer-gap-2 organizer-mx-auto">
           <TabBar
-            tabs={ALL_TABS}
+            tabs={tabs}
             activeTab={activeTab}
             onTabChange={(tabId) => setActiveTab(tabId as TabType)}
             disabledTabs={disabledTabs}

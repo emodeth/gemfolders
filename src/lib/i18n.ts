@@ -1,0 +1,208 @@
+import { useCallback } from "react"
+
+import { useSettings } from "~context/SettingsContext"
+
+export type Language = "en" | "es" | "de" | "tr"
+
+export const LANGUAGE_OPTIONS: { value: Language; label: string; nativeLabel: string }[] = [
+  { value: "en", label: "English", nativeLabel: "English" },
+  { value: "es", label: "Spanish", nativeLabel: "Español" },
+  { value: "de", label: "German", nativeLabel: "Deutsch" },
+  { value: "tr", label: "Turkish", nativeLabel: "Türkçe" }
+]
+
+const en = {
+  folders: "Folders",
+  bookmarks: "Bookmarks",
+  account: "Account",
+  settings: "Settings",
+  hide: "Hide",
+  search: "Search...",
+  searchBookmarks: "Search bookmarks...",
+  createFolder: "Create folder",
+  removeBookmark: "Remove bookmark",
+  noBookmarks: "No bookmarks yet",
+  bookmarkHelp: "Bookmark chats to find them quickly",
+  noFolders: "No folders yet",
+  folderHelp: "Create a folder to get started",
+  noResults: "No results found",
+  tryDifferentSearch: "Try a different search term",
+  general: "General",
+  appearance: "Appearance",
+  data: "Data",
+  language: "Language",
+  openOnStartup: "Open on startup",
+  hideFoldersSidebar: "Hide folders from left sidebar",
+  hideAddToFolder: "Hide add to folder from chat list",
+  hideBookmark: "Hide bookmark from chat list",
+  sidebarButtonPosition: "Sidebar Button Position",
+  top: "Top",
+  bottom: "Bottom",
+  theme: "Theme",
+  light: "Light",
+  dark: "Dark",
+  gemini: "Gemini",
+  exportChats: "Export Chats",
+  exporting: "Exporting...",
+  exported: "Exported!",
+  openOrganizer: "Open Folder Organizer",
+  bookmark: "Bookmark",
+  addToFolder: "Add to folder",
+  rename: "Rename",
+  delete: "Delete",
+  addSubfolder: "Add subfolder",
+  addChat: "Add chat",
+  changeColor: "Change color",
+  connectGoogle: "Connect with Google",
+  signingIn: "Signing in...",
+  signInGoogle: "Sign in with Google",
+  logout: "Logout",
+  manageAccount: "Manage account",
+  upgrade: "Upgrade",
+  linkedAccounts: "Linked accounts",
+  loading: "Loading...",
+  free: "Free",
+  emailHelp: "If you are not receiving our emails, please whitelist {{email}} with your email provider, or try a different email (Gmail accounts are the most reliable).",
+  signInFailed: "Failed to sign in with Google",
+  signInSuccess: "Signed in successfully!",
+  unexpectedError: "An unexpected error occurred",
+  loggedOut: "Logged out successfully",
+  folderHidden: "Folders hidden. You can enable them in settings.",
+  hideFromSidebar: "Hide from sidebar",
+  showMore: "Show {{count}} more",
+  cancel: "Cancel",
+  save: "Save",
+  clear: "Clear",
+  newFolder: "New Folder",
+  addFolder: "Add Folder",
+  enterFolderName: "Enter folder name",
+  renameFolder: "Rename Folder",
+  renameChat: "Rename Chat",
+  enterChatName: "Enter chat name",
+  filterFolders: "Filter folders by name...",
+  filterChats: "Filter chats by title...",
+  untitledChat: "Untitled Chat",
+  item: "item",
+  items: "items",
+  loginRequired: "Login required",
+  folderName: "Folder Name", preview: "Preview:", folderColorUpdated: "Folder color updated", changeFolderColor: "Change folder color",
+  folderCreated: "Folder \"{{name}}\" created", subfolderCreated: "Subfolder \"{{name}}\" created", folderRenamed: "Folder renamed to \"{{name}}\"",
+  chatRenamed: "Chat renamed to \"{{name}}\"", removedFromFolder: "\"{{name}}\" removed from folder", deleted: "\"{{name}}\" deleted",
+  moveTo: "Move \"{{name}}\" to", movedTo: "Moved to \"{{name}}\"", noFoldersMatch: "No folders match your search.", noFoldersAvailable: "No folders available.",
+  loginMagic: "Login with Magic Links", magicHelp: "Enter your email to receive a Magic Link for secure login. If you don't have an account, one will be created automatically.",
+  sending: "Sending...", sendMagic: "Send Magic Link", magicSent: "Magic link sent! Check your email.", welcome: "Welcome to Gemfolders",
+  chooseAccess: "Choose how you want to access your folders", extensionOnly: "Extension only", extensionOnlyHelp: "Keep Gemini's sidebar clean and access folders only through the extension sidebar.",
+  recommended: "Recommended", integratedMode: "Integrated mode", integratedModeHelp: "Use folders directly within Gemini's existing sidebar for a seamless experience.",
+  settingChanged: "You can change this choice in Settings", chooseLanguage: "Which language would you like to use?"
+} as const
+
+type TranslationKey = keyof typeof en
+type Dictionary = Record<TranslationKey, string>
+
+const es: Dictionary = {
+  folders: "Carpetas", bookmarks: "Marcadores", account: "Cuenta", settings: "Configuración", hide: "Ocultar",
+  search: "Buscar...", searchBookmarks: "Buscar marcadores...", createFolder: "Crear carpeta", removeBookmark: "Quitar marcador",
+  noBookmarks: "Aún no hay marcadores", bookmarkHelp: "Marca chats para encontrarlos rápidamente", noFolders: "Aún no hay carpetas",
+  folderHelp: "Crea una carpeta para empezar", noResults: "No se encontraron resultados", tryDifferentSearch: "Prueba con otro término de búsqueda",
+  general: "General", appearance: "Apariencia", data: "Datos", language: "Idioma", openOnStartup: "Abrir al iniciar",
+  hideFoldersSidebar: "Ocultar carpetas de la barra lateral izquierda", hideAddToFolder: "Ocultar añadir a carpeta de la lista de chats",
+  hideBookmark: "Ocultar marcador de la lista de chats", sidebarButtonPosition: "Posición del botón lateral", top: "Arriba", bottom: "Abajo",
+  theme: "Tema", light: "Claro", dark: "Oscuro", gemini: "Gemini", exportChats: "Exportar chats", exporting: "Exportando...", exported: "¡Exportado!",
+  openOrganizer: "Abrir organizador de carpetas", bookmark: "Marcar", addToFolder: "Añadir a carpeta", rename: "Renombrar", delete: "Eliminar",
+  addSubfolder: "Añadir subcarpeta", addChat: "Añadir chat", changeColor: "Cambiar color", connectGoogle: "Conectar con Google",
+  signingIn: "Iniciando sesión...", signInGoogle: "Iniciar sesión con Google", logout: "Cerrar sesión", manageAccount: "Gestionar cuenta",
+  upgrade: "Mejorar plan", linkedAccounts: "Cuentas vinculadas", loading: "Cargando...", free: "Gratis",
+  emailHelp: "Si no recibes nuestros correos, añade {{email}} a tu lista segura o prueba otro correo (las cuentas de Gmail son las más fiables).",
+  signInFailed: "No se pudo iniciar sesión con Google", signInSuccess: "¡Sesión iniciada correctamente!", unexpectedError: "Ocurrió un error inesperado",
+  loggedOut: "Sesión cerrada correctamente", folderHidden: "Carpetas ocultas. Puedes activarlas en la configuración.", hideFromSidebar: "Ocultar de la barra lateral",
+  showMore: "Mostrar {{count}} más", cancel: "Cancelar", save: "Guardar", clear: "Limpiar", newFolder: "Nueva carpeta", addFolder: "Añadir carpeta",
+  enterFolderName: "Introduce el nombre de la carpeta", renameFolder: "Renombrar carpeta", renameChat: "Renombrar chat", enterChatName: "Introduce el nombre del chat",
+  filterFolders: "Filtrar carpetas por nombre...", filterChats: "Filtrar chats por título...", untitledChat: "Chat sin título", item: "elemento", items: "elementos",
+  loginRequired: "Inicio de sesión requerido", folderName: "Nombre de carpeta", preview: "Vista previa:", folderColorUpdated: "Color de carpeta actualizado", changeFolderColor: "Cambiar color de carpeta",
+  folderCreated: "Carpeta \"{{name}}\" creada", subfolderCreated: "Subcarpeta \"{{name}}\" creada", folderRenamed: "Carpeta renombrada a \"{{name}}\"", chatRenamed: "Chat renombrado a \"{{name}}\"",
+  removedFromFolder: "\"{{name}}\" eliminado de la carpeta", deleted: "\"{{name}}\" eliminado", moveTo: "Mover \"{{name}}\" a", movedTo: "Movido a \"{{name}}\"",
+  noFoldersMatch: "Ninguna carpeta coincide con tu búsqueda.", noFoldersAvailable: "No hay carpetas disponibles.", loginMagic: "Iniciar sesión con enlace mágico",
+  magicHelp: "Introduce tu correo para recibir un enlace mágico seguro. Si no tienes cuenta, se creará automáticamente.", sending: "Enviando...", sendMagic: "Enviar enlace mágico",
+  magicSent: "¡Enlace mágico enviado! Revisa tu correo.", welcome: "Te damos la bienvenida a Gemfolders", chooseAccess: "Elige cómo acceder a tus carpetas", extensionOnly: "Solo extensión",
+  extensionOnlyHelp: "Mantén limpia la barra lateral de Gemini y accede a las carpetas desde la extensión.", recommended: "Recomendado", integratedMode: "Modo integrado",
+  integratedModeHelp: "Usa las carpetas directamente en la barra lateral de Gemini.", settingChanged: "Puedes cambiar esta opción en Configuración", chooseLanguage: "¿Qué idioma quieres usar?"
+}
+
+const de: Dictionary = {
+  folders: "Ordner", bookmarks: "Lesezeichen", account: "Konto", settings: "Einstellungen", hide: "Ausblenden",
+  search: "Suchen...", searchBookmarks: "Lesezeichen suchen...", createFolder: "Ordner erstellen", removeBookmark: "Lesezeichen entfernen",
+  noBookmarks: "Noch keine Lesezeichen", bookmarkHelp: "Markiere Chats, um sie schnell wiederzufinden", noFolders: "Noch keine Ordner",
+  folderHelp: "Erstelle einen Ordner, um zu beginnen", noResults: "Keine Ergebnisse gefunden", tryDifferentSearch: "Versuche einen anderen Suchbegriff",
+  general: "Allgemein", appearance: "Darstellung", data: "Daten", language: "Sprache", openOnStartup: "Beim Start öffnen",
+  hideFoldersSidebar: "Ordner in der linken Seitenleiste ausblenden", hideAddToFolder: "'Zu Ordner hinzufügen' in der Chatliste ausblenden",
+  hideBookmark: "Lesezeichen in der Chatliste ausblenden", sidebarButtonPosition: "Position der Seitenleisten-Schaltfläche", top: "Oben", bottom: "Unten",
+  theme: "Design", light: "Hell", dark: "Dunkel", gemini: "Gemini", exportChats: "Chats exportieren", exporting: "Wird exportiert...", exported: "Exportiert!",
+  openOrganizer: "Ordnerverwaltung öffnen", bookmark: "Lesezeichen", addToFolder: "Zu Ordner hinzufügen", rename: "Umbenennen", delete: "Löschen",
+  addSubfolder: "Unterordner hinzufügen", addChat: "Chat hinzufügen", changeColor: "Farbe ändern", connectGoogle: "Mit Google verbinden",
+  signingIn: "Anmeldung läuft...", signInGoogle: "Mit Google anmelden", logout: "Abmelden", manageAccount: "Konto verwalten", upgrade: "Upgrade",
+  linkedAccounts: "Verknüpfte Konten", loading: "Wird geladen...", free: "Kostenlos",
+  emailHelp: "Wenn du unsere E-Mails nicht erhältst, setze {{email}} auf die Positivliste oder verwende eine andere Adresse (Gmail-Konten sind am zuverlässigsten).",
+  signInFailed: "Anmeldung mit Google fehlgeschlagen", signInSuccess: "Erfolgreich angemeldet!", unexpectedError: "Ein unerwarteter Fehler ist aufgetreten",
+  loggedOut: "Erfolgreich abgemeldet", folderHidden: "Ordner ausgeblendet. Du kannst sie in den Einstellungen aktivieren.", hideFromSidebar: "In Seitenleiste ausblenden",
+  showMore: "{{count}} weitere anzeigen", cancel: "Abbrechen", save: "Speichern", clear: "Leeren", newFolder: "Neuer Ordner", addFolder: "Ordner hinzufügen",
+  enterFolderName: "Ordnernamen eingeben", renameFolder: "Ordner umbenennen", renameChat: "Chat umbenennen", enterChatName: "Chatnamen eingeben",
+  filterFolders: "Ordner nach Namen filtern...", filterChats: "Chats nach Titel filtern...", untitledChat: "Unbenannter Chat", item: "Element", items: "Elemente",
+  loginRequired: "Anmeldung erforderlich", folderName: "Ordnername", preview: "Vorschau:", folderColorUpdated: "Ordnerfarbe aktualisiert", changeFolderColor: "Ordnerfarbe ändern",
+  folderCreated: "Ordner \"{{name}}\" erstellt", subfolderCreated: "Unterordner \"{{name}}\" erstellt", folderRenamed: "Ordner in \"{{name}}\" umbenannt", chatRenamed: "Chat in \"{{name}}\" umbenannt",
+  removedFromFolder: "\"{{name}}\" aus dem Ordner entfernt", deleted: "\"{{name}}\" gelöscht", moveTo: "\"{{name}}\" verschieben nach", movedTo: "Verschoben nach \"{{name}}\"",
+  noFoldersMatch: "Keine passenden Ordner gefunden.", noFoldersAvailable: "Keine Ordner verfügbar.", loginMagic: "Mit Magic Link anmelden",
+  magicHelp: "Gib deine E-Mail-Adresse ein, um einen sicheren Magic Link zu erhalten. Falls du noch kein Konto hast, wird eines erstellt.", sending: "Wird gesendet...", sendMagic: "Magic Link senden",
+  magicSent: "Magic Link gesendet! Prüfe deine E-Mails.", welcome: "Willkommen bei Gemfolders", chooseAccess: "Wähle, wie du auf deine Ordner zugreifen möchtest", extensionOnly: "Nur Erweiterung",
+  extensionOnlyHelp: "Halte die Gemini-Seitenleiste sauber und greife nur über die Erweiterung auf Ordner zu.", recommended: "Empfohlen", integratedMode: "Integrierter Modus",
+  integratedModeHelp: "Nutze Ordner direkt in der vorhandenen Gemini-Seitenleiste.", settingChanged: "Du kannst diese Auswahl in den Einstellungen ändern", chooseLanguage: "Welche Sprache möchtest du verwenden?"
+}
+
+const tr: Dictionary = {
+  folders: "Klasörler", bookmarks: "Yer imleri", account: "Hesap", settings: "Ayarlar", hide: "Gizle",
+  search: "Ara...", searchBookmarks: "Yer imlerinde ara...", createFolder: "Klasör oluştur", removeBookmark: "Yer imini kaldır",
+  noBookmarks: "Henüz yer imi yok", bookmarkHelp: "Hızlıca bulmak için sohbetleri yer imlerine ekleyin", noFolders: "Henüz klasör yok",
+  folderHelp: "Başlamak için bir klasör oluşturun", noResults: "Sonuç bulunamadı", tryDifferentSearch: "Farklı bir arama terimi deneyin",
+  general: "Genel", appearance: "Görünüm", data: "Veriler", language: "Dil", openOnStartup: "Başlangıçta aç",
+  hideFoldersSidebar: "Klasörleri sol kenar çubuğundan gizle", hideAddToFolder: "Sohbet listesinden klasöre eklemeyi gizle",
+  hideBookmark: "Sohbet listesinden yer imini gizle", sidebarButtonPosition: "Kenar Çubuğu Düğmesi Konumu", top: "Üst", bottom: "Alt",
+  theme: "Tema", light: "Açık", dark: "Koyu", gemini: "Gemini", exportChats: "Sohbetleri Dışa Aktar", exporting: "Dışa aktarılıyor...", exported: "Dışa aktarıldı!",
+  openOrganizer: "Klasör Düzenleyiciyi Aç", bookmark: "Yer imine ekle", addToFolder: "Klasöre ekle", rename: "Yeniden adlandır", delete: "Sil",
+  addSubfolder: "Alt klasör ekle", addChat: "Sohbet ekle", changeColor: "Rengi değiştir", connectGoogle: "Google ile bağlan",
+  signingIn: "Oturum açılıyor...", signInGoogle: "Google ile oturum aç", logout: "Oturumu kapat", manageAccount: "Hesabı yönet",
+  upgrade: "Yükselt", linkedAccounts: "Bağlı hesaplar", loading: "Yükleniyor...", free: "Ücretsiz",
+  emailHelp: "E-postalarımızı almıyorsanız {{email}} adresini güvenli listeye ekleyin veya farklı bir adres deneyin (Gmail hesapları en güvenilir olanlardır).",
+  signInFailed: "Google ile oturum açılamadı", signInSuccess: "Oturum başarıyla açıldı!", unexpectedError: "Beklenmeyen bir hata oluştu",
+  loggedOut: "Oturum başarıyla kapatıldı", folderHidden: "Klasörler gizlendi. Ayarlardan yeniden etkinleştirebilirsiniz.", hideFromSidebar: "Kenar çubuğundan gizle",
+  showMore: "{{count}} tane daha göster", cancel: "İptal", save: "Kaydet", clear: "Temizle", newFolder: "Yeni Klasör", addFolder: "Klasör Ekle",
+  enterFolderName: "Klasör adını girin", renameFolder: "Klasörü Yeniden Adlandır", renameChat: "Sohbeti Yeniden Adlandır", enterChatName: "Sohbet adını girin",
+  filterFolders: "Klasörleri ada göre filtrele...", filterChats: "Sohbetleri başlığa göre filtrele...", untitledChat: "Başlıksız Sohbet", item: "öğe", items: "öğe",
+  loginRequired: "Oturum açma gerekli", folderName: "Klasör Adı", preview: "Önizleme:", folderColorUpdated: "Klasör rengi güncellendi", changeFolderColor: "Klasör rengini değiştir",
+  folderCreated: "\"{{name}}\" klasörü oluşturuldu", subfolderCreated: "\"{{name}}\" alt klasörü oluşturuldu", folderRenamed: "Klasörün adı \"{{name}}\" olarak değiştirildi",
+  chatRenamed: "Sohbetin adı \"{{name}}\" olarak değiştirildi", removedFromFolder: "\"{{name}}\" klasörden kaldırıldı", deleted: "\"{{name}}\" silindi",
+  moveTo: "\"{{name}}\" şuraya taşınsın", movedTo: "\"{{name}}\" konumuna taşındı", noFoldersMatch: "Aramanızla eşleşen klasör yok.", noFoldersAvailable: "Kullanılabilir klasör yok.",
+  loginMagic: "Sihirli Bağlantı ile Oturum Aç", magicHelp: "Güvenli oturum açma bağlantısı almak için e-postanızı girin. Hesabınız yoksa otomatik olarak oluşturulur.",
+  sending: "Gönderiliyor...", sendMagic: "Sihirli Bağlantı Gönder", magicSent: "Sihirli bağlantı gönderildi! E-postanızı kontrol edin.", welcome: "Gemfolders'a Hoş Geldiniz",
+  chooseAccess: "Klasörlerinize nasıl erişmek istediğinizi seçin", extensionOnly: "Yalnızca uzantı", extensionOnlyHelp: "Gemini kenar çubuğunu sade tutun ve klasörlere yalnızca uzantıdan erişin.",
+  recommended: "Önerilen", integratedMode: "Entegre mod", integratedModeHelp: "Klasörleri doğrudan Gemini'nin kenar çubuğunda kullanın.", settingChanged: "Bu seçimi Ayarlar'dan değiştirebilirsiniz", chooseLanguage: "Hangi dili kullanmak istersiniz?"
+}
+
+const dictionaries: Record<Language, Dictionary> = { en, es, de, tr }
+
+export const translate = (language: Language, key: TranslationKey, variables?: Record<string, string | number>) => {
+  let value: string = dictionaries[language]?.[key] || en[key]
+  Object.entries(variables || {}).forEach(([name, replacement]) => {
+    value = value.replaceAll(`{{${name}}}`, String(replacement))
+  })
+  return value
+}
+
+export const useI18n = () => {
+  const { settings } = useSettings()
+  const language = settings.language || "en"
+  const t = useCallback(
+    (key: TranslationKey, variables?: Record<string, string | number>) => translate(language, key, variables),
+    [language]
+  )
+
+  return { language, t }
+}

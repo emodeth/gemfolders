@@ -16,6 +16,7 @@ import { ThemeWrapper } from "./ThemeWrapper"
 import Tooltip from "./Tooltip"
 import { Button } from "./ui/Button"
 import { Input } from "./ui/Input"
+import { useI18n } from "../lib/i18n"
 
 interface GeminiFolderWidgetProps {
   onOpenExtension?: () => void
@@ -92,6 +93,7 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({
   const { chatContextMenu } = useChat()
   const { onOpen } = useModal()
   const { updateSettings } = useSettings()
+  const { t } = useI18n()
   const portalContainerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
@@ -137,16 +139,16 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({
           <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-2 organizer-py-2 organizer-pl-[14px]">
             <div className="organizer-flex organizer-items-center organizer-gap-2 organizer-cursor-pointer">
               <span className="organizer-text-sm organizer-font-medium organizer-text-text-secondary">
-                Folders
+                {t("folders")}
               </span>
-              <Tooltip text="Hide from sidebar" position="bottom">
+              <Tooltip text={t("hideFromSidebar")} position="bottom">
                 <div
                   className="organizer-flex organizer-items-center organizer-justify-center"
                   onClick={(e) => {
                     e.stopPropagation()
                     updateSettings({ hideFoldersFromSidebar: true })
                     toast.success(
-                      "Folders hidden. You can enable them in settings.",
+                      t("folderHidden"),
                       {
                         id: "folders-hidden-toast",
                         duration: 4000
@@ -157,11 +159,11 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({
                 </div>
               </Tooltip>
             </div>
-            <Tooltip text="Create Folder" position="left">
+            <Tooltip text={t("createFolder")} position="left">
               <Button
                 variant="icon"
                 onClick={handleCreateFolder}
-                className="organizer-text-text-secondary hover:organizer-text-text-primary">
+                className="organizer-text-text-secondary hover:organizer-text-text-folder-hover">
                 <Plus size={16} />
               </Button>
             </Tooltip>
@@ -170,7 +172,7 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({
           <div className="organizer-px-2 organizer-pb-2 organizer-pl-[14px]">
             <Input
               type="text"
-              placeholder="Search..."
+              placeholder={t("search")}
               className="organizer-rounded-lg"
               variant="ghost"
               value={searchTerm}
@@ -185,7 +187,7 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({
                 type="button"
                 onClick={() => setShowAll(true)}
                 className="organizer-w-full organizer-text-xs hover:organizer-text-primary/70 organizer-cursor-pointer organizer-text-center organizer-mt-2 organizer-text-text-primary organizer-transition-colors organizer-bg-transparent organizer-border-none organizer-outline-none">
-                Show {folders.length - 3} more
+                {t("showMore", { count: folders.length - 3 })}
               </button>
             )}
           </div>

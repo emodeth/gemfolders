@@ -7,9 +7,9 @@ import { useTierLimits } from "~context/TierLimitsContext";
 import type { Folder as FolderType } from "~lib/storage";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
-import { isLightColor } from "~constants/colors";
 import { truncateText } from "~lib/utils";
 import Tooltip from "../Tooltip";
+import { useI18n } from "~lib/i18n";
 
 interface AddToFolderItemProps {
   folder: FolderType;
@@ -20,33 +20,32 @@ const AddToFolderItem: React.FC<AddToFolderItemProps> = ({
   folder,
   onSelect,
 }) => {
+  const { t } = useI18n();
   const bgColor = folder.color || "#4e8ff8";
   const itemCount = folder.children?.length || 0;
-  const textColor = isLightColor(bgColor) ? "#1f1f1f" : "#f9fafb";
 
   return (
     <div
-      className="organizer-flex organizer-items-center organizer-justify-between organizer-px-3 organizer-py-2 organizer-cursor-pointer organizer-rounded-md organizer-transition-all organizer-mb-1.5 hover:organizer-opacity-80 organizer-h-8"
+      className="organizer-group organizer-flex organizer-items-center organizer-justify-between organizer-px-3 organizer-py-2 organizer-cursor-pointer organizer-rounded-md organizer-transition-shadow organizer-mb-1.5 hover:organizer-shadow-md organizer-h-8"
       style={{ backgroundColor: bgColor }}
       onClick={() => onSelect(folder.id)}
     >
       <span
-        className="organizer-text-sm organizer-font-medium organizer-truncate"
-        style={{ color: textColor }}
+        className="organizer-text-sm organizer-font-medium organizer-truncate organizer-text-text-folder group-hover:organizer-text-text-folder-hover organizer-transition-colors"
       >
         {folder.name}
       </span>
       <span
-        className="organizer-text-xs organizer-opacity-80 organizer-font-semibold"
-        style={{ color: textColor }}
+        className="organizer-text-xs organizer-opacity-80 organizer-font-semibold organizer-text-text-folder group-hover:organizer-text-text-folder-hover organizer-transition-colors"
       >
-        {itemCount} {itemCount === 1 ? "item" : "items"}
+        {itemCount} {t(itemCount === 1 ? "item" : "items")}
       </span>
     </div>
   );
 };
 
 const AddToFolderModal: React.FC = () => {
+  const { t } = useI18n();
   const { onClose, data } = useModal();
   const { folders, onAddChatsToFolder, onCreate } = useFolder();
   const { canCreateFolder, showPaywall, showSignInPaywall, isLoggedIn } = useTierLimits();
@@ -83,7 +82,7 @@ const AddToFolderModal: React.FC = () => {
     try {
       await onAddChatsToFolder(folderId, [{
         id: chatId,
-        title: chatTitle || "Untitled Chat",
+        title: chatTitle || t("untitledChat"),
         url: chatUrl || `https://gemini.google.com/app/${chatId}`
       }]);
       const targetFolder = allFlatFolders.find(f => f.id === folderId);
@@ -133,7 +132,7 @@ const AddToFolderModal: React.FC = () => {
         <div className="organizer-flex organizer-items-center organizer-gap-2 organizer-overflow-hidden">
           <FolderPlus size={18} className="organizer-text-text-secondary organizer-flex-shrink-0" />
           <span className="organizer-text-[13px] organizer-font-medium organizer-text-text-primary organizer-truncate">
-            Add "{chatTitle || 'Untitled Chat'}" to
+            {t("addToFolder")}: "{chatTitle || t("untitledChat")}"
           </span>
         </div>
         <button
@@ -150,17 +149,17 @@ const AddToFolderModal: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Filter folders by name..."
+            placeholder={t("filterFolders")}
             variant="ghost"
             autoFocus={!showCreateForm}
           />
         </div>
         <div className="organizer-flex organizer-items-center organizer-justify-end organizer-mt-2">
-          <Tooltip text="Create folder" position="left">
+          <Tooltip text={t("createFolder")} position="left">
             <Button
               variant="icon"
               onClick={handleToggleCreateForm}
-              className="organizer-text-text-secondary hover:organizer-text-text-primary"
+              className="organizer-text-text-secondary hover:organizer-text-text-folder-hover"
             >
               <FolderPlus size={18} />
             </Button>
@@ -170,12 +169,12 @@ const AddToFolderModal: React.FC = () => {
         {showCreateForm && (
           <div className="organizer-mt-2 organizer-bg-bg-input organizer-rounded-lg organizer-p-4">
             <h3 className="organizer-text-text-primary organizer-font-medium organizer-mb-3 organizer-text-sm">
-              Enter folder name
+              {t("enterFolderName")}
             </h3>
             <form onSubmit={handleCreateSubmit}>
               <Input
                 type="text"
-                placeholder="New Folder"
+                placeholder={t("newFolder")}
                 value={folderName}
                 onChange={(e) => setFolderName(e.target.value)}
                 variant="secondary"
@@ -186,7 +185,7 @@ const AddToFolderModal: React.FC = () => {
                 type="submit"
                 className="organizer-w-full organizer-font-medium organizer-py-2 organizer-text-sm"
               >
-                Add Folder
+                {t("addFolder")}
               </Button>
             </form>
           </div>

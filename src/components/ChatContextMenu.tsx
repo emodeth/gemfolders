@@ -7,6 +7,7 @@ import { useBookmark } from "../context/BookmarkContext";
 import { useFolder } from "../context/FolderContext";
 import { useTierLimits } from "../context/TierLimitsContext";
 import { isChatInAnyFolder } from "../lib/storage";
+import { useI18n } from "../lib/i18n";
 
 const menuIconProps = { size: MENU_ICON_SIZE, strokeWidth: MENU_ICON_STROKE };
 
@@ -40,6 +41,7 @@ const styles = {
 };
 
 const ChatContextMenu: React.FC = () => {
+  const { t } = useI18n();
   const {
     chatContextMenu,
     closeChatContextMenu,
@@ -180,7 +182,7 @@ const ChatContextMenu: React.FC = () => {
             fill={bookmarked ? "currentColor" : "none"}
           />
         }
-        label={bookmarked ? "Remove Bookmark" : "Bookmark"}
+        label={bookmarked ? t("removeBookmark") : t("bookmark")}
         onClick={handleBookmarkClick}
       />
 
@@ -191,19 +193,19 @@ const ChatContextMenu: React.FC = () => {
             fill={inFolder ? "currentColor" : "none"}
           />
         }
-        label="Add to folder"
+        label={t("addToFolder")}
         onClick={handleChatMoveTo}
       />
 
       <ContextMenuItem
         icon={<Pencil {...menuIconProps} />}
-        label="Rename"
+        label={t("rename")}
         onClick={handleChatRename}
       />
 
       <ContextMenuItem
         icon={<Trash2 {...menuIconProps} />}
-        label="Delete"
+        label={t("delete")}
         isDanger
         onClick={handleChatDelete}
       />
