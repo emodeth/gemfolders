@@ -52,7 +52,8 @@ function MagicLinkLogin() {
       <button
         type="submit"
         disabled={loading}
-        className="organizer-w-full organizer-bg-surface organizer-text-sm organizer-text-text-primary organizer-font-medium organizer-py-2 organizer-rounded-lg organizer-flex organizer-items-center organizer-justify-center organizer-gap-2 hover:organizer-opacity-80 organizer-transition-colors organizer-border organizer-border-border-default"      >
+        className="organizer-w-full organizer-bg-bg-surface-hover organizer-text-sm organizer-text-text-primary organizer-font-medium organizer-py-2 organizer-rounded-md organizer-flex organizer-items-center organizer-justify-center organizer-gap-2 hover:organizer-opacity-90 organizer-transition-opacity organizer-cursor-pointer disabled:organizer-opacity-50 disabled:organizer-cursor-not-allowed"
+      >
         <span>{loading ? "Sending..." : "Send Magic Link"}</span>
         <Send size={14} className="organizer-text-primary" />
       </button>
