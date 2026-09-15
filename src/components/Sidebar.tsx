@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import Tooltip from "./Tooltip";
 import {
-  ArrowRightFromLineIcon,
+  PanelRightClose,
+  PanelRight,
   Bookmark,
   User,
   Settings,
@@ -61,7 +62,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className={`organizer-px-6 organizer-py-8 organizer-fixed organizer-top-0 organizer-right-0 organizer-h-full organizer-w-96 organizer-shadow-2xl organizer-transform organizer-transition-transform organizer-duration-300 organizer-ease-in-out organizer-z-[9999] organizer-flex organizer-flex-col ${
+      className={`organizer-px-6 organizer-py-8 organizer-fixed organizer-top-0 organizer-right-0 organizer-h-full organizer-w-96 organizer-transform organizer-transition-transform organizer-duration-300 organizer-ease-in-out organizer-z-[9999] organizer-flex organizer-flex-col ${
         effectiveTheme === "light"
           ? "organizer-bg-bg-surface"
           : "organizer-bg-bg-background"
@@ -72,9 +73,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         <Tooltip text="Hide" position="bottom">
           <button
             onClick={onClose}
-            className="organizer-rounded-lg organizer-text-text-primary hover:organizer-text-text-secondary organizer-transition-all organizer-p-2"
+            className="organizer-group organizer-rounded-lg organizer-text-text-primary hover:organizer-text-text-secondary organizer-p-2"
           >
-            <ArrowRightFromLineIcon size={18} />
+            <span className="organizer-relative organizer-block organizer-h-[18px] organizer-w-[18px]">
+              <PanelRight className="organizer-absolute organizer-inset-0 organizer-opacity-100 organizer-transition-opacity organizer-duration-100 group-hover:organizer-opacity-0" size={18} />
+              <PanelRightClose className="organizer-absolute organizer-inset-0 organizer-opacity-0 organizer-transition-opacity organizer-duration-100 group-hover:organizer-opacity-100" size={18} />
+            </span>
           </button>
         </Tooltip>
 
@@ -105,4 +109,3 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 };
 
 export default Sidebar;
-
