@@ -55,7 +55,7 @@ const Node = ({ node, style, dragHandle, dragWidth = 260 }: any) => {
       <>
         {renderIcon()}
         <div
-          className="organizer-flex-1 organizer-flex organizer-items-center organizer-justify-between organizer-h-full organizer-px-2 organizer-py-1 organizer-rounded-md organizer-overflow-hidden"
+          className="organizer-flex-1 organizer-flex organizer-items-center organizer-justify-between organizer-h-full organizer-px-2 organizer-py-1 organizer-rounded-md organizer-overflow-hidden organizer-text-text-folder hover:organizer-text-text-folder-hover organizer-transition-colors"
           style={{ backgroundColor: bgColor, color: textColor }}
         >
           <span className="organizer-truncate organizer-min-w-0">{node.data.name}</span>
@@ -98,7 +98,7 @@ const Node = ({ node, style, dragHandle, dragWidth = 260 }: any) => {
           opacity: 0.5
         })
       }}
-      className="organizer-text-sm organizer-font-semibold organizer-flex organizer-items-center organizer-h-8 organizer-mb-1 organizer-text-text-primary organizer-cursor-pointer hover:organizer-brightness-110 dark:hover:organizer-brightness-[85%]"
+      className="organizer-text-sm organizer-font-semibold organizer-flex organizer-items-center organizer-h-8 organizer-mb-1 organizer-text-text-primary organizer-cursor-pointer"
       ref={dragHandle}
     >
       <GripVertical className="organizer-mr-1 organizer-text-text-muted" size={14} />

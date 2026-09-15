@@ -4,21 +4,28 @@
 
 :root {
   /* Dark theme — matches Gemini surface tokens */
-  --bg-background: #131314;
-  --bg-surface: #282a2c;
-  --bg-surface-hover: #333537;
-  --bg-input: #282a2c;
+  --bg-background: #1f1f1f;
+  --bg-popover: #272727;
+  --bg-surface: #171717;
+  --bg-surface-hover: #272727;
+  --bg-card: #1e1f20;
+  --bg-input: #2a2a2c;
+  --bg-input-focus: #303030;
+  --bg-button-surface: #444746;
   --font-sans: "Google Sans", "Google Sans Text", -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
   --text-primary: #e3e3e3;
+  --text-folder: #e3e3e3;
+  --text-folder-hover: #e3e3e3;
   --text-secondary: #8e918f;
   --text-muted: #8e918f;
   --text-placeholder: #8e918f;
 
   --border-default: #3c4043;
 
-  --color-primary: #a8c7fa;
+  --color-primary: #2f6fdb;
+  --color-primary-hover: #3d7be5;
 
   --tooltip-bg: #303030;
   --tooltip-text: #f2f2f2;
@@ -27,20 +34,27 @@
 }
 
 [data-theme="light"] {
-  /* Light theme — matches Gemini surface tokens */
-  --bg-background: #f0f4f9;
-  --bg-surface: #ffffff;
-  --bg-surface-hover: #e1e3e1;
-  --bg-input: #ffffff;
+  /* Light theme */
+  --bg-background: #ffffff;
+  --bg-popover: #ffffff;
+  --bg-surface: #f2f0f0;
+  --bg-surface-hover: #ebebeb;
+  --bg-card: #ffffff;
+  --bg-input: #f2f0f0;
+  --bg-input-focus: #ebebeb;
+  --bg-button-surface: #f2f0f0;
 
   --text-primary: #1f1f1f;
+  --text-folder: #0000008c;
+  --text-folder-hover: #0000008c;
   --text-secondary: #444746;
   --text-muted: #444746;
   --text-placeholder: #70757a;
 
   --border-default: #e3e3e3;
 
-  --color-primary: #0b57d0;
+  --color-primary: #07f;
+  --color-primary-hover: #1883FE;
 
   --tooltip-bg: #303030;
   --tooltip-text: #f2f2f2;
@@ -63,7 +77,7 @@
     sans-serif;
 }
 
-plasmo-csui {
+:host(plasmo-csui) {
   position: fixed;
   top: 0;
   left: 0;
@@ -71,9 +85,14 @@ plasmo-csui {
   height: 100vh;
   pointer-events: none;
   z-index: 2147483647;
+  isolation: isolate;
 }
 
-plasmo-csui > * {
+.plasmo-csui-container {
+  pointer-events: none;
+}
+
+.plasmo-csui-container > [data-theme] > * {
   pointer-events: auto;
 }
 

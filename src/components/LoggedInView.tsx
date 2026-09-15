@@ -7,6 +7,7 @@ import toast from "react-hot-toast"
 import { useAuth } from "../context/AuthContext"
 import { useModal } from "../context/ModalContext"
 import { useSubscription } from "../context/SubscriptionContext"
+import { useI18n } from "../lib/i18n"
 
 interface LoggedInViewProps {
   user: any
@@ -16,17 +17,18 @@ const LoggedInView: React.FC<LoggedInViewProps> = ({ user }) => {
   const { onOpen } = useModal()
   const { logout } = useAuth()
   const { isPro, accessLevel, isLoading: isSubscriptionLoading } = useSubscription()
+  const { t } = useI18n()
 
   const handleLogout = async () => {
     await logout()
-    toast.success("Logged out successfully")
+    toast.success(t("loggedOut"))
   }
 
   const getAccessBadge = () => {
     if (isSubscriptionLoading) {
       return (
         <span className="organizer-bg-bg-surface-hover organizer-text-text-secondary organizer-text-xs organizer-px-2 organizer-py-1 organizer-rounded organizer-animate-pulse organizer-w-fit">
-          Loading...
+          {t("loading")}
         </span>
       )
     }
@@ -40,7 +42,7 @@ const LoggedInView: React.FC<LoggedInViewProps> = ({ user }) => {
     } else if (accessLevel === "free") {
       return (
         <span className="organizer-font-semibold organizer-bg-bg-surface-hover organizer-text-text-secondary organizer-text-xs organizer-px-2 organizer-py-1 organizer-rounded organizer-w-fit">
-          Free
+          {t("free")}
         </span>
       )
     }
@@ -66,7 +68,7 @@ const LoggedInView: React.FC<LoggedInViewProps> = ({ user }) => {
           <button
             onClick={handleLogout}
             className="organizer-bg-bg-surface-hover organizer-text-text-primary organizer-text-xs organizer-px-3 organizer-py-1.5 organizer-rounded-lg hover:organizer-opacity-80 organizer-transition-opacity">
-            Logout
+            {t("logout")}
           </button>
         </div>
 
@@ -74,22 +76,22 @@ const LoggedInView: React.FC<LoggedInViewProps> = ({ user }) => {
           <button
             onClick={handleManageAccount}
             className="organizer-w-full organizer-bg-bg-surface-hover organizer-text-text-primary organizer-text-sm organizer-p-4  organizer-py-3 organizer-font-semibold organizer-rounded-lg hover:organizer-opacity-80 organizer-transition-opacity">
-            Manage account
+            {t("manageAccount")}
           </button>
 
         )}
         {!isPro && (
           <button
             onClick={() => onOpen('paywall')}
-            className="organizer-w-full organizer-bg-primary organizer-text-white organizer-font-medium organizer-py-2 organizer-rounded-lg hover:organizer-opacity-90 organizer-transition-opacity">
-            Upgrade
+            className="organizer-w-full organizer-bg-primary organizer-text-white organizer-font-medium organizer-py-2 organizer-rounded-lg hover:organizer-bg-primary-hover organizer-transition-colors">
+            {t("upgrade")}
           </button>
         )}
       </div>
 
       <div>
         <h3 className="organizer-text-text-primary organizer-font-medium organizer-text-sm organizer-mb-3">
-          Linked accounts
+          {t("linkedAccounts")}
         </h3>
         <div className="organizer-space-y-3">
           {user.user.identities?.map((identity: any) => (

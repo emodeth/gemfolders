@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import Tooltip from "./Tooltip";
 import {
-  ArrowRightFromLineIcon,
+  PanelRightClose,
+  PanelRight,
   Bookmark,
   User,
   Settings,
@@ -17,7 +18,7 @@ import FolderContextMenu from "./FolderContextMenu";
 import ChatContextMenu from "./ChatContextMenu";
 import { useFolder } from "../context/FolderContext";
 import { useChat } from "../context/ChatContext";
-import { useTheme } from "../context/ThemeContext";
+import { useI18n } from "../lib/i18n";
 
 type TabType = "folders" | "bookmarks" | "account" | "settings";
 
@@ -26,22 +27,21 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const ALL_TABS: { id: TabType; icon: React.ReactNode; label: string }[] = [
-  { id: "folders", icon: <Folders size={18} />, label: "Folders" },
-  { id: "bookmarks", icon: <Bookmark size={18} />, label: "Bookmarks" },
-  { id: "account", icon: <User size={18} />, label: "Account" },
-  { id: "settings", icon: <Settings size={18} />, label: "Settings" },
-];
-
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const { t } = useI18n();
+  const tabs: { id: TabType; icon: React.ReactNode; label: string }[] = [
+    { id: "folders", icon: <Folders size={18} />, label: t("folders") },
+    { id: "bookmarks", icon: <Bookmark size={18} />, label: t("bookmarks") },
+    { id: "account", icon: <User size={18} />, label: t("account") },
+    { id: "settings", icon: <Settings size={18} />, label: t("settings") },
+  ];
   const disabledTabs: string[] = [];
 
   const [activeTab, setActiveTab] = useState<TabType>("folders");
   const { contextMenu } = useFolder();
   const { chatContextMenu } = useChat();
-  const { effectiveTheme } = useTheme();
 
-  const currentTabLabel = ALL_TABS.find((t) => t.id === activeTab)?.label || "Account";
+  const currentTabLabel = tabs.find((tab) => tab.id === activeTab)?.label || t("account");
 
   const renderTabContent = () => {
 
@@ -61,26 +61,25 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className={`organizer-px-6 organizer-py-8 organizer-fixed organizer-top-0 organizer-right-0 organizer-h-full organizer-w-96 organizer-shadow-2xl organizer-transform organizer-transition-transform organizer-duration-300 organizer-ease-in-out organizer-z-[9999] organizer-flex organizer-flex-col ${
-        effectiveTheme === "light"
-          ? "organizer-bg-bg-surface"
-          : "organizer-bg-bg-background"
-      } ${isOpen ? "organizer-translate-x-0" : "organizer-translate-x-full"
+      className={`organizer-px-6 organizer-py-8 organizer-fixed organizer-top-0 organizer-right-0 organizer-h-full organizer-w-96 organizer-transform organizer-transition-transform organizer-duration-300 organizer-ease-in-out organizer-z-[9999] organizer-flex organizer-flex-col organizer-bg-bg-background ${isOpen ? "organizer-translate-x-0" : "organizer-translate-x-full"
         }`}
     >
       <div className="organizer-flex organizer-items-center  ">
-        <Tooltip text="Hide" position="bottom">
+        <Tooltip text={t("hide")} position="bottom">
           <button
             onClick={onClose}
-            className="organizer-rounded-lg organizer-text-text-primary hover:organizer-text-text-secondary organizer-transition-all organizer-p-2"
+            className="organizer-group organizer-rounded-lg organizer-text-text-primary hover:organizer-text-text-secondary organizer-p-2"
           >
-            <ArrowRightFromLineIcon size={18} />
+            <span className="organizer-relative organizer-block organizer-h-[18px] organizer-w-[18px]">
+              <PanelRight className="organizer-absolute organizer-inset-0 organizer-opacity-100 organizer-transition-opacity organizer-duration-100 group-hover:organizer-opacity-0" size={18} />
+              <PanelRightClose className="organizer-absolute organizer-inset-0 organizer-opacity-0 organizer-transition-opacity organizer-duration-100 group-hover:organizer-opacity-100" size={18} />
+            </span>
           </button>
         </Tooltip>
 
         <div className="organizer-flex organizer-items-center organizer-gap-2 organizer-mx-auto">
           <TabBar
-            tabs={ALL_TABS}
+            tabs={tabs}
             activeTab={activeTab}
             onTabChange={(tabId) => setActiveTab(tabId as TabType)}
             disabledTabs={disabledTabs}
@@ -105,4 +104,3 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 };
 
 export default Sidebar;
-

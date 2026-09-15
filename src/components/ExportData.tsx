@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { Download, Loader2, Check } from "lucide-react";
 import { getCachedChats } from "~lib/geminiChats";
 import { getFolders, getBookmarks } from "~lib/storage";
+import { useI18n } from "~lib/i18n";
 
 type ExportStatus = "idle" | "exporting" | "done";
 
 const ExportData: React.FC = () => {
   const [status, setStatus] = useState<ExportStatus>("idle");
+  const { t } = useI18n();
 
   const handleExport = async () => {
     try {
@@ -48,7 +50,7 @@ const ExportData: React.FC = () => {
   };
 
   const Icon = status === "idle" ? Download : status === "exporting" ? Loader2 : Check;
-  const label = status === "idle" ? "Export Chats" : status === "exporting" ? "Exporting..." : "Exported!";
+  const label = status === "idle" ? t("exportChats") : status === "exporting" ? t("exporting") : t("exported");
 
   return (
     <button

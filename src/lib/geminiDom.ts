@@ -249,17 +249,19 @@ export const findConversationActionsContainer = (
   conversationElement: Element
 ): HTMLElement | null => {
   const row = getConversationRow(conversationElement) ?? conversationElement
-  const parentContainer = row.parentElement ?? row
 
   for (const selector of ACTIONS_CONTAINER_SELECTORS) {
-    const actions = parentContainer.querySelector(selector)
+    const actions = row.querySelector(selector)
     if (actions instanceof HTMLElement) {
       return actions
     }
   }
 
+  const parentContainer = row.parentElement
+  if (!parentContainer) return null
+
   for (const selector of ACTIONS_CONTAINER_SELECTORS) {
-    const actions = row.querySelector(selector)
+    const actions = parentContainer.querySelector(`:scope > ${selector}`)
     if (actions instanceof HTMLElement) {
       return actions
     }
@@ -413,6 +415,8 @@ export const isConversationMenuTrigger = (element: Element): boolean => {
 }
 
 const NOTEBOOK_SECTION_SELECTORS = [
+  '[data-test-id="notebooks-expandable-section"]',
+  'expandable-section[storagekey="notebooks"]',
   '[data-test-id="notebooks-section"]',
   '[data-test-id="notebooks-list"]',
   '[data-test-id="notebook-list"]',
@@ -422,6 +426,8 @@ const NOTEBOOK_SECTION_SELECTORS = [
 ] as const
 
 const RECENTS_SECTION_SELECTORS = [
+  '[data-test-id="chats-expandable-section"]',
+  'expandable-section[storagekey="chats"]',
   ".chat-history-list",
   '[data-test-id="conversation-list"]',
   '[data-test-id="recent-conversations"]',
@@ -429,8 +435,14 @@ const RECENTS_SECTION_SELECTORS = [
   "infinite-scroller.chat-history"
 ] as const
 
+const RECENTS_SECTION_WRAPPER_SELECTOR =
+  '[data-test-id="chats-expandable-section"], expandable-section[storagekey="chats"]'
+
 const NOTEBOOK_LINK_SELECTOR =
   'a[href*="/notebook"], a[href*="notebooklm"], [data-test-id*="notebook"]'
+
+const NOTEBOOK_ITEM_SELECTOR =
+  'gem-nav-list-item, [role="listitem"], li'
 
 const containsNotebookMarkers = (element: Element): boolean => {
   return element.querySelector(NOTEBOOK_LINK_SELECTOR) !== null
@@ -451,8 +463,12 @@ const findNotebookSectionAncestor = (
   sidebar: Element,
   maxDepth = 10
 ): Element | null => {
-  let current: Element | null = element
-  let bestMatch: Element | null = null
+  const notebookItem = element.closest(NOTEBOOK_ITEM_SELECTOR)
+  if (notebookItem && notebookItem !== sidebar && sidebar.contains(notebookItem)) {
+    return notebookItem
+  }
+
+  let current: Element | null = element.parentElement
 
   for (let depth = 0; depth < maxDepth && current && sidebar.contains(current); depth++) {
     if (
@@ -460,12 +476,15 @@ const findNotebookSectionAncestor = (
       containsNotebookMarkers(current) &&
       !containsRecentsMarkers(current)
     ) {
-      bestMatch = current
+      // The nearest matching ancestor is the notebook row/list. Walking all
+      // the way up can select the sidebar's main layout (including its footer),
+      // which puts the widget below the account section after route changes.
+      return current
     }
     current = current.parentElement
   }
 
-  return bestMatch
+  return null
 }
 
 export const findNotebooksSectionContainer = (): Element | null => {
@@ -509,7 +528,12 @@ export const findRecentsSectionContainer = (): Element | null => {
 
   for (const selector of RECENTS_SECTION_SELECTORS) {
     const section = sidebar.querySelector(selector)
-    if (section) return section
+    if (section) {
+      // `.chat-history-list` lives inside the expandable Recents content.
+      // Anchor to the outer section so the widget is its sibling, not its
+      // first list item.
+      return section.closest(RECENTS_SECTION_WRAPPER_SELECTOR) ?? section
+    }
   }
 
   return null
@@ -521,14 +545,16 @@ export type FolderWidgetInjectionPoint = {
 }
 
 export const findFolderWidgetInjectionPoint = (): FolderWidgetInjectionPoint | null => {
-  const notebooksSection = findNotebooksSectionContainer()
-  if (notebooksSection) {
-    return { element: notebooksSection, position: "after" }
-  }
-
+  // The beginning of recents is the most stable boundary: it naturally keeps
+  // folders after notebooks without depending on notebook wrapper depth.
   const recentsSection = findRecentsSectionContainer()
   if (recentsSection) {
     return { element: recentsSection, position: "before" }
+  }
+
+  const notebooksSection = findNotebooksSectionContainer()
+  if (notebooksSection) {
+    return { element: notebooksSection, position: "after" }
   }
 
   return null

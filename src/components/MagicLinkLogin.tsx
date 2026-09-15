@@ -4,10 +4,12 @@ import { Send } from "lucide-react"
 
 import { supabase } from "~lib/supabase"
 import { Input } from "~components/ui/Input"
+import { useI18n } from "~lib/i18n"
 
 function MagicLinkLogin() {
   const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(false)
+  const { t } = useI18n()
 
   const handleMagicLinkLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -17,7 +19,7 @@ function MagicLinkLogin() {
         email,
       })
       if (error) throw error
-      toast.success("Magic link sent! Check your email.")
+      toast.success(t("magicSent"))
     } catch (error) {
       toast.error(error.error_description || error.message)
     } finally {
@@ -28,15 +30,10 @@ function MagicLinkLogin() {
   return (
     <form onSubmit={handleMagicLinkLogin}>
       <h3 className="organizer-text-text-primary organizer-font-bold organizer-text-sm organizer-mb-2">
-        Login with Magic Links
+        {t("loginMagic")}
       </h3>
       <p className="organizer-text-text-secondary organizer-text-xs organizer-mb-3 organizer-leading-relaxed">
-        Enter your email to receive a{" "}
-        <span className="organizer-text-primary organizer-font-medium">
-          Magic Link
-        </span>{" "}
-        for secure login. If you don't have an account, this will automatically
-        create one for you.
+        {t("magicHelp")}
       </p>
 
       <div className="organizer-mb-3">
@@ -52,8 +49,9 @@ function MagicLinkLogin() {
       <button
         type="submit"
         disabled={loading}
-        className="organizer-w-full organizer-bg-surface organizer-text-sm organizer-text-text-primary organizer-font-medium organizer-py-2 organizer-rounded-lg organizer-flex organizer-items-center organizer-justify-center organizer-gap-2 hover:organizer-opacity-80 organizer-transition-colors organizer-border organizer-border-border-default"      >
-        <span>{loading ? "Sending..." : "Send Magic Link"}</span>
+        className="organizer-w-full organizer-bg-bg-surface-hover organizer-text-sm organizer-text-text-primary organizer-font-medium organizer-py-2 organizer-rounded-md organizer-flex organizer-items-center organizer-justify-center organizer-gap-2 hover:organizer-opacity-90 organizer-transition-opacity organizer-cursor-pointer disabled:organizer-opacity-50 disabled:organizer-cursor-not-allowed"
+      >
+        <span>{loading ? t("sending") : t("sendMagic")}</span>
         <Send size={14} className="organizer-text-primary" />
       </button>
     </form>

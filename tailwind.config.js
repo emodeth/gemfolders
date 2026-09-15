@@ -22,19 +22,30 @@ module.exports = {
       colors: {
         bg: {
           background: "var(--bg-background)",
+          popover: "var(--bg-popover)",
           surface: "var(--bg-surface)",
           "surface-hover": "var(--bg-surface-hover)",
-          input: "var(--bg-input)"
+          card: "var(--bg-card)",
+          input: "var(--bg-input)",
+          "input-focus": "var(--bg-input-focus)",
+          "button-surface": "var(--bg-button-surface)",
+          "switch-off": "var(--bg-switch-off)"
         },
         text: {
           primary: "var(--text-primary)",
+          folder: "var(--text-folder)",
+          "folder-hover": "var(--text-folder-hover)",
           secondary: "var(--text-secondary)",
-          muted: "var(--text-muted)"
+          muted: "var(--text-muted)",
+          placeholder: "var(--text-placeholder)"
         },
         border: {
           default: "var(--border-default)"
         },
-        primary: "var(--color-primary)",
+        primary: {
+          DEFAULT: "var(--color-primary)",
+          hover: "var(--color-primary-hover)"
+        },
         tooltip: {
           bg: "var(--tooltip-bg)",
           text: "var(--tooltip-text)"

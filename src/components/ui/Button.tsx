@@ -10,6 +10,8 @@ const buttonVariants = cva(
       variant: {
         default:
           "organizer-px-3 organizer-py-1.5 organizer-rounded-md organizer-text-text-primary organizer-bg-bg-surface-hover hover:organizer-opacity-90 organizer-text-text-primary organizer-cursor-pointer",
+        surface:
+          "organizer-px-3 organizer-py-1.5 organizer-rounded-md organizer-bg-bg-button-surface organizer-text-text-primary hover:organizer-bg-bg-surface-hover organizer-cursor-pointer",
         cancel:
           "organizer-px-3 organizer-py-1.5 organizer-rounded-md organizer-text-text-primary hover:organizer-text-text-primary hover:organizer-bg-bg-surface-hover organizer-cursor-pointer",
         destructive:

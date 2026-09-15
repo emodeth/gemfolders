@@ -1,6 +1,6 @@
 import React from "react";
-import type { Folder as FolderType } from "~lib/storage";
 import { isLightColor } from "~constants/colors";
+import type { Folder as FolderType } from "~lib/storage";
 
 export interface MoveChatModalItemProps {
   folder: FolderType;
@@ -13,22 +13,22 @@ const MoveChatModalItem: React.FC<MoveChatModalItemProps> = ({
 }) => {
   const bgColor = folder.color || "#4e8ff8";
   const itemCount = folder.children?.length || 0;
-  const textColor = isLightColor(bgColor) ? "#1f1f1f" : "#f9fafb";
+  const textColor = isLightColor(bgColor) ? "#1f1f1f" : "#fff";
 
   return (
     <div
-      className="organizer-flex organizer-items-center organizer-justify-between organizer-px-3 organizer-py-2 organizer-cursor-pointer organizer-rounded-md organizer-transition-all organizer-mb-1.5 hover:organizer-opacity-80 organizer-h-8"
+      className="organizer-group organizer-flex organizer-items-center organizer-justify-between organizer-px-3 organizer-py-2 organizer-cursor-pointer organizer-rounded-md organizer-transition-shadow organizer-mb-1.5 hover:organizer-shadow-md organizer-h-8"
       style={{ backgroundColor: bgColor }}
       onClick={() => onSelect(folder.id)}
     >
       <span
-        className="organizer-text-sm organizer-font-medium organizer-truncate"
+        className="organizer-text-sm organizer-font-medium organizer-truncate organizer-text-text-folder group-hover:organizer-text-text-folder-hover organizer-transition-colors"
         style={{ color: textColor }}
       >
         {folder.name}
       </span>
       <span
-        className="organizer-text-xs organizer-opacity-80 organizer-font-semibold"
+        className="organizer-text-xs organizer-opacity-80 organizer-font-semibold organizer-text-text-folder group-hover:organizer-text-text-folder-hover organizer-transition-colors"
         style={{ color: textColor }}
       >
         {itemCount} {itemCount === 1 ? "item" : "items"}
@@ -38,4 +38,3 @@ const MoveChatModalItem: React.FC<MoveChatModalItemProps> = ({
 };
 
 export default MoveChatModalItem;
-

@@ -230,6 +230,7 @@ const setMenuItemLucideIcon = (button: HTMLElement, svgHtml: string) => {
   icon.style.width = "20px"
   icon.style.height = "20px"
   icon.style.fontSize = "20px"
+  icon.style.color = "inherit"
   icon.innerHTML = svgHtml
   icon.setAttribute("aria-hidden", "true")
 }

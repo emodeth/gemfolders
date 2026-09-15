@@ -8,10 +8,12 @@ import { useModal } from "../../context/ModalContext"
 import { useTierLimits } from "../../context/TierLimitsContext"
 import { Button } from "../ui/Button"
 import { Input } from "../ui/Input"
+import { useI18n } from "~lib/i18n"
 
 const CreateFolderModal: React.FC = () => {
   const { onClose, data } = useModal()
   const [folderName, setFolderName] = useState("")
+  const { t } = useI18n()
   const rect = data?.anchorRect
 
   useEffect(() => {
@@ -48,7 +50,7 @@ const CreateFolderModal: React.FC = () => {
       parentId: data?.parentId || null,
       index: 0
     })
-    toast.success(`Folder "${truncateText(folderName)}" created`)
+    toast.success(t("folderCreated", { name: truncateText(folderName) }))
     onClose()
   }
 
@@ -80,10 +82,10 @@ const CreateFolderModal: React.FC = () => {
     <div
       style={style}
       onClick={(e) => e.stopPropagation()}
-      className="organizer-w-[215px] organizer-bg-bg-input organizer-rounded-lg organizer-p-4 organizer-relative modal-animate-fade">
+      className="organizer-w-[215px] organizer-bg-bg-popover organizer-rounded-lg organizer-p-4 organizer-relative organizer-shadow-lg modal-animate-fade">
       {rect && (
         <div
-          className="organizer-absolute organizer-w-3 organizer-h-3 organizer-bg-bg-input organizer-transform organizer-rotate-45"
+          className="organizer-absolute organizer-w-3 organizer-h-3 organizer-bg-bg-popover organizer-transform organizer-rotate-45"
           style={
             placement === "right-start"
               ? {
@@ -98,22 +100,23 @@ const CreateFolderModal: React.FC = () => {
         />
       )}
       <h3 className="organizer-text-text-primary organizer-font-medium organizer-mb-3 organizer-text-sm">
-        Enter folder name
+        {t("enterFolderName")}
       </h3>
       <form onSubmit={handleSubmit}>
         <Input
           type="text"
-          placeholder="New Folder"
+          placeholder={t("newFolder")}
           value={folderName}
           onChange={(e) => setFolderName(e.target.value)}
-          variant="secondary"
+          variant="default"
           className="organizer-mb-3 organizer-rounded-lg"
           autoFocus
         />
         <Button
           type="submit"
-          className="organizer-w-full organizer-font-medium organizer-py-2 organizer-text-sm">
-          Add Folder
+          variant="surface"
+          className="organizer-w-full organizer-h-10 organizer-rounded-full organizer-font-medium organizer-text-sm active:organizer-scale-[0.96] organizer-transition-[background-color,transform]">
+          {t("addFolder")}
         </Button>
       </form>
     </div>

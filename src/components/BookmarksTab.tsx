@@ -3,10 +3,12 @@ import { Input } from "./ui/Input";
 import { useBookmark } from "../context/BookmarkContext";
 import BookmarkItem from "./BookmarkItem";
 import EmptyBookmarks from "./EmptyBookmarks";
+import { useI18n } from "~lib/i18n";
 
 const BookmarksTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { bookmarks, isLoading, removeBookmark } = useBookmark();
+  const { t } = useI18n();
 
   const filteredBookmarks = bookmarks.filter((bookmark) =>
     bookmark.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -45,7 +47,7 @@ const BookmarksTab: React.FC = () => {
         ))}
       </div>
     ) : (
-      <EmptyBookmarks message="No results found" description="Try a different search term" />
+      <EmptyBookmarks message={t("noResults")} description={t("tryDifferentSearch")} />
     );
   };
 
@@ -54,7 +56,7 @@ const BookmarksTab: React.FC = () => {
       <div className="organizer-relative organizer-mb-4">
         <Input
           type="text"
-          placeholder="Search bookmarks..."
+          placeholder={t("searchBookmarks")}
           variant="ghost"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

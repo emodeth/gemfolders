@@ -4,22 +4,24 @@ import { X, MessageSquareText } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { Button } from "../ui/Button";
 import { truncateText } from "~lib/utils";
+import { useI18n } from "~lib/i18n";
 
 const DeleteChatModal: React.FC = () => {
   const { onClose, data } = useModal();
   const { chatName = "Chat", onDelete } = data || {};
+  const { t } = useI18n();
 
   const handleDelete = () => {
     if (onDelete) {
       onDelete();
     }
-    toast.success(`"${truncateText(chatName)}" removed from folder`);
+    toast.success(t("removedFromFolder", { name: truncateText(chatName) }));
     onClose();
   };
 
   return (
     <div
-      className="organizer-w-[520px] organizer-bg-bg-surface organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden"
+      className="organizer-w-[520px] organizer-bg-bg-background organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-p-5 organizer-pb-0">
@@ -28,7 +30,7 @@ const DeleteChatModal: React.FC = () => {
             <MessageSquareText size={20} />
           </div>
           <div className="organizer-text-[16px] organizer-font-medium organizer-text-text-primary organizer-truncate">
-            Delete {chatName}
+            {t("delete")} {chatName}
           </div>
         </div>
         <button
@@ -41,10 +43,10 @@ const DeleteChatModal: React.FC = () => {
 
       <div className="organizer-p-5 organizer-pt-6 organizer-flex organizer-justify-end organizer-gap-3">
         <Button variant="cancel" onClick={onClose}>
-          Cancel
+          {t("cancel")}
         </Button>
         <Button variant="default" onClick={handleDelete}>
-          Delete
+          {t("delete")}
         </Button>
       </div>
     </div>

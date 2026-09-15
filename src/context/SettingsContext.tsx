@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useEffect, useState } from "react"
+import React, { createContext, useContext, useEffect, useRef, useState } from "react"
 import type { ReactNode } from "react"
 import { getSettings, saveSettings, type Settings, DEFAULT_SETTINGS } from "~lib/settings"
 
@@ -16,11 +16,13 @@ export const SettingsProvider: React.FC<{ children: ReactNode; initialSettings?:
   initialSettings
 }) => {
   const [settings, setSettings] = useState<Settings>(initialSettings || DEFAULT_SETTINGS)
+  const settingsRef = useRef(settings)
   const [isLoading, setIsLoading] = useState(!initialSettings)
 
   useEffect(() => {
     if (!initialSettings) {
       getSettings().then((loadedSettings) => {
+        settingsRef.current = loadedSettings
         setSettings(loadedSettings)
         setIsLoading(false)
       })
@@ -30,7 +32,9 @@ export const SettingsProvider: React.FC<{ children: ReactNode; initialSettings?:
       if (areaName === "local" && changes["gemfolders-organizer-settings"]) {
         const newValue = changes["gemfolders-organizer-settings"].newValue
         if (newValue) {
-          setSettings(newValue)
+          const updatedSettings = { ...DEFAULT_SETTINGS, ...newValue }
+          settingsRef.current = updatedSettings
+          setSettings(updatedSettings)
         }
       }
     }
@@ -43,7 +47,8 @@ export const SettingsProvider: React.FC<{ children: ReactNode; initialSettings?:
   }, [])
 
   const updateSettings = async (newSettings: Partial<Settings>) => {
-    const updated = { ...settings, ...newSettings }
+    const updated = { ...settingsRef.current, ...newSettings }
+    settingsRef.current = updated
     setSettings(updated)
     await saveSettings(updated)
   }

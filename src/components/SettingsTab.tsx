@@ -7,44 +7,47 @@ import { Switch } from "./ui/Switch";
 import SettingsSectionHeader from "./SettingsSectionHeader";
 import Tooltip from "./Tooltip";
 import ExportData from "./ExportData";
+import { useI18n } from "~lib/i18n";
+import LanguageSelect from "./ui/LanguageSelect";
 
 const SettingsTab: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const { settings, updateSettings } = useSettings();
+  const { t } = useI18n();
 
   const options = [
-    { value: "light", label: "Light", icon: Sun },
-    { value: "dark", label: "Dark", icon: Moon },
-    { value: "gemini", label: "Gemini", icon: Sparkles },
+    { value: "light", label: t("light"), icon: Sun },
+    { value: "dark", label: t("dark"), icon: Moon },
+    { value: "gemini", label: t("gemini"), icon: Sparkles },
   ] as const;
 
 
 
   return (
     <div className="organizer-flex organizer-flex-col organizer-p-4 organizer-gap-4">
-      <SettingsSectionHeader>General</SettingsSectionHeader>
+      <SettingsSectionHeader>{t("general")}</SettingsSectionHeader>
 
       <div className="organizer-flex organizer-flex-col organizer-gap-5">
         {[
           {
-            label: "Open on startup",
+            label: t("openOnStartup"),
             checked: settings.openOnStartup,
             onChange: (checked: boolean) => updateSettings({ openOnStartup: checked })
           },
           {
-            label: "Hide folders from left sidebar",
+            label: t("hideFoldersSidebar"),
             checked: settings.hideFoldersFromSidebar,
             onChange: (checked: boolean) =>
               updateSettings({ hideFoldersFromSidebar: checked })
           },
           {
-            label: "Hide add to folder from chat menu",
+            label: t("hideAddToFolder"),
             checked: settings.hideAddToFolderFromSidebar,
             onChange: (checked: boolean) =>
               updateSettings({ hideAddToFolderFromSidebar: checked })
           },
           {
-            label: "Hide bookmark from chat menu",
+            label: t("hideBookmark"),
             checked: settings.hideBookmarksFromSidebar,
             onChange: (checked: boolean) =>
               updateSettings({ hideBookmarksFromSidebar: checked })
@@ -65,12 +68,12 @@ const SettingsTab: React.FC = () => {
         ))}
       </div>
 
-      <SettingsSectionHeader>Appearance</SettingsSectionHeader>
+      <SettingsSectionHeader>{t("appearance")}</SettingsSectionHeader>
 
       <div className="organizer-flex organizer-flex-col organizer-gap-4">
         <div className="organizer-flex organizer-items-center organizer-justify-between">
           <span className="organizer-text-sm organizer-font-medium organizer-text-text-primary">
-            Sidebar Button Position
+            {t("sidebarButtonPosition")}
           </span>
           <div className="organizer-flex organizer-gap-2">
             {(["top", "bottom"] as const).map((position) => {
@@ -82,12 +85,11 @@ const SettingsTab: React.FC = () => {
                   className={cn(
                     "organizer-px-3 organizer-py-1 organizer-text-xs organizer-font-medium organizer-rounded-full organizer-transition-all",
                     isSelected
-                      ? "organizer-bg-primary organizer-text-white"
+                      ? "organizer-bg-primary organizer-text-white hover:organizer-bg-primary-hover"
                       : "organizer-bg-bg-surface organizer-text-text-secondary hover:organizer-text-text-primary"
                   )}
-                  style={isSelected ? { backgroundColor: "var(--color-primary)" } : {}}
                 >
-                  {position.charAt(0).toUpperCase() + position.slice(1)}
+                  {t(position)}
                 </button>
               );
             })}
@@ -96,7 +98,7 @@ const SettingsTab: React.FC = () => {
 
         <div className="organizer-flex organizer-items-center organizer-justify-between">
           <span className="organizer-text-sm organizer-font-medium organizer-text-text-primary">
-            Theme
+            {t("theme")}
           </span>
           <div className="organizer-flex organizer-bg-bg-input organizer-rounded-lg organizer-p-1">
             {options.map((option) => {
@@ -122,7 +124,23 @@ const SettingsTab: React.FC = () => {
         </div>
       </div>
 
-      <SettingsSectionHeader>Data</SettingsSectionHeader>
+      <div className="organizer-flex organizer-items-center organizer-justify-between organizer-gap-4">
+        <label
+          htmlFor="gemfolders-language"
+          className="organizer-text-sm organizer-font-medium organizer-text-text-primary"
+        >
+          {t("language")}
+        </label>
+        <LanguageSelect
+          id="gemfolders-language"
+          value={settings.language || "en"}
+          onChange={(language) =>
+            updateSettings({ language, languagePreferenceSet: true })
+          }
+        />
+      </div>
+
+      <SettingsSectionHeader>{t("data")}</SettingsSectionHeader>
 
       <div className="organizer-flex organizer-flex-col organizer-gap-4">
         <ExportData />

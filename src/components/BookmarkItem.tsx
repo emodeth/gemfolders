@@ -2,6 +2,7 @@ import React from "react";
 import { Bookmark, MessageSquareText } from "lucide-react";
 import type { BookmarkedChat } from "../lib/storage";
 import Tooltip from "./Tooltip";
+import { useI18n } from "~lib/i18n";
 
 interface BookmarkItemProps {
   bookmark: BookmarkedChat;
@@ -9,6 +10,7 @@ interface BookmarkItemProps {
 }
 
 const BookmarkItem: React.FC<BookmarkItemProps> = ({ bookmark, onRemove }) => {
+  const { t } = useI18n();
   return (
     <a
       href={bookmark.url}
@@ -21,7 +23,7 @@ const BookmarkItem: React.FC<BookmarkItemProps> = ({ bookmark, onRemove }) => {
       <span className="organizer-text-text-primary organizer-text-sm organizer-truncate organizer-flex-1 organizer-font-semibold">
         {bookmark.title}
       </span>
-      <Tooltip text="Remove bookmark" position="left">
+      <Tooltip text={t("removeBookmark")} position="left">
         <button
           onClick={(e) => onRemove(e, bookmark.id)}
           className="organizer-flex-shrink-0 organizer-p-1 organizer-rounded hover:organizer-bg-bg-surface-hover organizer-text-text-primary organizer-transition-colors"

@@ -10,6 +10,7 @@ import ContextMenuItem from "./ContextMenuItem";
 import { MENU_ICON_SIZE, MENU_ICON_STROKE } from "../lib/lucideMenuIcons";
 import { useFolder } from "../context/FolderContext";
 import { useModal } from "../context/ModalContext";
+import { useI18n } from "../lib/i18n";
 
 const menuIconProps = { size: MENU_ICON_SIZE, strokeWidth: MENU_ICON_STROKE };
 
@@ -18,9 +19,9 @@ const styles = {
     position: "fixed" as const,
     zIndex: 100000,
     minWidth: 180,
-    backgroundColor: "var(--bg-surface)",
+    backgroundColor: "var(--bg-background)",
     border: "none",
-    borderRadius: 16,
+    borderRadius: 10,
     boxShadow: "0 1px 3px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08)",
     padding: 8,
     display: "flex",
@@ -43,6 +44,7 @@ const styles = {
 };
 
 const FolderContextMenu: React.FC = () => {
+  const { t } = useI18n();
   const {
     contextMenu,
     closeContextMenu,
@@ -172,31 +174,31 @@ const FolderContextMenu: React.FC = () => {
 
       <ContextMenuItem
         icon={<FolderPlus {...menuIconProps} />}
-        label="Add subfolder"
+        label={t("addSubfolder")}
         onClickWithRect={handleAddSubfolder}
       />
 
       <ContextMenuItem
         icon={<MessageSquarePlus {...menuIconProps} />}
-        label="Add chat"
+        label={t("addChat")}
         onClick={handleAddChat}
       />
 
       <ContextMenuItem
         icon={<Palette {...menuIconProps} />}
-        label="Change color"
+        label={t("changeColor")}
         onClick={handleChangeColor}
       />
 
       <ContextMenuItem
         icon={<Pencil {...menuIconProps} />}
-        label="Rename"
+        label={t("rename")}
         onClick={handleRename}
       />
 
       <ContextMenuItem
         icon={<Trash2 {...menuIconProps} />}
-        label="Delete"
+        label={t("delete")}
         isDanger
         onClick={handleDelete}
       />

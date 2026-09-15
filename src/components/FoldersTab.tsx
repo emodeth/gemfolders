@@ -5,10 +5,12 @@ import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import FolderTree from "./FolderTree";
 import Tooltip from "./Tooltip";
+import { useI18n } from "~lib/i18n";
 
 const FoldersTab: React.FC = () => {
   const { onOpen, onClose, isOpen, type } = useModal();
   const [searchTerm, setSearchTerm] = React.useState("");
+  const { t } = useI18n();
 
   const handleCreateFolder = (e: React.MouseEvent) => {
     if (isOpen && type === 'createFolder') {
@@ -34,7 +36,7 @@ const FoldersTab: React.FC = () => {
       <div className="organizer-relative organizer-mb-2">
         <Input
           type="text"
-          placeholder="Search..."
+          placeholder={t("search")}
           className="organizer-rounded-lg"
           variant="ghost"
           value={searchTerm}
@@ -43,11 +45,11 @@ const FoldersTab: React.FC = () => {
       </div>
 
       <div className="organizer-flex organizer-items-center organizer-justify-end organizer-mb-4">
-        <Tooltip text="Create folder" position="left" >
+        <Tooltip text={t("createFolder")} position="left" >
           <Button
             variant="icon"
             onClick={handleCreateFolder}
-            className="organizer-text-text-secondary hover:organizer-text-text-primary"
+            className="organizer-text-text-secondary hover:organizer-text-text-folder-hover"
           >
             <FolderPlus size={18} />
           </Button>

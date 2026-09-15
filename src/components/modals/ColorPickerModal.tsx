@@ -3,10 +3,12 @@ import toast from "react-hot-toast";
 import { X } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { Button } from "../ui/Button";
-import { PRESET_COLORS, isLightColor } from "../../constants/colors";
+import { isLightColor, PRESET_COLORS } from "../../constants/colors";
+import { useI18n } from "~lib/i18n";
 
 const ColorPickerModal: React.FC = () => {
   const { onClose, data } = useModal();
+  const { t } = useI18n();
   const { folderId, folderName, currentColor = "#1976d2", itemCount = 0, onChangeColor } = data || {};
 
   const [selectedColor, setSelectedColor] = useState(currentColor);
@@ -20,17 +22,17 @@ const ColorPickerModal: React.FC = () => {
     if (onChangeColor && folderId) {
       await onChangeColor(folderId, selectedColor);
     }
-    toast.success("Folder color updated");
+    toast.success(t("folderColorUpdated"));
     onClose();
   };
 
   return (
     <div
-      className="organizer-w-[520px] organizer-bg-bg-surface organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden"
+      className="organizer-w-[520px] organizer-bg-bg-background organizer-rounded-lg organizer-shadow-2xl organizer-overflow-hidden"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="organizer-flex organizer-items-center organizer-justify-between organizer-p-5 organizer-pb-2">
-        <div className="organizer-text-lg organizer-font-medium organizer-text-text-primary">Change folder color</div>
+        <div className="organizer-text-lg organizer-font-medium organizer-text-text-primary">{t("changeFolderColor")}</div>
         <button
           className="organizer-text-text-primary hover:organizer-text-text-primary organizer-transition-colors"
           onClick={onClose}
@@ -41,18 +43,18 @@ const ColorPickerModal: React.FC = () => {
 
       <div className="organizer-px-5 organizer-pb-4">
         <div className="organizer-mb-4">
-          <span className="organizer-block organizer-text-sm organizer-font-medium organizer-text-text-primary organizer-mb-1">Preview:</span>
+          <span className="organizer-block organizer-text-sm organizer-font-medium organizer-text-text-primary organizer-mb-1">{t("preview")}</span>
           <div
-            className="organizer-w-full organizer-h-8 organizer-p-2 organizer-rounded organizer-flex organizer-items-center organizer-justify-between"
+            className="organizer-w-full organizer-h-8 organizer-p-2 organizer-rounded organizer-flex organizer-items-center organizer-justify-between organizer-text-text-folder"
             style={{
               backgroundColor: selectedColor,
               color: isLightColor(selectedColor) ? "#1f1f1f" : "#fff"
             }}
           >
-            <div className="organizer-font-medium organizer-text-sm">{folderName || "Folder Name"}</div>
+            <div className="organizer-font-medium organizer-text-sm">{folderName || t("folderName")}</div>
             {itemCount ? (
               <span className="organizer-text-xs organizer-font-semibold organizer-opacity-90">
-                {itemCount} {itemCount === 1 ? "item" : "items"}
+                {itemCount} {t(itemCount === 1 ? "item" : "items")}
               </span>
             ) : null}
           </div>
@@ -67,7 +69,7 @@ const ColorPickerModal: React.FC = () => {
                 <button
                   key={color}
                   className={`organizer-w-10 organizer-h-6 organizer-rounded-sm organizer-transition-all ${selectedColor === color
-                    ? "organizer-ring-2 organizer-ring-white organizer-ring-offset-1 organizer-ring-offset-bg-surface"
+                    ? "organizer-ring-2 organizer-ring-white organizer-ring-offset-1 organizer-ring-offset-bg-background"
                     : "hover:organizer-opacity-80"
                     }`}
                   style={{ backgroundColor: color }}
@@ -83,10 +85,10 @@ const ColorPickerModal: React.FC = () => {
 
       <div className="organizer-p-5 organizer-pt-2 organizer-flex organizer-justify-end organizer-gap-3">
         <Button variant="cancel" onClick={onClose}>
-          Cancel
+          {t("cancel")}
         </Button>
         <Button onClick={handleSave}>
-          Save
+          {t("save")}
         </Button>
       </div>
     </div>
@@ -94,4 +96,3 @@ const ColorPickerModal: React.FC = () => {
 };
 
 export default ColorPickerModal;
-

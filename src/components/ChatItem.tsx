@@ -39,8 +39,8 @@ const ChatItem: React.FC<ChatItemProps> = ({ chat, isSelected, onToggle }) => {
           )}
         </div>
       </div>
-      <div className="organizer-flex-1 organizer-gap-2 organizer-flex organizer-flex-col ">
-        <div className="organizer-text-sm organizer-text-text-primary organizer-font-medium">
+      <div className="organizer-flex-1 organizer-min-w-0 organizer-gap-2 organizer-flex organizer-flex-col">
+        <div className="organizer-text-sm organizer-text-text-primary organizer-font-medium organizer-break-words">
           {chat.title}
         </div>
         {chat.date && (

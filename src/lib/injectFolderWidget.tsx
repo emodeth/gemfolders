@@ -25,8 +25,9 @@ const WIDGET_STYLES_ID = "gemfolders-organizer-folder-styles";
 
 let widgetRoot: Root | null = null;
 let containerObserver: ResizeObserver | null = null;
-let repositionTimeout: ReturnType<typeof setTimeout> | null = null;
-let isRepositioning = false;
+let widgetObserver: MutationObserver | null = null;
+let widgetSyncFrame: number | null = null;
+let isSetup = false;
 
 const getProcessedStyles = (() => {
   let processed: string | null = null;
@@ -115,6 +116,26 @@ const insertAtInjectionPoint = (
   injectionPoint.element.parentNode?.insertBefore(container, nextSibling);
 };
 
+const observeWidgetParent = (container: HTMLElement) => {
+  containerObserver?.disconnect();
+  containerObserver = null;
+
+  const parent = container.parentElement;
+  if (!parent) return;
+
+  const updateCollapsedState = (width: number) => {
+    container.classList.toggle("collapsed", width < 150);
+  };
+
+  updateCollapsedState(parent.getBoundingClientRect().width);
+  containerObserver = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      updateCollapsedState(entry.contentRect.width);
+    }
+  });
+  containerObserver.observe(parent);
+};
+
 const isCorrectlyPositioned = (
   container: HTMLElement,
   injectionPoint: FolderWidgetInjectionPoint
@@ -127,33 +148,10 @@ const isCorrectlyPositioned = (
 };
 
 const findInjectionPoint = (): FolderWidgetInjectionPoint | null => {
-  const notebooksAnchor = findFolderWidgetInjectionPoint();
-  if (notebooksAnchor) {
-    return notebooksAnchor;
-  }
-
-  const gemsChip = document.querySelector('[data-test-id="gems-chip"]');
-  if (gemsChip) {
-    const gemsContainer =
-      gemsChip.closest('.gem-manager-section') ||
-      gemsChip.closest('a')?.parentElement?.parentElement ||
-      gemsChip.parentElement?.parentElement?.parentElement ||
-      gemsChip.parentElement?.parentElement;
-
-    if (gemsContainer) {
-      return { element: gemsContainer, position: "after" };
-    }
-  }
-
-  const sideNavContent = document.querySelector('[role="navigation"]') || document.querySelector('side-navigation') || document.querySelector('nav');
-  if (sideNavContent) {
-    const gemsListContainer = sideNavContent.querySelector('.gems-list-container');
-    if (gemsListContainer) {
-      return { element: gemsListContainer, position: "after" };
-    }
-  }
-
-  return null;
+  // Wait for a definitive notebooks/recents boundary. The old Gems fallbacks
+  // can exist while Gemini is still constructing the sidebar and point at a
+  // transient wrapper near the logo.
+  return findFolderWidgetInjectionPoint();
 };
 
 
@@ -253,6 +251,7 @@ export const injectFolderWidget = (): boolean => {
   if (existingWidget) {
     if (!isCorrectlyPositioned(existingWidget, injectionPoint)) {
       insertAtInjectionPoint(existingWidget, injectionPoint);
+      observeWidgetParent(existingWidget);
     }
     return true;
   }
@@ -279,55 +278,26 @@ export const injectFolderWidget = (): boolean => {
   }
 
   insertAtInjectionPoint(container, injectionPoint);
-
-  if (containerObserver) {
-    containerObserver.disconnect();
-  }
-
-  if (container.parentElement) {
-    containerObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.contentRect.width < 150) {
-          container.classList.add("collapsed");
-        } else {
-          container.classList.remove("collapsed");
-        }
-      }
-    });
-    containerObserver.observe(container.parentElement);
-  }
+  observeWidgetParent(container);
 
   renderWidget(container);
   return true;
 };
 
-const scheduleWidgetReposition = (
+const repositionWidget = (
   existingWidget: HTMLDivElement,
   injectionPoint: FolderWidgetInjectionPoint
 ) => {
-  if (isRepositioning || isCorrectlyPositioned(existingWidget, injectionPoint)) {
-    return;
-  }
+  if (isCorrectlyPositioned(existingWidget, injectionPoint)) return;
 
-  if (repositionTimeout) {
-    clearTimeout(repositionTimeout);
-  }
-
-  repositionTimeout = setTimeout(() => {
-    if (isRepositioning || isCorrectlyPositioned(existingWidget, injectionPoint)) {
-      return;
-    }
-
-    isRepositioning = true;
-    try {
-      insertAtInjectionPoint(existingWidget, injectionPoint);
-    } finally {
-      isRepositioning = false;
-    }
-  }, 250);
+  insertAtInjectionPoint(existingWidget, injectionPoint);
+  observeWidgetParent(existingWidget);
 };
 
 export const setupFolderWidgetInjection = () => {
+  if (isSetup) return;
+  isSetup = true;
+
   getSettings().then((s) => {
     cachedSettings = s;
     applySettings(s);
@@ -335,31 +305,34 @@ export const setupFolderWidgetInjection = () => {
 
   injectFolderWidget();
 
-  const observer = new MutationObserver((mutations) => {
+  const syncWidget = () => {
+    widgetSyncFrame = null;
+
     const injectionPoint = findInjectionPoint();
     if (!injectionPoint) return;
 
-    const existingWidget = document.getElementById(WIDGET_CONTAINER_ID) as HTMLDivElement | null;
+    const existingWidget = document.getElementById(
+      WIDGET_CONTAINER_ID
+    ) as HTMLDivElement | null;
     if (existingWidget) {
-      scheduleWidgetReposition(existingWidget, injectionPoint);
+      repositionWidget(existingWidget, injectionPoint);
       return;
     }
 
-    for (const mutation of mutations) {
-      if (mutation.addedNodes.length) {
-        injectFolderWidget();
-        break;
-      }
-    }
-  });
+    injectFolderWidget();
+  };
 
-  const sidebar =
-    document.querySelector('[data-test-id="side-nav"]') ||
-    document.querySelector('[role="navigation"]') ||
-    document.querySelector("side-navigation") ||
-    document.querySelector("nav");
+  const scheduleWidgetSync = () => {
+    if (widgetSyncFrame !== null) return;
+    widgetSyncFrame = requestAnimationFrame(syncWidget);
+  };
 
-  observer.observe(sidebar ?? document.body, {
+  widgetObserver = new MutationObserver(scheduleWidgetSync);
+
+  // Gemini swaps the entire side navigation during transitions such as
+  // Spark -> Chat. Observing the original sidebar leaves the observer attached
+  // to a detached node, so watch the stable document body instead.
+  widgetObserver.observe(document.body, {
     childList: true,
     subtree: true
   });
@@ -378,6 +351,14 @@ export const setupFolderWidgetInjection = () => {
 
 
 export const removeFolderWidget = () => {
+  widgetObserver?.disconnect();
+  widgetObserver = null;
+
+  if (widgetSyncFrame !== null) {
+    cancelAnimationFrame(widgetSyncFrame);
+    widgetSyncFrame = null;
+  }
+
   const container = document.getElementById(WIDGET_CONTAINER_ID);
   if (container) {
     if (widgetRoot) {
@@ -401,4 +382,6 @@ export const removeFolderWidget = () => {
 
   const separator = document.querySelector(".gemfolders-folder-separator");
   separator?.remove();
+
+  isSetup = false;
 };

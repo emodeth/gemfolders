@@ -1,5 +1,6 @@
 import React from "react";
 import Tooltip from "./Tooltip";
+import { useI18n } from "~lib/i18n";
 
 interface TabItem {
   id: string;
@@ -20,6 +21,7 @@ const TabButton: React.FC<TabButtonProps> = ({
   onClick,
   disabled = false,
 }) => {
+  const { t } = useI18n();
   const handleClick = () => {
     if (!disabled) {
       onClick();
@@ -27,7 +29,7 @@ const TabButton: React.FC<TabButtonProps> = ({
   };
 
   return (
-    <Tooltip text={disabled ? `${tab.label} (Login required)` : tab.label} position="bottom">
+    <Tooltip text={disabled ? `${tab.label} (${t("loginRequired")})` : tab.label} position="bottom">
       <button
         data-tab-button
         onClick={handleClick}
