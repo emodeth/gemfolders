@@ -80,10 +80,10 @@ const CreateFolderModal: React.FC = () => {
     <div
       style={style}
       onClick={(e) => e.stopPropagation()}
-      className="organizer-w-[215px] organizer-bg-bg-input organizer-rounded-lg organizer-p-4 organizer-relative modal-animate-fade">
+      className="organizer-w-[215px] organizer-bg-bg-surface-hover organizer-rounded-lg organizer-p-4 organizer-relative modal-animate-fade">
       {rect && (
         <div
-          className="organizer-absolute organizer-w-3 organizer-h-3 organizer-bg-bg-input organizer-transform organizer-rotate-45"
+          className="organizer-absolute organizer-w-3 organizer-h-3 organizer-bg-bg-surface-hover organizer-transform organizer-rotate-45"
           style={
             placement === "right-start"
               ? {
@@ -107,11 +107,12 @@ const CreateFolderModal: React.FC = () => {
           value={folderName}
           onChange={(e) => setFolderName(e.target.value)}
           variant="secondary"
-          className="organizer-mb-3 organizer-rounded-lg"
+          className="organizer-mb-3 organizer-rounded-lg organizer-bg-bg-surface"
           autoFocus
         />
         <Button
           type="submit"
+          variant="surface"
           className="organizer-w-full organizer-font-medium organizer-py-2 organizer-text-sm">
           Add Folder
         </Button>

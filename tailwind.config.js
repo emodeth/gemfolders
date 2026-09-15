@@ -25,12 +25,14 @@ module.exports = {
           surface: "var(--bg-surface)",
           "surface-hover": "var(--bg-surface-hover)",
           card: "var(--bg-card)",
-          input: "var(--bg-input)"
+          input: "var(--bg-input)",
+          "input-focus": "var(--bg-input-focus)"
         },
         text: {
           primary: "var(--text-primary)",
           secondary: "var(--text-secondary)",
-          muted: "var(--text-muted)"
+          muted: "var(--text-muted)",
+          placeholder: "var(--text-placeholder)"
         },
         border: {
           default: "var(--border-default)"

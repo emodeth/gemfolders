@@ -11,7 +11,7 @@ const SidebarButton: React.FC<SidebarButtonProps> = ({ onClick }) => {
     <Tooltip text="Open Folder Organizer" position="left">
       <button
         onClick={onClick}
-        className="organizer-relative organizer-flex organizer-items-center organizer-justify-center organizer-w-10 organizer-h-10 organizer-rounded-full organizer-bg-transparent organizer-border-2 organizer-border-primary organizer-cursor-pointer organizer-transition-all organizer-duration-200 organizer-ease-in-out hover:organizer-bg-bg-surface-hover [&_svg]:organizer-text-text-primary [&_svg]:organizer-transition-colors [&_svg]:organizer-duration-200 hover:[&_svg]:organizer-text-text-primary"
+        className="organizer-relative organizer-flex organizer-items-center organizer-justify-center organizer-w-10 organizer-h-10 organizer-rounded-full organizer-bg-transparent organizer-border-2 organizer-border-primary organizer-cursor-pointer organizer-transition-colors organizer-duration-200 organizer-ease-in-out hover:organizer-bg-bg-surface-hover [&_svg]:organizer-text-text-primary [&_svg]:organizer-transition-colors [&_svg]:organizer-duration-200 hover:[&_svg]:organizer-text-text-primary"
       >
         <PanelRight size={18} />
       </button>
