@@ -4,6 +4,7 @@ import { X, FolderPlus } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { useFolder } from "~context/FolderContext";
 import { useTierLimits } from "~context/TierLimitsContext";
+import { isLightColor } from "~constants/colors";
 import type { Folder as FolderType } from "~lib/storage";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
@@ -23,6 +24,7 @@ const AddToFolderItem: React.FC<AddToFolderItemProps> = ({
   const { t } = useI18n();
   const bgColor = folder.color || "#4e8ff8";
   const itemCount = folder.children?.length || 0;
+  const textColor = isLightColor(bgColor) ? "#1f1f1f" : "#fff";
 
   return (
     <div
@@ -32,11 +34,13 @@ const AddToFolderItem: React.FC<AddToFolderItemProps> = ({
     >
       <span
         className="organizer-text-sm organizer-font-medium organizer-truncate organizer-text-text-folder group-hover:organizer-text-text-folder-hover organizer-transition-colors"
+        style={{ color: textColor }}
       >
         {folder.name}
       </span>
       <span
         className="organizer-text-xs organizer-opacity-80 organizer-font-semibold organizer-text-text-folder group-hover:organizer-text-text-folder-hover organizer-transition-colors"
+        style={{ color: textColor }}
       >
         {itemCount} {t(itemCount === 1 ? "item" : "items")}
       </span>

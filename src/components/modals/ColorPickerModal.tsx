@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { X } from "lucide-react";
 import { useModal } from "~context/ModalContext";
 import { Button } from "../ui/Button";
-import { PRESET_COLORS } from "../../constants/colors";
+import { isLightColor, PRESET_COLORS } from "../../constants/colors";
 import { useI18n } from "~lib/i18n";
 
 const ColorPickerModal: React.FC = () => {
@@ -47,7 +47,8 @@ const ColorPickerModal: React.FC = () => {
           <div
             className="organizer-w-full organizer-h-8 organizer-p-2 organizer-rounded organizer-flex organizer-items-center organizer-justify-between organizer-text-text-folder"
             style={{
-              backgroundColor: selectedColor
+              backgroundColor: selectedColor,
+              color: isLightColor(selectedColor) ? "#1f1f1f" : "#fff"
             }}
           >
             <div className="organizer-font-medium organizer-text-sm">{folderName || t("folderName")}</div>

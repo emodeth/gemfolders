@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { ChevronDown, ChevronRight, Folder, GripVertical, MessageSquareText } from "lucide-react";
+import { isLightColor } from "../constants/colors";
 import { useFolder } from "../context/FolderContext";
 import { useChat } from "../context/ChatContext";
 
@@ -38,6 +39,7 @@ const Node = ({ node, style, dragHandle, dragWidth = 260 }: any) => {
 
   function renderFolder() {
     const bgColor = node.data.color || "#4e8ff8";
+    const textColor = isLightColor(bgColor) ? "#1f1f1f" : "#fff";
     const hasChildren = node.data.children?.length > 0;
 
     const renderIcon = () => {
@@ -54,7 +56,7 @@ const Node = ({ node, style, dragHandle, dragWidth = 260 }: any) => {
         {renderIcon()}
         <div
           className="organizer-flex-1 organizer-flex organizer-items-center organizer-justify-between organizer-h-full organizer-px-2 organizer-py-1 organizer-rounded-md organizer-overflow-hidden organizer-text-text-folder hover:organizer-text-text-folder-hover organizer-transition-colors"
-          style={{ backgroundColor: bgColor }}
+          style={{ backgroundColor: bgColor, color: textColor }}
         >
           <span className="organizer-truncate organizer-min-w-0">{node.data.name}</span>
           {hasChildren ? (

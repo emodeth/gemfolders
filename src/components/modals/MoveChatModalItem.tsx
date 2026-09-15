@@ -1,4 +1,5 @@
 import React from "react";
+import { isLightColor } from "~constants/colors";
 import type { Folder as FolderType } from "~lib/storage";
 
 export interface MoveChatModalItemProps {
@@ -12,6 +13,7 @@ const MoveChatModalItem: React.FC<MoveChatModalItemProps> = ({
 }) => {
   const bgColor = folder.color || "#4e8ff8";
   const itemCount = folder.children?.length || 0;
+  const textColor = isLightColor(bgColor) ? "#1f1f1f" : "#fff";
 
   return (
     <div
@@ -21,11 +23,13 @@ const MoveChatModalItem: React.FC<MoveChatModalItemProps> = ({
     >
       <span
         className="organizer-text-sm organizer-font-medium organizer-truncate organizer-text-text-folder group-hover:organizer-text-text-folder-hover organizer-transition-colors"
+        style={{ color: textColor }}
       >
         {folder.name}
       </span>
       <span
         className="organizer-text-xs organizer-opacity-80 organizer-font-semibold organizer-text-text-folder group-hover:organizer-text-text-folder-hover organizer-transition-colors"
+        style={{ color: textColor }}
       >
         {itemCount} {itemCount === 1 ? "item" : "items"}
       </span>
