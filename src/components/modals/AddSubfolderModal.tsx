@@ -98,7 +98,7 @@ const AddSubfolderModal: React.FC = () => {
     <div
       ref={modalRef}
       style={style}
-      className="organizer-w-[215px] organizer-bg-bg-surface organizer-rounded-md organizer-p-4 organizer-shadow-lg modal-animate-fade"
+      className="organizer-w-[215px] organizer-bg-bg-background organizer-rounded-md organizer-p-4 organizer-shadow-lg modal-animate-fade"
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}>
       <form onSubmit={handleSubmit}>
