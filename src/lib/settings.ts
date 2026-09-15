@@ -14,7 +14,7 @@ export const DEFAULT_SETTINGS: Settings = {
   hideBookmarksFromSidebar: false,
   hideFoldersFromSidebar: false,
   hideAddToFolderFromSidebar: false,
-  sidebarButtonPosition: "top",
+  sidebarButtonPosition: "bottom",
   hasSeenOnboarding: false
 }
 
