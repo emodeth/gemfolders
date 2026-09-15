@@ -1,8 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  --bg-background: #f0f4f9;
-  --bg-surface: #ffffff;
+  --bg-background: #ffffff;
+  --bg-surface: #f2f0f0;
   --text-primary: #1f1f1f;
   --text-secondary: #444746;
   --color-primary: #07f;
@@ -50,7 +50,7 @@ body {
   width: 56px;
   height: 56px;
   margin: 0 auto 1.25rem;
-  background: #e9eef6;
+  background: var(--bg-surface);
   border-radius: 50%;
   display: flex;
   align-items: center;

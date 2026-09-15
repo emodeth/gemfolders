@@ -106,14 +106,14 @@ const CreateFolderModal: React.FC = () => {
           placeholder="New Folder"
           value={folderName}
           onChange={(e) => setFolderName(e.target.value)}
-          variant="secondary"
+          variant="default"
           className="organizer-mb-3 organizer-rounded-lg"
           autoFocus
         />
         <Button
           type="submit"
           variant="surface"
-          className="organizer-w-full organizer-h-10 organizer-rounded-full organizer-font-medium organizer-text-sm active:organizer-scale-[0.96] organizer-transition-[filter,transform]">
+          className="organizer-w-full organizer-h-10 organizer-rounded-full organizer-font-medium organizer-text-sm active:organizer-scale-[0.96] organizer-transition-[background-color,transform]">
           Add Folder
         </Button>
       </form>

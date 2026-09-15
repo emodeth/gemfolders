@@ -32,15 +32,15 @@
 }
 
 [data-theme="light"] {
-  /* Light theme — matches Gemini surface tokens */
-  --bg-background: #f0f4f9;
+  /* Light theme */
+  --bg-background: #ffffff;
   --bg-popover: #ffffff;
-  --bg-surface: #ffffff;
-  --bg-surface-hover: #e1e3e1;
-  --bg-card: #f0f4f9;
-  --bg-input: #ffffff;
-  --bg-input-focus: var(--bg-background);
-  --bg-button-surface: #dfe1e1;
+  --bg-surface: #f2f0f0;
+  --bg-surface-hover: #ebebeb;
+  --bg-card: #ffffff;
+  --bg-input: #f2f0f0;
+  --bg-input-focus: #ebebeb;
+  --bg-button-surface: #f2f0f0;
 
   --text-primary: #1f1f1f;
   --text-secondary: #444746;
