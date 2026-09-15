@@ -1,4 +1,4 @@
-export const MENU_ICON_SIZE = 18
+export const MENU_ICON_SIZE = 16
 export const MENU_ICON_STROKE = 1.25
 
 const createLucideSvg = (

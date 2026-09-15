@@ -35,14 +35,14 @@ const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
         display: "flex",
         alignItems: "center",
         width: "100%",
-        padding: "10px 16px",
-        fontSize: 14,
+        padding: "8px 10px",
+        fontSize: 13,
         fontWeight: 400,
         fontFamily: "inherit",
-        lineHeight: "20px",
+        lineHeight: "18px",
         color: isHovered && isDanger ? "#fff" : "var(--text-primary)",
         cursor: "pointer",
-        borderRadius: 8,
+        borderRadius: 6,
         border: "none",
         transition: "background-color 0.15s ease",
         userSelect: "none",
@@ -59,12 +59,12 @@ const ContextMenuItem: React.FC<ContextMenuItemProps> = ({
     >
       <span
         style={{
-          marginRight: 12,
+          marginRight: 8,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          width: 20,
-          height: 20,
+          width: 16,
+          height: 16,
           flexShrink: 0,
         }}
       >

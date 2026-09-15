@@ -15,9 +15,9 @@ const styles = {
     position: "fixed" as const,
     zIndex: 100000,
     minWidth: 180,
-    backgroundColor: "var(--bg-surface)",
+    backgroundColor: "var(--bg-background)",
     border: "none",
-    borderRadius: 16,
+    borderRadius: 10,
     boxShadow: "0 1px 3px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08)",
     padding: 8,
     display: "flex",
@@ -212,4 +212,3 @@ const ChatContextMenu: React.FC = () => {
 };
 
 export default ChatContextMenu;
-
