@@ -82,10 +82,9 @@ const SettingsTab: React.FC = () => {
                   className={cn(
                     "organizer-px-3 organizer-py-1 organizer-text-xs organizer-font-medium organizer-rounded-full organizer-transition-all",
                     isSelected
-                      ? "organizer-bg-primary organizer-text-white"
+                      ? "organizer-bg-primary organizer-text-white hover:organizer-bg-primary-hover"
                       : "organizer-bg-bg-surface organizer-text-text-secondary hover:organizer-text-text-primary"
                   )}
-                  style={isSelected ? { backgroundColor: "var(--color-primary)" } : {}}
                 >
                   {position.charAt(0).toUpperCase() + position.slice(1)}
                 </button>

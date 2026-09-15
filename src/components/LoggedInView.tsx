@@ -81,7 +81,7 @@ const LoggedInView: React.FC<LoggedInViewProps> = ({ user }) => {
         {!isPro && (
           <button
             onClick={() => onOpen('paywall')}
-            className="organizer-w-full organizer-bg-primary organizer-text-white organizer-font-medium organizer-py-2 organizer-rounded-lg hover:organizer-opacity-90 organizer-transition-opacity">
+            className="organizer-w-full organizer-bg-primary organizer-text-white organizer-font-medium organizer-py-2 organizer-rounded-lg hover:organizer-bg-primary-hover organizer-transition-colors">
             Upgrade
           </button>
         )}

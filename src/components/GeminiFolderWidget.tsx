@@ -134,9 +134,9 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({
       `}</style>
       <div className="organizer-flex organizer-flex-col organizer-h-auto organizer-font-sans organizer-scrollbar-gutter-stable animate-fadeIn">
         <div className="gemfolders-folder-widget-visible-content">
-          <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-2 organizer-py-2 organizer-pl-4">
+          <div className="organizer-flex organizer-items-center organizer-justify-between organizer-px-2 organizer-py-2 organizer-pl-[14px]">
             <div className="organizer-flex organizer-items-center organizer-gap-2 organizer-cursor-pointer">
-              <span className="organizer-text-sm organizer-font-medium organizer-text-text-primary">
+              <span className="organizer-text-sm organizer-font-medium organizer-text-text-secondary">
                 Folders
               </span>
               <Tooltip text="Hide from sidebar" position="bottom">
@@ -167,7 +167,7 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({
             </Tooltip>
           </div>
 
-          <div className="organizer-px-2 organizer-pb-2 organizer-pl-4">
+          <div className="organizer-px-2 organizer-pb-2 organizer-pl-[14px]">
             <Input
               type="text"
               placeholder="Search..."
@@ -178,7 +178,7 @@ const GeminiFolderWidget: React.FC<GeminiFolderWidgetProps> = ({
             />
           </div>
 
-          <div className="organizer-px-2 organizer-pl-4">
+          <div className="organizer-px-2 organizer-pl-[14px]">
             <FolderTree searchTerm={searchTerm} folders={displayedFolders} />
             {!searchTerm && !showAll && folders && folders.length > 3 && (
               <button

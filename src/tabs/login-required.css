@@ -5,8 +5,8 @@
   --bg-surface: #ffffff;
   --text-primary: #1f1f1f;
   --text-secondary: #444746;
-  --color-primary: #0b57d0;
-  --color-primary-hover: #0842a0;
+  --color-primary: #07f;
+  --color-primary-hover: #1883FE;
   --border-default: #e3e3e3;
 }
 
@@ -92,13 +92,15 @@ body {
   font-weight: 600;
   font-family: "Inter", sans-serif;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition-property: background-color, transform, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
 }
 
 .login-button:hover {
   background: var(--color-primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(11, 87, 208, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 119, 255, 0.3);
 }
 
 .login-button:active {

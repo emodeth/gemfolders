@@ -22,11 +22,14 @@ module.exports = {
       colors: {
         bg: {
           background: "var(--bg-background)",
+          popover: "var(--bg-popover)",
           surface: "var(--bg-surface)",
           "surface-hover": "var(--bg-surface-hover)",
           card: "var(--bg-card)",
           input: "var(--bg-input)",
-          "input-focus": "var(--bg-input-focus)"
+          "input-focus": "var(--bg-input-focus)",
+          "button-surface": "var(--bg-button-surface)",
+          "switch-off": "var(--bg-switch-off)"
         },
         text: {
           primary: "var(--text-primary)",
@@ -37,7 +40,10 @@ module.exports = {
         border: {
           default: "var(--border-default)"
         },
-        primary: "var(--color-primary)",
+        primary: {
+          DEFAULT: "var(--color-primary)",
+          hover: "var(--color-primary-hover)"
+        },
         tooltip: {
           bg: "var(--tooltip-bg)",
           text: "var(--tooltip-text)"

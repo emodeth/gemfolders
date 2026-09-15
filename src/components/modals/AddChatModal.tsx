@@ -13,6 +13,8 @@ interface LoadState {
   progress: number;
 }
 
+const CHATS_PER_PAGE = 10;
+
 const AddChatModal: React.FC = () => {
   const { onClose, data } = useModal();
   const {
@@ -25,6 +27,7 @@ const AddChatModal: React.FC = () => {
 
   const [selectedChats, setSelectedChats] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [visibleChatCount, setVisibleChatCount] = useState(CHATS_PER_PAGE);
   const [chats, setChats] = useState<GeminiChat[]>(initialChats);
   const [isInitialLoading, setIsInitialLoading] = useState(initialChats.length === 0);
   const [loadState, setLoadState] = useState<LoadState>({
@@ -124,6 +127,8 @@ const AddChatModal: React.FC = () => {
       const indexB = b.sortIndex ?? Number.MAX_SAFE_INTEGER;
       return indexA - indexB;
     });
+  const visibleChats = filteredChats.slice(0, visibleChatCount);
+  const hasMoreChats = visibleChatCount < filteredChats.length;
 
   const getEmptyStateMessage = () => {
     if (isInitialLoading) {
@@ -159,7 +164,7 @@ const AddChatModal: React.FC = () => {
 
     return (
       <div className="organizer-flex organizer-flex-col organizer-gap-1">
-        {filteredChats.map((chat) => (
+        {visibleChats.map((chat) => (
           <ChatItem
             key={chat.id}
             chat={{
@@ -178,7 +183,7 @@ const AddChatModal: React.FC = () => {
 
   return (
     <div
-      className="organizer-w-[520px] organizer-bg-bg-surface organizer-rounded-md organizer-shadow-2xl organizer-overflow-hidden organizer-flex organizer-flex-col"
+      className="organizer-w-[520px] organizer-max-w-[calc(100vw-32px)] organizer-bg-bg-background organizer-rounded-md organizer-shadow-md organizer-overflow-hidden organizer-flex organizer-flex-col"
       style={{ maxHeight: "80vh" }}
       onClick={(e) => e.stopPropagation()}
     >
@@ -226,8 +231,18 @@ const AddChatModal: React.FC = () => {
           </button>
         </div>
 
-        <div className="organizer-overflow-y-auto organizer-flex-1 organizer-pr-2 organizer-scrollbar-thin">
+        <div className="organizer-overflow-x-hidden organizer-overflow-y-auto organizer-flex-1 organizer-min-w-0 organizer-pr-2 organizer-scrollbar-thin">
           {renderChatList()}
+          {hasMoreChats && (
+            <div className="organizer-flex organizer-justify-center organizer-py-2">
+              <button
+                className="organizer-min-h-10 organizer-rounded-lg organizer-px-4 organizer-text-xs organizer-font-medium organizer-text-primary hover:organizer-bg-bg-surface-hover organizer-transition-[background-color,transform] active:organizer-scale-[0.96]"
+                onClick={() => setVisibleChatCount((count) => count + CHATS_PER_PAGE)}
+              >
+                Show more
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

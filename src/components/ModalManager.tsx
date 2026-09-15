@@ -98,7 +98,7 @@ const ModalManager: React.FC<ModalManagerProps> = ({ enablePaywallListener = fal
   return (
     <div
       data-modal-overlay="true"
-      className={`organizer-fixed organizer-inset-0
+      className={`organizer-fixed organizer-inset-0 organizer-overflow-x-hidden
         ${type === 'paywall' || type === 'signInPaywall' || type === 'onboarding' ? 'organizer-bg-black/50 organizer-backdrop-blur-sm' : 'organizer-bg-transparent'}
         ${isTransparentOverlay ? '' : 'organizer-flex organizer-justify-center'}
         ${isTopPositioned ? 'organizer-items-start organizer-pt-[20vh]' : ''}
@@ -108,7 +108,7 @@ const ModalManager: React.FC<ModalManagerProps> = ({ enablePaywallListener = fal
       onClick={handleOverlayClick}
     >
       <div
-        className={`organizer-pointer-events-auto ${!isTransparentOverlay ? 'modal-animate-enter' : ''}`}
+        className={`organizer-pointer-events-auto organizer-max-w-full ${!isTransparentOverlay ? 'modal-animate-enter' : ''}`}
         onClick={(e) => e.stopPropagation()}
       >
         {type === 'createFolder' && <CreateFolderModal />}

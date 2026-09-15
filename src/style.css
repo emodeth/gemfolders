@@ -5,11 +5,13 @@
 :root {
   /* Dark theme — matches Gemini surface tokens */
   --bg-background: #1f1f1f;
+  --bg-popover: #272727;
   --bg-surface: #171717;
   --bg-surface-hover: #272727;
   --bg-card: #1e1f20;
   --bg-input: #2a2a2c;
   --bg-input-focus: #303030;
+  --bg-button-surface: #444746;
   --font-sans: "Google Sans", "Google Sans Text", -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 
@@ -20,7 +22,8 @@
 
   --border-default: #3c4043;
 
-  --color-primary: #a8c7fa;
+  --color-primary: #07f;
+  --color-primary-hover: #1883FE;
 
   --tooltip-bg: #303030;
   --tooltip-text: #f2f2f2;
@@ -31,11 +34,13 @@
 [data-theme="light"] {
   /* Light theme — matches Gemini surface tokens */
   --bg-background: #f0f4f9;
+  --bg-popover: #ffffff;
   --bg-surface: #ffffff;
   --bg-surface-hover: #e1e3e1;
   --bg-card: #f0f4f9;
   --bg-input: #ffffff;
   --bg-input-focus: var(--bg-background);
+  --bg-button-surface: #dfe1e1;
 
   --text-primary: #1f1f1f;
   --text-secondary: #444746;
@@ -44,7 +49,8 @@
 
   --border-default: #e3e3e3;
 
-  --color-primary: #0b57d0;
+  --color-primary: #07f;
+  --color-primary-hover: #1883FE;
 
   --tooltip-bg: #303030;
   --tooltip-text: #f2f2f2;
