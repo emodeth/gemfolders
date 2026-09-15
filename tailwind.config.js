@@ -24,6 +24,7 @@ module.exports = {
           background: "var(--bg-background)",
           surface: "var(--bg-surface)",
           "surface-hover": "var(--bg-surface-hover)",
+          card: "var(--bg-card)",
           input: "var(--bg-input)"
         },
         text: {

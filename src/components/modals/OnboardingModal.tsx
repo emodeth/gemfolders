@@ -1,32 +1,43 @@
-import React from 'react';
-import { Sidebar, Check, Sparkles } from 'lucide-react';
-import toast from 'react-hot-toast';
-import { useModal } from '../../context/ModalContext';
-import { useSettings } from '../../context/SettingsContext';
+import gemfoldersIcon from "data-base64:../../../assets/icon.png"
+import { Blocks, Sidebar } from "lucide-react"
+import React from "react"
+import toast from "react-hot-toast"
+
+import { useModal } from "../../context/ModalContext"
+import { useSettings } from "../../context/SettingsContext"
 
 const OnboardingModal: React.FC = () => {
-  const { onClose } = useModal();
-  const { updateSettings } = useSettings();
+  const { onClose } = useModal()
+  const { updateSettings } = useSettings()
 
   const handleChoice = async (hideFolders: boolean) => {
     await updateSettings({
       hideFoldersFromSidebar: hideFolders,
       hasSeenOnboarding: true
-    });
-    onClose();
-    toast.success('You can change the setting in Settings', {
-      id: 'onboarding-toast',
+    })
+    onClose()
+    toast.success("You can change the setting in Settings", {
+      id: "onboarding-toast",
       duration: 4000
-    });
-  };
+    })
+  }
 
   return (
-    <div className="organizer-w-[600px] organizer-bg-bg-surface organizer-rounded-md organizer-text-text-primary organizer-relative organizer-shadow-2xl organizer-border organizer-border-border-default">
-      <div className="organizer-text-center organizer-p-8 organizer-pb-4">
-        <h1 className="organizer-text-2xl organizer-font-bold organizer-mb-2">
+    <div className="organizer-w-[600px] organizer-bg-bg-surface organizer-rounded-lg organizer-text-text-primary organizer-relative organizer-shadow-2xl">
+      <div className="organizer-px-8 organizer-pb-5 organizer-pt-8 organizer-text-center">
+        <span className="organizer-mx-auto organizer-mb-3 organizer-flex organizer-h-16 organizer-w-16 organizer-items-center organizer-justify-center organizer-rounded-full organizer-bg-bg-background organizer-shadow-md">
+          <img
+            src={gemfoldersIcon}
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+            className="organizer-h-10 organizer-w-10 organizer-select-none organizer-object-contain"
+          />
+        </span>
+        <h1 className="organizer-text-balance organizer-text-2xl organizer-font-semibold organizer-leading-8 organizer-tracking-[-0.01em] organizer-text-text-primary">
           Welcome to Gemfolders
         </h1>
-        <p className="organizer-text-text-secondary">
+        <p className="organizer-mt-1 organizer-text-pretty organizer-text-base organizer-font-normal organizer-leading-6 organizer-text-text-secondary">
           Choose how you want to access your folders
         </p>
       </div>
@@ -34,35 +45,39 @@ const OnboardingModal: React.FC = () => {
       <div className="organizer-grid organizer-grid-cols-2 organizer-gap-4 organizer-p-8 organizer-pt-4">
         <button
           onClick={() => handleChoice(true)}
-          className="organizer-group organizer-relative organizer-flex organizer-flex-col organizer-items-center organizer-justify-center organizer-p-6 organizer-rounded-xl organizer-border organizer-border-border-default hover:organizer-border-[var(--color-primary)] hover:organizer-bg-bg-surface-hover organizer-transition-all organizer-text-left"
-        >
-          <div className="organizer-mb-4 organizer-p-3 organizer-rounded-full organizer-bg-[var(--color-primary)]/10 group-hover:organizer-bg-[var(--color-primary)]/20 organizer-transition-colors">
-            <Sparkles size={32} className="organizer-text-[var(--color-primary)]" />
-          </div>
-          <h3 className="organizer-font-bold organizer-text-lg organizer-mb-2">Extension Only</h3>
-          <p className="organizer-text-sm organizer-text-text-secondary organizer-text-center organizer-mb-4">
-            Keep Gemini's sidebar clean and access folders only through the extension sidebar.
+          className="organizer-group organizer-relative organizer-flex organizer-min-h-[210px] organizer-flex-col organizer-items-start organizer-rounded-md organizer-bg-bg-card organizer-p-5 organizer-text-left organizer-shadow-md organizer-outline organizer-outline-1 organizer-outline-transparent organizer-transition-[outline-color,transform] organizer-duration-200 hover:organizer-outline-border-default active:organizer-scale-[0.96]">
+          <span className="organizer-mb-3 organizer-flex organizer-h-10 organizer-w-10 organizer-items-center organizer-justify-center organizer-rounded-md organizer-bg-bg-surface-hover organizer-text-text-primary">
+            <Blocks size={16} strokeWidth={2} />
+          </span>
+          <h3 className="organizer-mb-2 organizer-text-base organizer-font-semibold organizer-leading-6 organizer-text-text-primary">
+            Extension only
+          </h3>
+          <p className="organizer-mb-4 organizer-text-sm organizer-leading-5 organizer-text-text-secondary">
+            Keep Gemini's sidebar clean and access folders only through the
+            extension sidebar.
           </p>
-          <span className="organizer-inline-flex organizer-items-center organizer-text-xs organizer-font-medium organizer-text-white organizer-rounded-full organizer-px-2 organizer-py-0.5" style={{ backgroundColor: 'var(--color-primary)' }}>
+          <span className="organizer-mt-auto organizer-inline-flex organizer-items-center organizer-rounded-full organizer-bg-bg-surface organizer-px-2.5 organizer-py-0.5 organizer-text-xs organizer-font-medium organizer-leading-4 organizer-text-text-primary">
             Recommended
           </span>
         </button>
 
         <button
           onClick={() => handleChoice(false)}
-          className="organizer-group organizer-relative organizer-flex organizer-flex-col organizer-items-center organizer-justify-center organizer-p-6 organizer-rounded-xl organizer-border organizer-border-border-default hover:organizer-border-[var(--color-primary)] hover:organizer-bg-bg-surface-hover organizer-transition-all organizer-text-left"
-        >
-          <div className="organizer-mb-4 organizer-p-3 organizer-rounded-full organizer-bg-[var(--color-primary)]/10 group-hover:organizer-bg-[var(--color-primary)]/20 organizer-transition-colors">
-            <Sidebar size={32} className="organizer-text-[var(--color-primary)]" />
-          </div>
-          <h3 className="organizer-font-bold organizer-text-lg organizer-mb-2">Integrated Mode</h3>
-          <p className="organizer-text-sm organizer-text-text-secondary organizer-text-center organizer-mb-4">
-            Use folders directly within Gemini's existing sidebar for a seamless experience.
+          className="organizer-group organizer-relative organizer-flex organizer-min-h-[210px] organizer-flex-col organizer-items-start organizer-rounded-md organizer-bg-bg-card organizer-p-5 organizer-text-left organizer-shadow-md organizer-outline organizer-outline-1 organizer-outline-transparent organizer-transition-[outline-color,transform] organizer-duration-200 hover:organizer-outline-border-default active:organizer-scale-[0.96]">
+          <span className="organizer-mb-3 organizer-flex organizer-h-10 organizer-w-10 organizer-items-center organizer-justify-center organizer-rounded-md organizer-bg-bg-surface-hover organizer-text-text-primary">
+            <Sidebar size={16} strokeWidth={2} />
+          </span>
+          <h3 className="organizer-mb-2 organizer-text-base organizer-font-semibold organizer-leading-6 organizer-text-text-primary">
+            Integrated mode
+          </h3>
+          <p className="organizer-text-sm organizer-leading-5 organizer-text-text-secondary">
+            Use folders directly within Gemini's existing sidebar for a seamless
+            experience.
           </p>
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default OnboardingModal;
+export default OnboardingModal
