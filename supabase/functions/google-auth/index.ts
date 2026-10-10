@@ -64,47 +64,29 @@ Deno.serve(async (req: Request) => {
       }
     )
 
-    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers()
-    const existingUser = existingUsers?.users?.find(
-      (u: { email?: string }) => u.email === googleUser.email
-    )
+    const userMetadata = {
+      full_name: googleUser.name,
+      avatar_url: googleUser.picture,
+      provider: "google"
+    }
 
-    let userId: string
+    // Try to create the user and treat "already exists" as the lookup, instead
+    // of listing users (listUsers is paginated and misses users past page 1).
+    const { error: createError } = await supabaseAdmin.auth.admin.createUser({
+      email: googleUser.email,
+      email_confirm: true,
+      user_metadata: userMetadata
+    })
 
-    if (existingUser) {
-      userId = existingUser.id
+    const userAlreadyExists =
+      createError?.code === "email_exists" || createError?.status === 422
 
-      await supabaseAdmin.auth.admin.updateUserById(userId, {
-        user_metadata: {
-          full_name: googleUser.name,
-          avatar_url: googleUser.picture,
-          provider: "google"
-        }
+    if (createError && !userAlreadyExists) {
+      console.error("Error creating user:", createError)
+      return new Response(JSON.stringify({ error: "Failed to create user" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
       })
-    } else {
-      const { data: newUser, error: createError } =
-        await supabaseAdmin.auth.admin.createUser({
-          email: googleUser.email,
-          email_confirm: true,
-          user_metadata: {
-            full_name: googleUser.name,
-            avatar_url: googleUser.picture,
-            provider: "google"
-          }
-        })
-
-      if (createError || !newUser.user) {
-        console.error("Error creating user:", createError)
-        return new Response(
-          JSON.stringify({ error: "Failed to create user" }),
-          {
-            status: 500,
-            headers: { ...corsHeaders, "Content-Type": "application/json" }
-          }
-        )
-      }
-
-      userId = newUser.user.id
     }
 
     const { data: linkData, error: linkError } =
@@ -122,6 +104,16 @@ Deno.serve(async (req: Request) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" }
         }
       )
+    }
+
+    if (userAlreadyExists && linkData.user?.id) {
+      const { error: updateError } =
+        await supabaseAdmin.auth.admin.updateUserById(linkData.user.id, {
+          user_metadata: userMetadata
+        })
+      if (updateError) {
+        console.error("Error updating user metadata:", updateError)
+      }
     }
 
     const token_hash = linkData.properties?.hashed_token
