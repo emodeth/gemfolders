@@ -6,7 +6,7 @@ import {
   saveBookmarksLocal,
   type BookmarkedChat
 } from "../lib/storage"
-import { pullBookmarks, pushBookmarks } from "../lib/cloudStorage"
+import { pullBookmarks, pushBookmarks, shouldPullFromCloud } from "../lib/cloudStorage"
 import { useAuth } from "./AuthContext"
 import toast from "react-hot-toast"
 
@@ -63,13 +63,22 @@ export const BookmarkProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   useEffect(() => {
     const syncFromCloud = async () => {
-      if (user?.id) {
+      if (user?.id && !(await shouldPullFromCloud("bookmarks", user.id))) {
+        // Pulled recently on this device; local data is up to date.
+        setBookmarks(await getBookmarks())
+        setIsLoading(false)
+      } else if (user?.id) {
         setIsLoading(true)
         try {
           const cloudBookmarks = await pullBookmarks(user.id)
           if (cloudBookmarks !== null) {
             await saveBookmarksLocal(cloudBookmarks)
             setBookmarks(cloudBookmarks)
+            globalThis.dispatchEvent(
+              new CustomEvent("gemfolders-bookmark-changed", {
+                detail: { bookmarks: cloudBookmarks }
+              })
+            )
           } else {
             const localBookmarks = await getBookmarks()
             if (localBookmarks.length > 0) {

@@ -20,6 +20,62 @@ interface SubscriptionContextType {
   refreshSubscription: () => Promise<void>
 }
 
+const ACCESS_CACHE_TTL = 60 * 1000
+
+// Shared by every SubscriptionProvider in this page so multiple widgets don't
+// each query user_access.
+let accessCache: {
+  userId: string
+  data: UserAccess | null
+  fetchedAt: number
+} | null = null
+let accessInFlight: {
+  userId: string
+  promise: Promise<UserAccess | null | undefined>
+} | null = null
+
+/** Resolves to undefined when the fetch failed and state should be kept. */
+const loadUserAccess = (
+  userId: string,
+  force: boolean
+): Promise<UserAccess | null | undefined> => {
+  if (
+    !force &&
+    accessCache?.userId === userId &&
+    Date.now() - accessCache.fetchedAt < ACCESS_CACHE_TTL
+  ) {
+    return Promise.resolve(accessCache.data)
+  }
+  if (accessInFlight?.userId === userId) return accessInFlight.promise
+
+  const promise = (async () => {
+    try {
+      const { data, error } = await supabase
+        .from("user_access")
+        .select("*")
+        .eq("user_id", userId)
+        .single()
+
+      if (error && error.code !== "PGRST116") {
+        console.error("Error fetching user access:", error)
+        return undefined
+      }
+
+      const access = error ? null : (data as UserAccess)
+      accessCache = { userId, data: access, fetchedAt: Date.now() }
+      return access
+    } catch (err) {
+      console.error("Error fetching subscription:", err)
+      return undefined
+    } finally {
+      accessInFlight = null
+    }
+  })()
+
+  accessInFlight = { userId, promise }
+  return promise
+}
+
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(
   undefined
 )
@@ -31,72 +87,47 @@ export const SubscriptionProvider: React.FC<{ children: React.ReactNode }> = ({
   const [userAccess, setUserAccess] = useState<UserAccess | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  const fetchUserAccess = useCallback(async () => {
-    if (!user?.id) {
-      setUserAccess(null)
-      setIsLoading(false)
-      return
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from("user_access")
-        .select("*")
-        .eq("user_id", user.id)
-        .single()
-
-      if (error) {
-        if (error.code === "PGRST116") {
-          setUserAccess(null)
-        } else {
-          console.error("Error fetching user access:", error)
-        }
-      } else {
-        setUserAccess(data)
+  const fetchUserAccess = useCallback(
+    async (force = false) => {
+      if (!user?.id) {
+        setUserAccess(null)
+        setIsLoading(false)
+        return
       }
-    } catch (err) {
-      console.error("Error fetching subscription:", err)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [user?.id])
+
+      try {
+        const result = await loadUserAccess(user.id, force)
+        if (result !== undefined) setUserAccess(result)
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [user?.id]
+  )
 
   const refreshSubscription = useCallback(async () => {
     setIsLoading(true)
-    await fetchUserAccess()
+    await fetchUserAccess(true)
   }, [fetchUserAccess])
 
   useEffect(() => {
     fetchUserAccess()
   }, [fetchUserAccess])
 
+  // Re-check when the user comes back to the tab (e.g. after checkout) instead
+  // of keeping a Realtime channel open in every Gemini tab.
   useEffect(() => {
     if (!user?.id) return
 
-    const channel = supabase
-      .channel(`user_access_${user.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "user_access",
-          filter: `user_id=eq.${user.id}`
-        },
-        (payload) => {
-          if (payload.eventType === "DELETE") {
-            setUserAccess(null)
-          } else {
-            setUserAccess(payload.new as UserAccess)
-          }
-        }
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") fetchUserAccess()
     }
-  }, [user?.id])
+
+    document.addEventListener("visibilitychange", handleVisibilityChange)
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    }
+  }, [user?.id, fetchUserAccess])
 
   const accessLevel: AccessLevel = useMemo(() => {
     if (!userAccess) return "free"

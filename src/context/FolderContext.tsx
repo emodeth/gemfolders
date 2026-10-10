@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef, type ReactNode } from "react"
 import { createFolder, deleteFolder, getFolders, renameFolder, updateFolderColor, addChatsToFolder, moveNodes, saveFoldersLocal, type Folder, type ChatToAdd } from "../lib/storage"
-import { pullFolders, pushFolders } from "../lib/cloudStorage"
+import { pullFolders, pushFolders, shouldPullFromCloud } from "../lib/cloudStorage"
 import { useModal } from "./ModalContext"
 import { useAuth } from "./AuthContext"
 
@@ -103,13 +103,17 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   useEffect(() => {
     const syncFromCloud = async () => {
-      if (user?.id) {
+      if (user?.id && !(await shouldPullFromCloud("folders", user.id))) {
+        // Pulled recently on this device; local data is up to date.
+        setFolders(await getFolders())
+        setLoading(false)
+      } else if (user?.id) {
         setLoading(true)
         try {
           const cloudFolders = await pullFolders(user.id)
           if (cloudFolders !== null) {
             await saveFoldersLocal(cloudFolders)
-            setFolders(cloudFolders)
+            updateFoldersAndSync(cloudFolders)
           } else {
             const localFolders = await getFolders()
             if (localFolders.length > 0) {
