@@ -27,9 +27,9 @@ const OnboardingModal: React.FC = () => {
   }
 
   return (
-    <div className="organizer-w-[600px] organizer-bg-bg-surface organizer-rounded-lg organizer-text-text-primary organizer-relative organizer-shadow-2xl">
-      <div className="organizer-px-8 organizer-pb-5 organizer-pt-8 organizer-text-center">
-        <span className="organizer-mx-auto organizer-mb-3 organizer-flex organizer-h-16 organizer-w-16 organizer-items-center organizer-justify-center organizer-rounded-full organizer-bg-bg-background organizer-shadow-md">
+    <div className="organizer-w-[600px] organizer-max-w-[calc(100vw-32px)] organizer-max-h-[calc(100dvh-32px)] organizer-overflow-y-auto organizer-overscroll-contain organizer-bg-bg-surface organizer-rounded-lg organizer-text-text-primary organizer-relative organizer-shadow-2xl">
+      <div className="organizer-px-5 organizer-pb-4 organizer-pt-6 organizer-text-center sm:organizer-px-8 sm:organizer-pb-5 sm:organizer-pt-8">
+        <span className="organizer-mx-auto organizer-mb-3 organizer-flex organizer-h-14 organizer-w-14 organizer-items-center sm:organizer-h-16 sm:organizer-w-16 organizer-justify-center organizer-rounded-full organizer-bg-bg-background organizer-shadow-md">
           <img
             src={gemfoldersIcon}
             alt=""
@@ -38,7 +38,7 @@ const OnboardingModal: React.FC = () => {
             className="organizer-h-10 organizer-w-10 organizer-select-none organizer-object-contain"
           />
         </span>
-        <h1 className="organizer-text-balance organizer-text-2xl organizer-font-semibold organizer-leading-8 organizer-tracking-[-0.01em] organizer-text-text-primary">
+        <h1 className="organizer-text-balance organizer-text-xl organizer-font-semibold organizer-leading-7 sm:organizer-text-2xl sm:organizer-leading-8 organizer-tracking-[-0.01em] organizer-text-text-primary">
           {t("welcome")}
         </h1>
         <p className="organizer-mt-1 organizer-text-pretty organizer-text-base organizer-font-normal organizer-leading-6 organizer-text-text-secondary">
@@ -46,10 +46,10 @@ const OnboardingModal: React.FC = () => {
         </p>
       </div>
 
-      <div className="organizer-grid organizer-grid-cols-2 organizer-gap-4 organizer-px-8 organizer-pb-4">
+      <div className="organizer-grid organizer-grid-cols-1 organizer-gap-3 organizer-px-5 organizer-pb-4 sm:organizer-grid-cols-2 sm:organizer-gap-4 sm:organizer-px-8">
         <button
           onClick={() => handleChoice(true)}
-          className="organizer-group organizer-relative organizer-flex organizer-min-h-[210px] organizer-flex-col organizer-items-start organizer-rounded-md organizer-bg-bg-card organizer-p-5 organizer-text-left organizer-shadow-md organizer-outline organizer-outline-1 organizer-outline-transparent organizer-transition-[outline-color,transform] organizer-duration-200 hover:organizer-outline-border-default active:organizer-scale-[0.96]">
+          className="organizer-group organizer-relative organizer-flex organizer-flex-col sm:organizer-min-h-[210px] organizer-items-start organizer-rounded-md organizer-bg-bg-card organizer-p-5 organizer-text-left organizer-shadow-md organizer-outline organizer-outline-1 organizer-outline-transparent organizer-transition-[outline-color,transform] organizer-duration-200 hover:organizer-outline-border-default active:organizer-scale-[0.96]">
           <span className="organizer-mb-3 organizer-flex organizer-h-10 organizer-w-10 organizer-items-center organizer-justify-center organizer-rounded-md organizer-bg-bg-surface-hover organizer-text-text-primary">
             <Blocks size={16} strokeWidth={2} />
           </span>
@@ -66,7 +66,7 @@ const OnboardingModal: React.FC = () => {
 
         <button
           onClick={() => handleChoice(false)}
-          className="organizer-group organizer-relative organizer-flex organizer-min-h-[210px] organizer-flex-col organizer-items-start organizer-rounded-md organizer-bg-bg-card organizer-p-5 organizer-text-left organizer-shadow-md organizer-outline organizer-outline-1 organizer-outline-transparent organizer-transition-[outline-color,transform] organizer-duration-200 hover:organizer-outline-border-default active:organizer-scale-[0.96]">
+          className="organizer-group organizer-relative organizer-flex organizer-flex-col sm:organizer-min-h-[210px] organizer-items-start organizer-rounded-md organizer-bg-bg-card organizer-p-5 organizer-text-left organizer-shadow-md organizer-outline organizer-outline-1 organizer-outline-transparent organizer-transition-[outline-color,transform] organizer-duration-200 hover:organizer-outline-border-default active:organizer-scale-[0.96]">
           <span className="organizer-mb-3 organizer-flex organizer-h-10 organizer-w-10 organizer-items-center organizer-justify-center organizer-rounded-md organizer-bg-bg-surface-hover organizer-text-text-primary">
             <Sidebar size={16} strokeWidth={2} />
           </span>
@@ -79,7 +79,7 @@ const OnboardingModal: React.FC = () => {
         </button>
       </div>
 
-      <div className="organizer-px-8 organizer-pb-8">
+      <div className="organizer-px-5 organizer-pb-5 sm:organizer-px-8 sm:organizer-pb-8">
         <div className="organizer-w-full organizer-rounded-xl organizer-bg-bg-background organizer-p-4 organizer-shadow-sm">
           <label
             htmlFor="gemfolders-onboarding-language"
