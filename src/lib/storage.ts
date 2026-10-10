@@ -1,7 +1,12 @@
 import { v4 as uuidv4 } from "uuid"
 
 import { getRandomColor } from "../constants/colors"
-import { getCurrentUserId, pushBookmarks, pushFolders } from "./cloudStorage"
+import {
+  getCurrentUserId,
+  markLocalUnowned,
+  pushBookmarks,
+  pushFolders
+} from "./cloudStorage"
 
 export interface Folder {
   id: string
@@ -34,6 +39,8 @@ export const saveFolders = async (folders: Folder[]): Promise<void> => {
     pushFolders(userId, folders).catch((err) =>
       console.error("Cloud sync (folders) failed:", err)
     )
+  } else {
+    await markLocalUnowned("folders")
   }
 }
 
@@ -457,6 +464,8 @@ export const saveBookmarks = async (
     pushBookmarks(userId, bookmarks).catch((err) =>
       console.error("Cloud sync (bookmarks) failed:", err)
     )
+  } else {
+    await markLocalUnowned("bookmarks")
   }
 }
 

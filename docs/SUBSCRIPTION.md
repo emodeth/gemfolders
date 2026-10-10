@@ -47,6 +47,8 @@ create policy "Users can view own access" on public.user_access
 create policy "Service role full access" on public.user_access
   for all using (auth.role() = 'service_role');
 
+-- Enable realtime for the table
+alter publication supabase_realtime add table public.user_access;
 ```
 
 ## Setting Up Webhooks
@@ -105,7 +107,7 @@ Make sure these are set in your Supabase project:
 3. User completes payment on Polar.sh
 4. Polar.sh sends webhook to our Edge Function
 5. Edge Function updates `user_access` table
-6. SubscriptionContext re-fetches `user_access` when the user returns to the Gemini tab
+6. SubscriptionContext receives realtime update
 7. UI updates to reflect new subscription status
 
 ### Access Levels
@@ -145,5 +147,5 @@ Make sure these are set in your Supabase project:
 ### Subscription not updating in UI
 
 - Check browser console for errors
-- Switch away from the Gemini tab and back to trigger a re-fetch
+- Verify realtime is enabled for `user_access` table
 - Check Supabase logs for database errors
