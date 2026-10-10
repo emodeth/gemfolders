@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef, type ReactNode } from "react"
 import { createFolder, deleteFolder, getFolders, renameFolder, updateFolderColor, addChatsToFolder, moveNodes, saveFoldersLocal, type Folder, type ChatToAdd } from "../lib/storage"
-import { pullFolders, pushFolders } from "../lib/cloudStorage"
+import { pullFolders, pushFolders, shouldPullFromCloud } from "../lib/cloudStorage"
 import { useModal } from "./ModalContext"
 import { useAuth } from "./AuthContext"
 
@@ -103,17 +103,24 @@ export const FolderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
   useEffect(() => {
     const syncFromCloud = async () => {
-      if (user?.id) {
+      if (user?.id && !shouldPullFromCloud("folders", user.id)) {
+        // This page already synced; pushes keep local data current.
+        setFolders(await getFolders())
+        setLoading(false)
+      } else if (user?.id) {
         setLoading(true)
         try {
-          const cloudFolders = await pullFolders(user.id)
-          if (cloudFolders !== null) {
-            await saveFoldersLocal(cloudFolders)
-            setFolders(cloudFolders)
+          const result = await pullFolders(user.id)
+          if (result.status === "data") {
+            await saveFoldersLocal(result.data)
+            updateFoldersAndSync(result.data)
           } else {
             const localFolders = await getFolders()
-            if (localFolders.length > 0) {
-              await pushFolders(user.id, localFolders)
+            const needsPush =
+              (result.status === "missing" && localFolders.length > 0) ||
+              (result.status === "unchanged" && result.dirty)
+            if (needsPush) {
+              pushFolders(user.id, localFolders)
             }
             setFolders(localFolders)
           }

@@ -1,28 +1,43 @@
+import { getCachedChats, saveCachedChats } from "./geminiChats"
 import {
   extractChatId,
   findConversationTitleElement,
   getSidebarScrollContainer
 } from "./geminiDom"
-import { getCachedChats, saveCachedChats } from "./geminiChats"
 import { renameChat, updateBookmarkTitle } from "./storage"
 
-const extractChatIdFromTitleElement = (element: Element | null): string | null => {
+const extractChatIdFromTitleElement = (
+  element: Element | null
+): string | null => {
   if (!element) return null
   const titleElement = findConversationTitleElement(element)
   if (!titleElement) return null
   return extractChatId(titleElement)
 }
 
-const SYNC_COOLDOWN = 2000
-const recentlySynced = new Set<string>()
+const RENAME_DEBOUNCE = 1000
+const pendingRenames = new Map<string, ReturnType<typeof setTimeout>>()
+const lastSeenTitles = new Map<string, string>()
+
+const scheduleRename = (chatId: string, newTitle: string) => {
+  const pending = pendingRenames.get(chatId)
+  if (!pending && lastSeenTitles.get(chatId) === newTitle) return
+  if (pending) clearTimeout(pending)
+
+  pendingRenames.set(
+    chatId,
+    setTimeout(() => {
+      pendingRenames.delete(chatId)
+      handleRename(chatId, newTitle)
+    }, RENAME_DEBOUNCE)
+  )
+}
 
 const handleRename = async (chatId: string, newTitle: string) => {
-  if (recentlySynced.has(chatId)) return
+  if (lastSeenTitles.get(chatId) === newTitle) return
+  lastSeenTitles.set(chatId, newTitle)
 
   try {
-    recentlySynced.add(chatId)
-    setTimeout(() => recentlySynced.delete(chatId), SYNC_COOLDOWN)
-
     const updatedFolders = await renameChat(chatId, newTitle)
 
     await updateBookmarkTitle(chatId, newTitle)
@@ -53,7 +68,7 @@ const handleRename = async (chatId: string, newTitle: string) => {
     )
   } catch (error) {
     console.error("[Gemini Folders] Error syncing rename:", error)
-    recentlySynced.delete(chatId)
+    lastSeenTitles.delete(chatId)
   }
 }
 
@@ -73,7 +88,7 @@ export const setupRenameHandler = () => {
           const newTitle = titleElement.textContent?.trim()
 
           if (chatId && newTitle) {
-            handleRename(chatId, newTitle)
+            scheduleRename(chatId, newTitle)
           }
         }
       }

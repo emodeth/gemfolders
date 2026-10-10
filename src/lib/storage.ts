@@ -1,7 +1,12 @@
 import { v4 as uuidv4 } from "uuid"
 
 import { getRandomColor } from "../constants/colors"
-import { getCurrentUserId, pushBookmarks, pushFolders } from "./cloudStorage"
+import {
+  getCurrentUserId,
+  markLocalUnowned,
+  pushBookmarks,
+  pushFolders
+} from "./cloudStorage"
 
 export interface Folder {
   id: string
@@ -34,6 +39,8 @@ export const saveFolders = async (folders: Folder[]): Promise<void> => {
     pushFolders(userId, folders).catch((err) =>
       console.error("Cloud sync (folders) failed:", err)
     )
+  } else {
+    await markLocalUnowned("folders")
   }
 }
 
@@ -201,22 +208,26 @@ export const renameChat = async (
   newName: string
 ): Promise<Folder[]> => {
   const folders = await getFolders()
+  let changed = false
 
-  const updateName = (nodes: Folder[]): boolean => {
+  const updateName = (nodes: Folder[]): void => {
     for (const node of nodes) {
       if (
         (node.id === chatId || node.originalId === chatId) &&
-        node.type === "chat"
+        node.type === "chat" &&
+        node.name !== newName
       ) {
         node.name = newName
+        changed = true
       }
       if (node.children) updateName(node.children)
     }
-    return true
   }
 
   updateName(folders)
-  await saveFolders(folders)
+  // Gemini re-renders sidebar titles constantly; only save real renames so we
+  // don't push the whole folder tree to the cloud on every DOM mutation.
+  if (changed) await saveFolders(folders)
   return folders
 }
 
@@ -453,6 +464,8 @@ export const saveBookmarks = async (
     pushBookmarks(userId, bookmarks).catch((err) =>
       console.error("Cloud sync (bookmarks) failed:", err)
     )
+  } else {
+    await markLocalUnowned("bookmarks")
   }
 }
 
@@ -531,6 +544,9 @@ export const updateBookmarkTitle = async (
   newTitle: string
 ): Promise<BookmarkedChat[]> => {
   const bookmarks = await getBookmarks()
+  if (!bookmarks.some((b) => b.id === chatId && b.title !== newTitle)) {
+    return bookmarks
+  }
   const updatedBookmarks = bookmarks.map((b) =>
     b.id === chatId ? { ...b, title: newTitle } : b
   )

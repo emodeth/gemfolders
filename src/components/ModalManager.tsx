@@ -84,7 +84,7 @@ const ModalManager: React.FC<ModalManagerProps> = ({ enablePaywallListener = fal
 
   if (!isOpen || !type) return null;
 
-  const isTopPositioned = type === 'deleteFolder' || type === 'renameFolderModal' || type === 'renameChatModal' || type === 'deleteChatModal' || type === 'onboarding';
+  const isTopPositioned = type === 'deleteFolder' || type === 'renameFolderModal' || type === 'renameChatModal' || type === 'deleteChatModal';
   const isTransparentOverlay = type === 'createFolder' || type === 'addSubfolder';
 
   const handleOverlayClick = (e: React.MouseEvent) => {
