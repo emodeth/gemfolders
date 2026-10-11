@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useMemo } from "react"
 
+import { PAYWALL_ENABLED } from "~lib/featureFlags"
 import type { Folder } from "~lib/storage"
 
 import { useAuth } from "./AuthContext"
@@ -82,6 +83,7 @@ export const TierLimitsProvider: React.FC<{ children: React.ReactNode }> = ({
   const { onOpen } = useModal()
 
   const isLoggedIn = !!session?.user
+  const hasUnlimitedAccess = isPro || !PAYWALL_ENABLED
 
   // Select the correct limits based on login state
   const currentLimits = isLoggedIn ? FREE_TIER_LIMITS : NOT_LOGGED_IN_LIMITS
@@ -115,23 +117,23 @@ export const TierLimitsProvider: React.FC<{ children: React.ReactNode }> = ({
   )
 
   const canCreateFolder = useCallback((): boolean => {
-    if (isPro) return true
+    if (hasUnlimitedAccess) return true
     return totalFolderCount < currentLimits.maxFolders
-  }, [isPro, totalFolderCount, currentLimits])
+  }, [hasUnlimitedAccess, totalFolderCount, currentLimits])
 
   const canCreateSubfolder = useCallback(
     (parentId: string): boolean => {
-      if (isPro) return true
+      if (hasUnlimitedAccess) return true
       const parentDepth = getFolderDepth(parentId)
       return parentDepth < currentLimits.maxSubfolderDepth
     },
-    [isPro, getFolderDepth, currentLimits]
+    [hasUnlimitedAccess, getFolderDepth, currentLimits]
   )
 
   const canBookmark = useCallback((): boolean => {
-    if (isPro) return true
+    if (hasUnlimitedAccess) return true
     return bookmarkCount < currentLimits.maxBookmarks
-  }, [isPro, bookmarkCount, currentLimits])
+  }, [hasUnlimitedAccess, bookmarkCount, currentLimits])
 
   const value = useMemo(
     () => ({

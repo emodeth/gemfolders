@@ -1,3 +1,4 @@
+import { PAYWALL_ENABLED } from "./featureFlags"
 import {
   extractChatId,
   extractChatTitle,
@@ -103,7 +104,7 @@ const isBookmarked = (chatId: string): boolean =>
   bookmarksCache.some((bookmark) => bookmark.id === chatId)
 
 const canAddBookmark = (): { allowed: boolean; reason?: string } => {
-  if (userAccessCache?.isPro) return { allowed: true }
+  if (!PAYWALL_ENABLED || userAccessCache?.isPro) return { allowed: true }
 
   const maxBookmarks = isLoggedIn
     ? FREE_TIER_MAX_BOOKMARKS
