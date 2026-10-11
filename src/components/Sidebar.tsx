@@ -19,6 +19,7 @@ import ChatContextMenu from "./ChatContextMenu";
 import { useFolder } from "../context/FolderContext";
 import { useChat } from "../context/ChatContext";
 import { useI18n } from "../lib/i18n";
+import { AUTH_ENABLED } from "../lib/featureFlags";
 
 type TabType = "folders" | "bookmarks" | "account" | "settings";
 
@@ -29,12 +30,13 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { t } = useI18n();
-  const tabs: { id: TabType; icon: React.ReactNode; label: string }[] = [
+  const allTabs: { id: TabType; icon: React.ReactNode; label: string }[] = [
     { id: "folders", icon: <Folders size={18} />, label: t("folders") },
     { id: "bookmarks", icon: <Bookmark size={18} />, label: t("bookmarks") },
     { id: "account", icon: <User size={18} />, label: t("account") },
     { id: "settings", icon: <Settings size={18} />, label: t("settings") },
   ];
+  const tabs = allTabs.filter((tab) => AUTH_ENABLED || tab.id !== "account");
   const disabledTabs: string[] = [];
 
   const [activeTab, setActiveTab] = useState<TabType>("folders");
