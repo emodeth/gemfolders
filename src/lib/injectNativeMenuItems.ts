@@ -1,3 +1,4 @@
+import { PAYWALL_ENABLED } from "./featureFlags"
 import {
   closeNativeConversationMenu,
   extractChatId,
@@ -107,7 +108,7 @@ const isBookmarked = (chatId: string): boolean =>
   bookmarksCache.some((bookmark) => bookmark.id === chatId)
 
 const canAddBookmark = (): { allowed: boolean; reason?: string } => {
-  if (userAccessCache?.isPro) {
+  if (!PAYWALL_ENABLED || userAccessCache?.isPro) {
     return { allowed: true }
   }
 
