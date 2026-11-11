@@ -1,7 +1,7 @@
-// Temporarily disabled while Supabase is restricted (until 2026-10-27).
-// Set back to true to re-enable tier limits and paywall prompts.
-export const PAYWALL_ENABLED = false
+// Enables tier limits and paywall prompts. Set to false to make
+// every feature free (e.g. if Supabase becomes unavailable again).
+export const PAYWALL_ENABLED = true
 
-// Hides the Account tab (sign-in) while Supabase auth is unavailable.
-// Set back to true to show it again.
-export const AUTH_ENABLED = false
+// Shows the Account tab (sign-in). Set to false to hide it if
+// Supabase auth becomes unavailable again.
+export const AUTH_ENABLED = true
