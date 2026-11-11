@@ -32,10 +32,11 @@
 
 Stop losing important threads. Gemfolders is a browser extension that brings structure to your Google Gemini workflow with native folders, instant search, and bookmarks — all directly inside Gemini's sidebar.
 
-## 🛠️ What's New in v2.0.0
+## 🛠️ What's New in v2.0.4
 
-- **Gemini UI Fix** — Resolved all extension breakage caused by recent Gemini frontend updates. The extension is now more stable, faster, and perfectly aligned with the new layout.
-- **Seamless Integration** — Fully optimized to match Gemini's native dark and light theme settings flawlessly.
+- **Accounts are back** — Sign in with Google or a Magic Link from the Account tab to sync your folders and bookmarks across devices.
+- **Free and Pro plans are back** — Signing in for free doubles your limits, and Pro removes them. Your existing folders and bookmarks are always kept.
+- **Reliability and performance improvements.**
 
 ## ✨ Features
 
@@ -45,8 +46,19 @@ Stop losing important threads. Gemfolders is a browser extension that brings str
 - **🖱️ Drag & Drop** — Move chats between folders effortlessly.
 - **⚡ Native Sidebar Integration** — Blends seamlessly into Gemini's interface without disrupting your flow.
 - **🌗 Theme Aware** — Automatically adapts to Gemini's light and dark modes.
-- **🔒 Privacy-Focused** — Your data stays local on your device. We never collect or share your chat history.
-- **🔄 Cloud Sync** — Sync your folder structure across devices with end-to-end encrypted storage.
+- **🔒 Privacy-Focused** — Without an account, your folders and bookmarks stay local in your browser. We never collect or share your chat content.
+- **🔄 Cloud Sync** — Sign in to back up your folders and bookmarks and use them on any computer.
+- **📤 Export** — Download your folders, bookmarks, and cached chat info as a JSON file at any time.
+
+## 💎 Plans
+
+|                                   | Folders   | Bookmarks | Subfolder depth | Cloud sync |
+| --------------------------------- | --------- | --------- | --------------- | ---------- |
+| Without an account                | 5         | 5         | 1 level         | —          |
+| Free account                      | 10        | 10        | 2 levels        | ✓          |
+| Pro (monthly, yearly or lifetime) | Unlimited | Unlimited | Unlimited       | ✓          |
+
+See current pricing at [gemfolders.com](https://www.gemfolders.com).
 
 ## 🚀 Getting Started
 
@@ -83,6 +95,12 @@ To set up a local development environment:
    - Enable "Developer mode"
    - Click "Load unpacked" and select the `build/chrome-mv3-dev` directory
    - Changes will hot-reload automatically
+
+5. **Feature Flags**
+
+   `src/lib/featureFlags.ts` has two switches you can turn off if Supabase is unavailable:
+   - `AUTH_ENABLED` — shows the Account tab (sign-in and sync)
+   - `PAYWALL_ENABLED` — enforces plan limits and shows upgrade prompts
 
 ## 🧱 Tech Stack
 
